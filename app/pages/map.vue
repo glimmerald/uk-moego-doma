@@ -173,7 +173,7 @@ const diveTo = (cityId) => {
       type: 'fill',
       source: `${city.id}-data`,
       paint: {
-        'fill-color': '#dcdcdc', // Город чуть темнее страны, чтобы выделялся
+        'fill-color': 'rgba(0, 0, 0, 0.04)', // Город чуть темнее страны, чтобы выделялся
         'fill-opacity': 0, // Изначально прозрачный
         'fill-opacity-transition': { duration: 1500 } // Плавное появление
       }
@@ -184,8 +184,8 @@ const diveTo = (cityId) => {
       type: 'line',
       source: `${city.id}-data`,
       paint: {
-        'line-color': '#111111', // Оранжевая граница
-        'line-width': 2,
+        'line-color': 'rgba(0, 0, 0, 0.3)', // Тонкая графитовая граница
+        'line-width': 1.5,
         'line-opacity': 0,
         'line-opacity-transition': { duration: 1500 }
       }
