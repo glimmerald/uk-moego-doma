@@ -2,10 +2,45 @@
   <div class="map-page">
     <AppHeader />
     
-    <!-- Временная кнопка для теста -->
-    <div class="test-controls">
-      <button @click="diveTo('krd')">Нырок в Краснодар</button>
-      <button @click="returnToPlanet()" style="margin-left: 10px; background-color: #555;">Назад к планете</button>
+    <!-- Информационная панель (Стекло) -->
+    <div class="map-sidebar glass-effect">
+      <Transition name="fade" mode="out-in">
+        <!-- Состояние 1: Планета -->
+        <div v-if="!isDived" class="sidebar-content" key="planet">
+          <h1 class="sidebar-title">Наши ЖК</h1>
+          <p class="sidebar-desc">
+            Подробная информация о жилых комплексах, находящихся под нашим управлением. Выберите город на карте или в списке ниже, чтобы изучить объекты.
+          </p>
+          <div class="sidebar-cities">
+            <button 
+              v-for="city in cities" 
+              :key="city.id" 
+              class="sidebar-city-btn"
+              @click="diveTo(city.id)"
+            >
+              {{ city.name }}
+              <span class="city-badge">{{ city.complexes.length }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Состояние 2: Город -->
+        <div v-else class="sidebar-content" key="city">
+          <button class="sidebar-back-btn" @click="returnToPlanet()">
+            &larr; Вернуться к списку городов
+          </button>
+          <h1 class="sidebar-title">{{ activeCity?.name }}</h1>
+          <div class="sidebar-stats">
+            <div class="stat-box">
+              <div class="stat-val">{{ activeCity?.complexes.length }}</div>
+              <div class="stat-label">Жилых комплексов</div>
+            </div>
+          </div>
+          <p class="sidebar-desc" style="margin-top: 20px;">
+            Нажмите на маркер на карте, чтобы посмотреть информацию о конкретном жилом комплексе.
+          </p>
+        </div>
+      </Transition>
     </div>
 
     <div class="map-container" id="map" ref="mapContainer"></div>
@@ -37,7 +72,8 @@ import 'mapbox-gl/dist/mapbox-gl.css'
 
 const mapContainer = ref(null)
 let map = null
-let isDived = false
+const isDived = ref(false)
+const activeCity = ref(null)
 
 const hoveredCity = ref(null)
 const tooltipX = ref(0)
@@ -73,14 +109,16 @@ const cities = [
 // Функция возврата на общую планету
 const returnToPlanet = () => {
   if (!map) return
-  isDived = false
+  isDived.value = false
+  activeCity.value = null
 
   // Возвращаем камеру на Россию
   map.flyTo({
-    center: [60, 55],
-    zoom: 2.5,
+    center: [50, 48],
+    zoom: 4.2,
     pitch: 20, // Возвращаем легкий наклон, как было при входе
     bearing: 0,
+    padding: { right: 450 },
     duration: 3000,
     essential: true,
     easing: (t) => t * (2 - t)
@@ -89,8 +127,8 @@ const returnToPlanet = () => {
   // Через 1 секунду после начала обратного полета
   setTimeout(() => {
     // Прячем контур Краснодара
-    if (map.getLayer('krasnodar-fill')) map.setPaintProperty('krasnodar-fill', 'fill-opacity', 0)
-    if (map.getLayer('krasnodar-border')) map.setPaintProperty('krasnodar-border', 'line-opacity', 0)
+    if (map.getLayer(`${city.id}-fill`)) map.setPaintProperty(`${city.id}-fill`, 'fill-opacity', 0)
+    if (map.getLayer(`${city.id}-border`)) map.setPaintProperty(`${city.id}-border`, 'line-opacity', 0)
     
     // Возвращаем глобусные точки
     if (map.getLayer('city-dot')) map.setPaintProperty('city-dot', 'circle-opacity', 1)
@@ -108,7 +146,8 @@ const diveTo = (cityId) => {
   const city = cities.find(c => c.id === cityId)
   if (!city || !map) return
   
-  isDived = true
+  isDived.value = true
+  activeCity.value = city
 
   // 1. Полет камеры
   map.flyTo({
@@ -116,22 +155,23 @@ const diveTo = (cityId) => {
     zoom: 11, // Зум до уровня города
     pitch: 0, // Смотрим перпендикулярно сверху вниз
     bearing: 0,
+    padding: { right: 450 },
     duration: 3000,
     essential: true,
     easing: (t) => t * (2 - t)
   })
 
   // 2. Подгружаем слой Краснодара (если его еще нет)
-  if (!map.getSource('krasnodar-data')) {
-    map.addSource('krasnodar-data', {
+  if (!map.getSource(`${city.id}-data`)) {
+    map.addSource(`${city.id}-data`, {
       type: 'geojson',
-      data: '/krasnodar.geojson'
+      data:  `/${city.id}.geojson`
     })
     
     map.addLayer({
-      id: 'krasnodar-fill',
+      id: `${city.id}-fill`,
       type: 'fill',
-      source: 'krasnodar-data',
+      source: `${city.id}-data`,
       paint: {
         'fill-color': '#dcdcdc', // Город чуть темнее страны, чтобы выделялся
         'fill-opacity': 0, // Изначально прозрачный
@@ -140,11 +180,11 @@ const diveTo = (cityId) => {
     })
     
     map.addLayer({
-      id: 'krasnodar-border',
+      id: `${city.id}-border`,
       type: 'line',
-      source: 'krasnodar-data',
+      source: `${city.id}-data`,
       paint: {
-        'line-color': '#e65100', // Оранжевая граница
+        'line-color': '#111111', // Оранжевая граница
         'line-width': 2,
         'line-opacity': 0,
         'line-opacity-transition': { duration: 1500 }
@@ -168,8 +208,8 @@ const diveTo = (cityId) => {
     })
 
     // Показываем контур Краснодара поверх России
-    map.setPaintProperty('krasnodar-fill', 'fill-opacity', 1)
-    map.setPaintProperty('krasnodar-border', 'line-opacity', 1)
+    map.setPaintProperty(`${city.id}-fill`, 'fill-opacity', 1)
+    map.setPaintProperty(`${city.id}-border`, 'line-opacity', 1)
   }, 1000)
 }
 
@@ -194,8 +234,8 @@ onMounted(() => {
     },
     projection: 'globe',
     minZoom: 1.5,
-    zoom: 1.5,
-    center: [0, 20], 
+    zoom: 4.2,
+    center: [50, 48], // Смещаем левее, чтобы Sidebar справа не закрывал города 
     pitch: 0,
     
     // ЖЕСТКАЯ БЛОКИРОВКА ВСЕХ ВЗАИМОДЕЙСТВИЙ С КАРТОЙ
@@ -229,8 +269,8 @@ onMounted(() => {
       source: 'countries',
       filter: ['==', 'admin', 'Russia'],
       paint: {
-        'line-color': '#e65100', // ЯРКАЯ ОРАНЖЕВАЯ ЛИНИЯ
-        'line-width': 2
+        'line-color': 'rgba(0, 0, 0, 0.3)', // Тонкая графитовая граница
+        'line-width': 1.5
       }
     })
 
@@ -267,7 +307,7 @@ onMounted(() => {
       type: 'circle',
       source: 'cities-data',
       paint: {
-        'circle-color': '#e65100',
+        'circle-color': '#111111',
         'circle-radius': 5,
         'circle-opacity': 0.5,
         'circle-pitch-alignment': 'map' // Прибито к земле
@@ -280,7 +320,7 @@ onMounted(() => {
       type: 'circle',
       source: 'cities-data',
       paint: {
-        'circle-color': '#e65100',
+        'circle-color': '#111111',
         'circle-radius': 5,
         'circle-pitch-alignment': 'map', // Прибито к земле
         'circle-opacity-transition': { duration: 1500 } // Добавили плавность
@@ -295,7 +335,7 @@ onMounted(() => {
       const radius = 5 + progress * 25 // Увеличиваем радиус
       
       // Если мы внутри города, пульс не показываем
-      const baseOpacity = isDived ? 0 : 0.8
+      const baseOpacity = isDived.value ? 0 : 0.8
       const opacity = baseOpacity * (1 - progress) // Затухание
 
       if (map.getLayer('city-pulse')) {
@@ -317,13 +357,17 @@ onMounted(() => {
 
       el.appendChild(label)
 
+            el.addEventListener('click', () => {
+        diveTo(city.id)
+      })
+
       el.addEventListener('mouseenter', (e) => {
         hoveredCity.value = city
         updateTooltipPosition(e)
         window.addEventListener('mousemove', updateTooltipPosition)
         // Подсвечиваем WebGL точку
         map.setPaintProperty('city-dot', 'circle-color', [
-          'match', ['get', 'id'], city.id, '#ff6d00', '#e65100'
+          'match', ['get', 'id'], city.id, '#111111', '#555555'
         ])
         map.setPaintProperty('city-dot', 'circle-radius', [
           'match', ['get', 'id'], city.id, 7, 5
@@ -334,7 +378,7 @@ onMounted(() => {
         hoveredCity.value = null
         window.removeEventListener('mousemove', updateTooltipPosition)
         // Возвращаем цвет
-        map.setPaintProperty('city-dot', 'circle-color', '#e65100')
+        map.setPaintProperty('city-dot', 'circle-color', '#111111')
         map.setPaintProperty('city-dot', 'circle-radius', 5)
       })
 
@@ -361,8 +405,8 @@ onMounted(() => {
     // Анимация входа
     setTimeout(() => {
       map.flyTo({
-        center: [60, 55],
-        zoom: 2.5,
+        center: [50, 48],
+        zoom: 4.2,
         pitch: 20,
         bearing: 0,
         duration: 3000,
@@ -431,7 +475,7 @@ onUnmounted(() => {
 }
 
 :deep(.city-marker-hitbox:hover .city-marker__label) {
-  color: #e65100;
+  color: #111111;
   font-weight: 600;
 }
 
@@ -501,27 +545,121 @@ onUnmounted(() => {
   opacity: 0;
   transform: translateY(5px);
 }
-.test-controls {
+  background-color: #ff6d00;
+}
+/* --- ИНФОРМАЦИОННАЯ ПАНЕЛЬ (SIDEBAR) --- */
+.map-sidebar {
   position: absolute;
-  top: 100px;
+  top: 120px;
   right: 40px;
-  z-index: 100;
+  width: 400px;
+  max-height: calc(100vh - 160px);
+  z-index: 1000;
+  border-radius: 24px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
 }
 
-.test-controls button {
-  background-color: #e65100;
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  font-family: inherit;
+.sidebar-title {
+  font-size: 32px;
+  font-weight: 300;
+  margin-bottom: 16px;
+  color: #111;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-desc {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #555;
+  margin-bottom: 32px;
+  font-weight: 300;
+}
+
+.sidebar-cities {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-city-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  font-size: 16px;
+  color: #111;
+  font-weight: 400;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.sidebar-city-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateX(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.city-badge {
+  background: #111;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.sidebar-back-btn {
+  display: inline-flex;
+  align-items: center;
+  color: #555;
   font-size: 14px;
   font-weight: 500;
-  border-radius: 4px;
+  margin-bottom: 24px;
+  transition: color 0.3s ease;
+  padding: 0;
+  background: transparent;
   cursor: pointer;
-  transition: background-color 0.3s;
+  border: none;
 }
 
-.test-controls button:hover {
-  background-color: #ff6d00;
+.sidebar-back-btn:hover {
+  color: #111;
+}
+
+.sidebar-stats {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.stat-box {
+  background: rgba(255, 255, 255, 0.5);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  flex: 1;
+}
+
+.stat-val {
+  font-size: 32px;
+  font-weight: 300;
+  color: #111;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 </style>
