@@ -80,23 +80,7 @@ const tooltipX = ref(0)
 const tooltipY = ref(0)
 
 // Данные городов с реальными координатами [lng, lat]
-const cities = [
-  {
-    id: 'kld',
-    name: 'Калининград',
-    coordinates: [20.4522, 54.7104],
-    complexes: [{ name: 'ЖК Калининградский' }]
-  },
-  {
-    id: 'krd',
-    name: 'Краснодар',
-    coordinates: [38.9753, 45.0355],
-    complexes: [
-      { name: 'ЖК Престиж' }, 
-      { name: 'ЖК Марсель' }, 
-      { name: 'ЖК Аврора' }, 
-      { name: 'ЖК Фреш' }
-    ]
+import cities from '~/data/cities.json'
   },
   {
     id: 'adg',
@@ -126,9 +110,11 @@ const returnToPlanet = () => {
 
   // Через 1 секунду после начала обратного полета
   setTimeout(() => {
-    // Прячем контур Краснодара
-    if (map.getLayer(`${city.id}-fill`)) map.setPaintProperty(`${city.id}-fill`, 'fill-opacity', 0)
-    if (map.getLayer(`${city.id}-border`)) map.setPaintProperty(`${city.id}-border`, 'line-opacity', 0)
+    // Прячем контур активного города
+    cities.forEach(c => {
+      if (map.getLayer(`${c.id}-fill`)) map.setPaintProperty(`${c.id}-fill`, 'fill-opacity', 0)
+      if (map.getLayer(`${c.id}-border`)) map.setPaintProperty(`${c.id}-border`, 'line-opacity', 0)
+    })
     
     // Возвращаем глобусные точки
     if (map.getLayer('city-dot')) map.setPaintProperty('city-dot', 'circle-opacity', 1)
