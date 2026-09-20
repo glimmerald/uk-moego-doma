@@ -218,6 +218,78 @@
         "status": "Премиум",
         "description": "Сердце города. Проект с невероятными видами на стадион.",
         "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80"
+      },
+      {
+        "id": "flotiliya",
+        "name": "ЖК «Флотилия»",
+        "address": "ул. Восточно-Кругликовская",
+        "coordinates": [
+          39.0007,
+          45.0011
+        ],
+        "status": "Сдан",
+        "description": "Новый современный жилой комплекс под управлением УК.",
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+      },
+      {
+        "id": "barselona",
+        "name": "ЖК «Барселона»",
+        "address": "ул. 40-летия Победы",
+        "coordinates": [
+          38.9703,
+          44.989
+        ],
+        "status": "Сдан",
+        "description": "Новый современный жилой комплекс под управлением УК.",
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+      },
+      {
+        "id": "parusnaya",
+        "name": "ЖК «Парусная»",
+        "address": "ул. Парусная",
+        "coordinates": [
+          38.9585,
+          45.0833
+        ],
+        "status": "Сдан",
+        "description": "Новый современный жилой комплекс под управлением УК.",
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+      },
+      {
+        "id": "stolica",
+        "name": "ЖК «Столица»",
+        "address": "ул. Московская",
+        "coordinates": [
+          39.0066,
+          44.9943
+        ],
+        "status": "Сдан",
+        "description": "Новый современный жилой комплекс под управлением УК.",
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+      },
+      {
+        "id": "luchshiy-3",
+        "name": "ЖК «Лучший 3»",
+        "address": "ул. Ростовское Шоссе",
+        "coordinates": [
+          38.9715,
+          45.0137
+        ],
+        "status": "Сдан",
+        "description": "Новый современный жилой комплекс под управлением УК.",
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+      },
+      {
+        "id": "main-city",
+        "name": "ЖК «Main City»",
+        "address": "ул. Красная",
+        "coordinates": [
+          38.9694,
+          45.0647
+        ],
+        "status": "Сдан",
+        "description": "Новый современный жилой комплекс под управлением УК.",
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
       }
     ]
   }
