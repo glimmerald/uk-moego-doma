@@ -81,14 +81,6 @@ const tooltipY = ref(0)
 
 // Данные городов с реальными координатами [lng, lat]
 import cities from '~/data/cities.json'
-  },
-  {
-    id: 'adg',
-    name: 'Республика Адыгея',
-    coordinates: [39.1833, 44.6098], // Майкоп
-    complexes: [{ name: 'ЖК Спортивный парк' }]
-  }
-]
 
 // Функция возврата на общую планету
 const returnToPlanet = () => {
