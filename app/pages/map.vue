@@ -45,6 +45,25 @@
 
     <div class="map-container" id="map" ref="mapContainer"></div>
 
+    
+    <!-- Тултип конкретного ЖК -->
+    <Transition name="fade">
+      <div 
+        v-if="hoveredComplex && isDived" 
+        class="map-tooltip glass-effect"
+        :style="{ left: tooltipX + 'px', top: tooltipY + 'px' }"
+      >
+        <div class="complex-card">
+          <img v-if="hoveredComplex.image" :src="hoveredComplex.image" class="complex-card__image" />
+          <div class="complex-card__info">
+            <h3 class="complex-card__title">{{ hoveredComplex.name }}</h3>
+            <p class="complex-card__address">{{ hoveredComplex.address }}</p>
+            <div class="complex-card__status">{{ hoveredComplex.status }}</div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
     <!-- Тултип -->
     <Transition name="fade">
       <div 
@@ -76,6 +95,7 @@ const isDived = ref(false)
 const activeCity = ref(null)
 
 const hoveredCity = ref(null)
+const hoveredComplex = ref(null)
 const tooltipX = ref(0)
 const tooltipY = ref(0)
 
@@ -87,6 +107,11 @@ const returnToPlanet = () => {
   if (!map) return
   isDived.value = false
   activeCity.value = null
+
+  // Убираем точки ЖК
+  complexMarkers.forEach(m => m.marker.remove())
+  complexMarkers = []
+
 
   // Возвращаем камеру на Россию
   map.flyTo({
@@ -188,6 +213,32 @@ const diveTo = (cityId) => {
     // Показываем контур Краснодара поверх России
     map.setPaintProperty(`${city.id}-fill`, 'fill-opacity', 1)
     map.setPaintProperty(`${city.id}-border`, 'line-opacity', 1)
+
+    // Показываем точки ЖК
+    city.complexes.forEach(complex => {
+      if (!complex.coordinates) return
+      
+      const el = document.createElement('div')
+      el.className = 'complex-marker glass-effect'
+      
+      el.addEventListener('mouseenter', (e) => {
+        hoveredComplex.value = complex
+        updateComplexTooltipPosition(e)
+        window.addEventListener('mousemove', updateComplexTooltipPosition)
+      })
+
+      el.addEventListener('mouseleave', () => {
+        hoveredComplex.value = null
+        window.removeEventListener('mousemove', updateComplexTooltipPosition)
+      })
+
+      const marker = new mapboxgl.Marker({ element: el })
+        .setLngLat(complex.coordinates)
+        .addTo(map)
+        
+      complexMarkers.push({ marker, complex })
+    })
+
   }, 1000)
 }
 
@@ -394,6 +445,12 @@ onMounted(() => {
     }, 500)
   })
 })
+
+
+const updateComplexTooltipPosition = (event) => {
+  tooltipX.value = event.clientX + 15
+  tooltipY.value = event.clientY + 15
+}
 
 const updateTooltipPosition = (event) => {
   tooltipX.value = event.clientX + 15
@@ -638,4 +695,52 @@ onUnmounted(() => {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+:deep(.complex-marker) {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+:deep(.complex-marker:hover) {
+  transform: scale(1.5);
+  background: rgba(0, 0, 0, 1);
+}
+
+
+.complex-card {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+}
+.complex-card__image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+.complex-card__title {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #000;
+}
+.complex-card__address {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+}
+.complex-card__status {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #e65100;
+  font-weight: 600;
+}
+
 </style>
