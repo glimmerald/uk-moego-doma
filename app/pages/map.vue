@@ -219,7 +219,7 @@ const diveTo = (cityId) => {
       if (!complex.coordinates) return
       
       const el = document.createElement('div')
-      el.className = 'complex-marker glass-effect'
+      el.className = 'complex-marker'
       
       el.addEventListener('mouseenter', (e) => {
         hoveredComplex.value = complex
@@ -697,18 +697,21 @@ onUnmounted(() => {
 }
 
 :deep(.complex-marker) {
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: #111111;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   cursor: pointer;
   transition: all 0.3s ease;
+  z-index: 10;
 }
-
 :deep(.complex-marker:hover) {
-  transform: scale(1.5);
-  background: rgba(0, 0, 0, 1);
+  transform: scale(1.4);
+  background: #e65100;
+  border-color: #ffffff;
+  box-shadow: 0 6px 14px rgba(230, 81, 0, 0.4);
 }
 
 
