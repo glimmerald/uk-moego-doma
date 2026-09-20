@@ -1,0 +1,224 @@
+[
+  {
+    "id": "guryevsk",
+    "name": "г. Гурьевск",
+    "coordinates": [
+      20.6037,
+      54.7745
+    ],
+    "complexes": [
+      {
+        "id": "vklyuchi",
+        "name": "ЖК «Включи»",
+        "address": "г. Гурьевск, ул. Героя России Катериничева, 2",
+        "coordinates": [
+          20.615,
+          54.775
+        ],
+        "status": "Строится",
+        "description": "Новый жилой комплекс в уютном зеленом районе Гурьевска.",
+        "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=400&q=80"
+      }
+    ]
+  },
+  {
+    "id": "yablonovsky",
+    "name": "пгт. Яблоновский",
+    "coordinates": [
+      38.9382,
+      44.9864
+    ],
+    "complexes": [
+      {
+        "id": "dom-na-lugovoi",
+        "name": "ЖК «Дом на Луговой»",
+        "address": "пгт. Яблоновский, ул. Луговая, 7/6",
+        "coordinates": [
+          38.935,
+          44.995
+        ],
+        "status": "Строится",
+        "description": "Комфортная жизнь в ближайшем пригороде Краснодара.",
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+      }
+    ]
+  },
+  {
+    "id": "krasnodar",
+    "name": "Краснодар",
+    "coordinates": [
+      38.9753,
+      45.0355
+    ],
+    "complexes": [
+      {
+        "id": "svoboda",
+        "name": "ЖК «Свобода»",
+        "address": "ул. Домбайская, 55",
+        "coordinates": [
+          39.028,
+          45.056
+        ],
+        "status": "Сдан",
+        "description": "ЖК комфорт-класса в районе Краевой клинической больницы.",
+        "image": "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=400&q=80"
+      },
+      {
+        "id": "trilogia",
+        "name": "ЖК «Трилогия»",
+        "address": "ул. им. Невкипелого, 24/2",
+        "coordinates": [
+          39.068,
+          44.992
+        ],
+        "status": "Сдан",
+        "description": "Три современных дома в микрорайоне Гидростроителей.",
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80"
+      },
+      {
+        "id": "yunost",
+        "name": "ЖК «Юность»",
+        "address": "ул. Бородинская, 152/7",
+        "coordinates": [
+          39.112,
+          45.021
+        ],
+        "status": "Сдан",
+        "description": "Молодежный комплекс с продуманным благоустройством.",
+        "image": "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=400&q=80"
+      },
+      {
+        "id": "kaskad",
+        "name": "ЖК «Каскад»",
+        "address": "ул. им. Дмитрия Благоева, 31",
+        "coordinates": [
+          39.065,
+          44.998
+        ],
+        "status": "Сдан",
+        "description": "Дом комфорт-класса в спокойном спальном районе.",
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80"
+      },
+      {
+        "id": "prityazhenie",
+        "name": "ЖК «Притяжение»",
+        "address": "ул. Московская, 148",
+        "coordinates": [
+          39.006,
+          45.083
+        ],
+        "status": "Сдан",
+        "description": "Современный ЖК с активной коммерческой инфраструктурой.",
+        "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=400&q=80"
+      },
+      {
+        "id": "pokolenie",
+        "name": "ЖК «Поколение»",
+        "address": "ул. Снесарева, 17/1",
+        "coordinates": [
+          39.073,
+          44.99
+        ],
+        "status": "Сдан",
+        "description": "Комплекс для всей семьи с безопасными дворами.",
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+      },
+      {
+        "id": "fontany",
+        "name": "ЖК «Фонтаны»",
+        "address": "ул. 40-летия Победы, 178",
+        "coordinates": [
+          39.025,
+          45.05
+        ],
+        "status": "Сдан",
+        "description": "Авторский проект с ландшафтным дизайном.",
+        "image": "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=400&q=80"
+      },
+      {
+        "id": "perspektiva",
+        "name": "ЖК «Перспектива»",
+        "address": "ул. 40-летия Победы, 97",
+        "coordinates": [
+          39.02,
+          45.045
+        ],
+        "status": "Сдан",
+        "description": "Масштабная застройка рядом с парком Галицкого.",
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80"
+      },
+      {
+        "id": "dom-na-moskovskoy",
+        "name": "ЖК «Дом на Московской»",
+        "address": "ул. Московская, 133",
+        "coordinates": [
+          39.005,
+          45.08
+        ],
+        "status": "Сдан",
+        "description": "Уютный дом с закрытой территорией.",
+        "image": "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=400&q=80"
+      },
+      {
+        "id": "otkritie",
+        "name": "ЖК «Открытие»",
+        "address": "ул. Душистая, 1",
+        "coordinates": [
+          38.97,
+          45.1
+        ],
+        "status": "Сдан",
+        "description": "Новый стандарт качества в Молодежном микрорайоне.",
+        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80"
+      },
+      {
+        "id": "stihiya",
+        "name": "ЖК «Стихия»",
+        "address": "ул. Петра Метальникова, 85",
+        "coordinates": [
+          39.01,
+          45.085
+        ],
+        "status": "Строится",
+        "description": "Четыре стихии воплощенные в архитектуре.",
+        "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=400&q=80"
+      },
+      {
+        "id": "luchshiy-2",
+        "name": "ЖК «Лучший 2»",
+        "address": "ул. Ростовское Шоссе, 30/7",
+        "coordinates": [
+          38.995,
+          45.09
+        ],
+        "status": "Строится",
+        "description": "Продолжение популярного жилого комплекса.",
+        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+      },
+      {
+        "id": "role-clef",
+        "name": "ЖК «Role Clef»",
+        "address": "ул. им. Кондратенко Н.И., 8",
+        "coordinates": [
+          38.966,
+          45.019
+        ],
+        "status": "Премиум",
+        "description": "Клубный дом премиум-класса в историческом центре.",
+        "image": "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=400&q=80"
+      },
+      {
+        "id": "serdce",
+        "name": "ЖК «Сердце»",
+        "address": "ул. Школьная, 1",
+        "coordinates": [
+          39.023,
+          45.035
+        ],
+        "status": "Премиум",
+        "description": "Сердце города. Проект с невероятными видами на стадион.",
+        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80"
+      }
+    ]
+  }
+]
