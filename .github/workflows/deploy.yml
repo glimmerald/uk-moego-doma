@@ -1,0 +1,37 @@
+name: Deploy to FTP
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Получение кода
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Настройка Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Установка зависимостей
+        working-directory: ./app
+        run: npm install
+
+      - name: 🔨 Сборка статики Nuxt
+        working-directory: ./app
+        run: npm run generate
+
+      - name: 🚀 Отправка файлов по FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./app/.output/public/
+          server-dir: /uk.glimme4h.beget.tech/public_html/
