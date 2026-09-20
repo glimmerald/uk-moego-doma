@@ -545,8 +545,6 @@ onUnmounted(() => {
   opacity: 0;
   transform: translateY(5px);
 }
-  background-color: #ff6d00;
-}
 /* --- ИНФОРМАЦИОННАЯ ПАНЕЛЬ (SIDEBAR) --- */
 .map-sidebar {
   position: absolute;
