@@ -34,4 +34,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./app/.output/public/
-          server-dir: /uk.glimme4h.beget.tech/public_html/
+          server-dir: public_html/
