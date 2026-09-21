@@ -275,10 +275,24 @@
         </p>
 
         <div class="debt__list">
-          <div class="debt__city" v-for="city in debtRegistry" :key="city.id">
-            <h2 class="debt__city-title">{{ city.name }}</h2>
+          <div 
+            class="debt__city" 
+            v-for="city in debtRegistry" 
+            :key="city.id"
+            :class="{ 'is-open': city.isOpen }"
+          >
+            <div class="debt__city-header" @click="toggleCity(city)">
+              <h2 class="debt__city-title">{{ city.name }}</h2>
+              <div class="debt__icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-plus"/>
+                </svg>
+              </div>
+            </div>
             
-            <div class="debt__complex-list">
+            <div class="debt__city-body-wrapper">
+              <div class="debt__city-body">
+                <div class="debt__complex-list">
               <div 
                 class="debt__complex" 
                 v-for="complex in city.complexes" 
@@ -375,10 +389,12 @@
                   </div>
                 </div>
               </div>
+              </div>
+              </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
     </section>
   </div>
 </template>
@@ -589,6 +605,10 @@ const activePressIndex = ref(-1)
 
 // Данные для секции "Реестр задолженностей"
 const debtRegistry = ref(debtorsData)
+
+const toggleCity = (city) => {
+  city.isOpen = !city.isOpen
+}
 
 const toggleComplex = (complex) => {
   complex.isOpen = !complex.isOpen
@@ -1698,12 +1718,44 @@ onUnmounted(() => {
   margin-bottom: var(--space-80);
 }
 
+.debt__city-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding-bottom: var(--space-40);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.debt__city.is-open .debt__city-header {
+  border-bottom: none;
+}
+
 .debt__city-title {
   font-size: var(--text-h5);
   font-weight: var(--font-weight-regular);
-  margin-bottom: var(--space-40);
   color: #000;
+  margin: 0;
 }
+
+.debt__city-body-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--transition-slow);
+}
+
+.debt__city.is-open .debt__city-body-wrapper {
+  grid-template-rows: 1fr;
+}
+
+.debt__city-body {
+  overflow: hidden;
+}
+
+.debt__city.is-open .debt__city-header .icon-plus {
+  d: path("M5 12H19"); /* transform to minus */
+}
+
 
 .debt__complex-list {
   display: flex;
