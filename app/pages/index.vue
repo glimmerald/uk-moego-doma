@@ -139,16 +139,16 @@
         <!-- Правая прокручиваемая часть с фото -->
         <div class="dispatch__right">
           <div class="dispatch__photo">
-            <img src="/images/Фасад/DSC04411.jpg" alt="Служба заботы" loading="lazy">
+            <img :src="'/images/Фасад/DSC04411.jpg'" alt="Служба заботы" loading="lazy">
           </div>
           <div class="dispatch__photo dispatch__photo--offset">
-            <img src="/images/Фасад/DSC04615.jpg" alt="Инженер" loading="lazy">
+            <img :src="'/images/Фасад/DSC04615.jpg'" alt="Инженер" loading="lazy">
           </div>
           <div class="dispatch__photo">
-            <img src="/images/Фасад/DSC04613.jpg" alt="Техническое обслуживание" loading="lazy">
+            <img :src="'/images/Фасад/DSC04613.jpg'" alt="Техническое обслуживание" loading="lazy">
           </div>
           <div class="dispatch__photo dispatch__photo--offset">
-            <img src="/images/Фасад/DSC04603.jpg" alt="Консьерж" loading="lazy">
+            <img :src="'/images/Фасад/DSC04603.jpg'" alt="Консьерж" loading="lazy">
           </div>
         </div>
       </div>
