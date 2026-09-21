@@ -15,16 +15,6 @@
         <div class="hero__overlay"></div>
       </div>
       
-      <div class="hero__content">
-        <h1 class="hero__title">
-          <span class="hero__title-line">Искусство</span>
-          <span class="hero__title-line">управления</span>
-          <span class="hero__title-line">вашим домом</span>
-        </h1>
-        <p class="hero__subtitle">
-          Премиальный сервис для лучших жилых комплексов
-        </p>
-      </div>
       
       <div class="hero__scroll-indicator">
         <span class="hero__scroll-text">Листайте вниз</span>
