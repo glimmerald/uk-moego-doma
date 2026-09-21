@@ -58,7 +58,6 @@
           <div class="complex-card__info">
             <h3 class="complex-card__title">{{ hoveredComplex.name }}</h3>
             <p class="complex-card__address">{{ hoveredComplex.address }}</p>
-            <div class="complex-card__status">{{ hoveredComplex.status }}</div>
           </div>
         </div>
       </div>
@@ -98,6 +97,9 @@ const hoveredCity = ref(null)
 const hoveredComplex = ref(null)
 const tooltipX = ref(0)
 const tooltipY = ref(0)
+
+let complexMarkers = []
+let markers = []
 
 // Данные городов с реальными координатами [lng, lat]
 import cities from '~/data/cities.json'
@@ -155,10 +157,10 @@ const diveTo = (cityId) => {
   // 1. Полет камеры
   map.flyTo({
     center: city.coordinates,
-    zoom: 11, // Зум до уровня города
+    zoom: 10.54, // Увеличили еще на 15% (было 10.34)
     pitch: 0, // Смотрим перпендикулярно сверху вниз
     bearing: 0,
-    padding: { right: 450 },
+    padding: { right: 450, top: 200 }, // top: 200 смещает центр города ниже, чтобы он помещался в кадре
     duration: 3000,
     essential: true,
     easing: (t) => t * (2 - t)
@@ -214,32 +216,35 @@ const diveTo = (cityId) => {
     map.setPaintProperty(`${city.id}-fill`, 'fill-opacity', 1)
     map.setPaintProperty(`${city.id}-border`, 'line-opacity', 1)
 
-    // Показываем точки ЖК
-    city.complexes.forEach(complex => {
-      if (!complex.coordinates) return
-      
-      const el = document.createElement('div')
-      el.className = 'complex-marker'
-      
-      el.addEventListener('mouseenter', (e) => {
-        hoveredComplex.value = complex
-        updateComplexTooltipPosition(e)
-        window.addEventListener('mousemove', updateComplexTooltipPosition)
-      })
+  }, 1000)
 
-      el.addEventListener('mouseleave', () => {
-        hoveredComplex.value = null
-        window.removeEventListener('mousemove', updateComplexTooltipPosition)
-      })
-
-      const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat(complex.coordinates)
-        .addTo(map)
-        
-      complexMarkers.push({ marker, complex })
+  // Показываем точки ЖК сразу, чтобы они не появлялись слишком поздно
+  city.complexes.forEach(complex => {
+    if (!complex.coordinates) return
+    
+    const el = document.createElement('div')
+    el.className = 'complex-marker fade-in-marker'
+    
+    el.addEventListener('mouseenter', (e) => {
+      hoveredComplex.value = complex
+      updateComplexTooltipPosition(e)
+      window.addEventListener('mousemove', updateComplexTooltipPosition)
     })
 
-  }, 1000)
+    el.addEventListener('mouseleave', () => {
+      hoveredComplex.value = null
+      window.removeEventListener('mousemove', updateComplexTooltipPosition)
+    })
+
+    const marker = new mapboxgl.Marker({ 
+      element: el,
+      pitchAlignment: 'map'
+    })
+      .setLngLat(complex.coordinates)
+      .addTo(map)
+      
+    complexMarkers.push({ marker, complex })
+  })
 }
 
 onMounted(() => {
@@ -413,7 +418,8 @@ onMounted(() => {
 
       const marker = new mapboxgl.Marker({ 
         element: el,
-        anchor: 'center'
+        anchor: 'center',
+        pitchAlignment: 'map'
       })
         .setLngLat(city.coordinates)
         .addTo(map)
@@ -459,6 +465,7 @@ const updateTooltipPosition = (event) => {
 
 onUnmounted(() => {
   markers.forEach(m => m.marker.remove())
+  complexMarkers.forEach(m => m.marker.remove())
   if (map) map.remove()
   window.removeEventListener('mousemove', updateTooltipPosition)
 })
@@ -704,11 +711,27 @@ onUnmounted(() => {
   border: 2px solid #ffffff;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: width 0.3s ease, height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   z-index: 10;
+  box-sizing: border-box;
 }
+
+:deep(.fade-in-marker) {
+  animation: fadeInMarker 0.8s ease-out forwards;
+}
+
+@keyframes fadeInMarker {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 :deep(.complex-marker:hover) {
-  transform: scale(1.4);
+  width: 22px;
+  height: 22px;
   background: #e65100;
   border-color: #ffffff;
   box-shadow: 0 6px 14px rgba(230, 81, 0, 0.4);
@@ -737,13 +760,6 @@ onUnmounted(() => {
   font-size: 12px;
   color: #666;
   margin-bottom: 8px;
-}
-.complex-card__status {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #e65100;
-  font-weight: 600;
 }
 
 </style>
