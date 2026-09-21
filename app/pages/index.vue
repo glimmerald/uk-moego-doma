@@ -1741,7 +1741,7 @@ onUnmounted(() => {
 .debt__city-body-wrapper {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows var(--transition-slow);
+  transition: grid-template-rows var(--anim-duration-medium) var(--anim-easing-smooth);
 }
 
 .debt__city.is-open .debt__city-body-wrapper {
