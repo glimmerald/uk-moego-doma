@@ -568,7 +568,7 @@ const pressList = [
     source: 'The Blueprint',
     link: 'https://theblueprint.ru/career/special/domiland-interview',
     image: kazaryanImg,
-    imagePosition: 'center calc(50% + 80px)'
+    imagePosition: 'center calc(50% + 140px)'
   },
   {
     quote: 'Идеальный пример того, как смелый архитектурный замысел поддерживается безупречной, невидимой глазу эксплуатацией здания. Инженерные системы функционируют как швейцарские часы, обеспечивая жильцам максимальный уровень безопасности и абсолютную тишину.',
