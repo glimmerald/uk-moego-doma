@@ -139,16 +139,16 @@
         <!-- Правая прокручиваемая часть с фото -->
         <div class="dispatch__right">
           <div class="dispatch__photo">
-            <img :src="'/images/Фасад/DSC04411.jpg'" alt="Служба заботы" loading="lazy">
+            <img :src="'/optimized/Фасад/DSC04411.webp'" alt="Служба заботы" loading="lazy">
           </div>
           <div class="dispatch__photo dispatch__photo--offset">
-            <img :src="'/images/Фасад/DSC04615.jpg'" alt="Инженер" loading="lazy">
+            <img :src="'/optimized/Фасад/DSC04615.webp'" alt="Инженер" loading="lazy">
           </div>
           <div class="dispatch__photo">
-            <img :src="'/images/Фасад/DSC04613.jpg'" alt="Техническое обслуживание" loading="lazy">
+            <img :src="'/optimized/Фасад/DSC04613.webp'" alt="Техническое обслуживание" loading="lazy">
           </div>
           <div class="dispatch__photo dispatch__photo--offset">
-            <img :src="'/images/Фасад/DSC04603.jpg'" alt="Консьерж" loading="lazy">
+            <img :src="'/optimized/Фасад/DSC04603.webp'" alt="Консьерж" loading="lazy">
           </div>
         </div>
       </div>
@@ -441,12 +441,12 @@ const scrollAccordion = (direction) => {
 }
 
 const sliderImages = [
-  '/images/Фасад/DSC05127.jpg',
-  '/images/Фасад/DSC04986.jpg',
-  '/images/Фасад/DSC05052.jpg',
-  '/images/Фасад/DSC04826.jpg',
-  '/images/Фасад/DSC04824.jpg',
-  '/images/Фасад/DSC04402.jpg'
+  '/optimized/Фасад/DSC05127.webp',
+  '/optimized/Фасад/DSC04986.webp',
+  '/optimized/Фасад/DSC05052.webp',
+  '/optimized/Фасад/DSC04826.webp',
+  '/optimized/Фасад/DSC04824.webp',
+  '/optimized/Фасад/DSC04402.webp'
 ]
 
 const advantagesList = [
@@ -454,49 +454,49 @@ const advantagesList = [
     number: '> 15',
     title: 'Жилых комплексов',
     text: 'В портфеле нашей управляющей компании более 15 объектов премиум и бизнес-класса в разных городах.',
-    image: '/images/Фасад/DSC04808.jpg'
+    image: '/optimized/Фасад/DSC04808.webp'
   },
   {
     number: '24/7',
     title: 'Служба заботы',
     text: 'Круглосуточная диспетчерская служба и консьерж-сервис, готовые решить любой вопрос за считанные минуты.',
-    image: '/images/Фасад/DSC05913.jpg'
+    image: '/optimized/Фасад/DSC05913.webp'
   },
   {
     number: '50к+',
     title: 'Счастливых жителей',
     text: 'Мы создаем комьюнити, где каждый житель чувствует себя в безопасности и максимальном комфорте.',
-    image: '/images/Фасад/DSC04833.jpg'
+    image: '/optimized/Фасад/DSC04833.webp'
   },
   {
     number: '10 лет',
     title: 'Безупречной работы',
     text: 'С 2014 года мы задаем новые стандарты управления недвижимостью на российском рынке.',
-    image: '/images/Фасад/DSC04416.jpg'
+    image: '/optimized/Фасад/DSC04416.webp'
   },
   {
     number: '№ 1',
     title: 'Рейтинг доверия',
     text: 'Первое место по результатам независимых опросов среди резидентов элитных домов в 2023 году.',
-    image: '/images/Фасад/DSC04416.jpg'
+    image: '/optimized/Фасад/DSC04416.webp'
   },
   {
     number: '15 мин',
     title: 'Скорость реакции',
     text: 'Среднее время прибытия мастера по заявке. Мы ценим ваше время и действуем на опережение.',
-    image: '/images/Фасад/DSC04414.jpg'
+    image: '/optimized/Фасад/DSC04414.webp'
   },
   {
     number: '100%',
     title: 'Прозрачность',
     text: 'Полная детализация расходов и доступ к финансовой отчетности вашего дома через мобильное приложение.',
-    image: '/images/Фасад/DSC04788.jpg'
+    image: '/optimized/Фасад/DSC04788.webp'
   },
   {
     number: '4',
     title: 'Региона',
     text: 'Мы успешно масштабируем наш премиальный сервис: Москва, Краснодар, Адыгея, Калининград.',
-    image: '/images/Фасад/DSC04827.jpg'
+    image: '/optimized/Фасад/DSC04827.webp'
   }
 ]
 
@@ -510,31 +510,31 @@ const newsList = [
     date: '14 / 09',
     title: 'Старт продаж в новом клубном доме на набережной',
     excerpt: 'Уникальные видовые квартиры с террасами и собственным выходом к воде. Узнайте первыми о специальных условиях на старте.',
-    image: '/images/Фасад/DSC05045.jpg'
+    image: '/optimized/Фасад/DSC05045.webp'
   },
   {
     date: '28 / 08',
     title: 'Завершение монолитных работ в ЖК «Авангард»',
     excerpt: 'Мы идем с опережением графика на 2 месяца. Строители приступили к остеклению фасадов и монтажу инженерных систем.',
-    image: '/images/Фасад/DSC04984.jpg'
+    image: '/optimized/Фасад/DSC04984.webp'
   },
   {
     date: '12 / 08',
     title: 'Новые стандарты благоустройства внутренних дворов',
     excerpt: 'Ландшафтный дизайн от мировых бюро, всесезонные растения и зонирование для всех возрастов.',
-    image: '/images/Фасад/DSC05455.jpg'
+    image: '/optimized/Фасад/DSC05455.webp'
   },
   {
     date: '03 / 08',
     title: 'Наш проект получил премию Urban Awards 2024',
     excerpt: 'Жюри высоко оценило архитектурный облик и концепцию инфраструктуры нашего флагманского проекта.',
-    image: '/images/Фасад/DSC04993.jpg'
+    image: '/optimized/Фасад/DSC04993.webp'
   },
   {
     date: '18 / 07',
     title: 'Открытие премиального фитнес-клуба для резидентов',
     excerpt: 'Бассейн 25 метров, SPA-зона и новейшее оборудование. Доступ только для жителей комплекса по индивидуальной ключ-карте.',
-    image: '/images/Фасад/DSC05046.jpg'
+    image: '/optimized/Фасад/DSC05046.webp'
   }
 ]
 

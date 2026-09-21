@@ -9,3 +9,6 @@ GEMINI.md
 Дома ССК/
 Парадные/
 Фасад/
+
+!app/public/optimized/
+!app/public/optimized/**
