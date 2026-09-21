@@ -3,19 +3,12 @@
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero__video-wrapper">
-        <video 
-          class="hero__video"
-          src="/main_video.mp4"
-          autoplay
-          loop
-          muted
-          playsinline
-        ></video>
+        <video class="hero__video" src="/main_video.mp4" autoplay loop muted playsinline></video>
         <!-- Overlay to make text and header more readable -->
         <div class="hero__overlay"></div>
       </div>
-      
-      
+
+
       <div class="hero__scroll-indicator">
         <span class="hero__scroll-text">Листайте вниз</span>
         <div class="hero__scroll-line"></div>
@@ -31,18 +24,18 @@
             <span class="btn-arrow__text">На карту</span>
             <span class="btn-arrow__icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </span>
           </NuxtLink>
         </div>
-        
+
         <div class="projects__right">
           <p class="projects__description">
-            Мы создаем не просто квадратные метры, а продуманную среду для жизни. 
-            Каждый наш жилой комплекс — это уникальный архитектурный проект, 
-            в котором сочетаются передовые технологии строительства, премиальный 
-            сервис и внимание к мельчайшим деталям благоустройства.
+            Мы не просто обслуживаем здания — мы создаём комфортную и безопасную среду для жизни. В каждом жилом
+            комплексе наша команда реализует продуманный подход: современные стандарты эксплуатации, премиальный уровень
+            сервиса и внимание к каждой детали — от инженерных систем до благоустройства территории
           </p>
         </div>
       </div>
@@ -54,11 +47,11 @@
         <div class="image-section__header">
           <h2 class="image-section__title">Философия комфорта</h2>
           <p class="image-section__text">
-            Наш подход основан на абсолютном внимании к деталям. Мы верим, что качество жизни 
+            Наш подход основан на абсолютном внимании к деталям. Мы верим, что качество жизни
             определяется мелочами, поэтому каждая зона в наших домах продумана до сантиметра.
           </p>
         </div>
-        
+
         <div class="image-section__slider-wrapper">
           <CarouselCoverflow :slides="sliderImages" />
         </div>
@@ -73,40 +66,37 @@
           <div class="advantages__controls">
             <button class="slider-btn" @click="scrollAccordion(-1)">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round" />
               </svg>
             </button>
             <button class="slider-btn" @click="scrollAccordion(1)">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                  stroke-linejoin="round" />
               </svg>
             </button>
           </div>
         </div>
-        
+
         <div class="accordion-wrapper">
           <div class="accordion" ref="accordionRef" @pointerleave="deactivateItem">
-            <div 
-              class="accordion__item"
-              :class="{ 'is-active': activeAccordionIndex === index }"
-              v-for="(adv, index) in advantagesList"
-              :key="index"
-              @pointermove="activateItem(index, $event)"
-            >
-            <div class="accordion__bg">
-              <img :src="adv.image" alt="" loading="lazy" />
-              <div class="accordion__bg-overlay"></div>
-            </div>
-            
-            <div class="accordion__content">
-              <div class="accordion__number">{{ adv.number }}</div>
-              <div class="accordion__text-wrapper">
-                <h3 class="accordion__title">{{ adv.title }}</h3>
-                <p class="accordion__description">{{ adv.text }}</p>
+            <div class="accordion__item" :class="{ 'is-active': activeAccordionIndex === index }"
+              v-for="(adv, index) in advantagesList" :key="index" @pointermove="activateItem(index, $event)">
+              <div class="accordion__bg">
+                <img :src="adv.image" alt="" loading="lazy" />
+                <div class="accordion__bg-overlay"></div>
+              </div>
+
+              <div class="accordion__content">
+                <div class="accordion__number">{{ adv.number }}</div>
+                <div class="accordion__text-wrapper">
+                  <h3 class="accordion__title">{{ adv.title }}</h3>
+                  <p class="accordion__description">{{ adv.text }}</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </section>
@@ -120,13 +110,13 @@
             <div class="dispatch__huge-text">24/7</div>
             <h2 class="dispatch__title">На страже комфорта</h2>
             <p class="dispatch__description">
-              Наша аварийно-диспетчерская служба работает круглосуточно. 
-              Инженеры, сантехники и электрики всегда дежурят на объекте, чтобы решить любую задачу в течение 15 минут. 
+              Наша аварийно-диспетчерская служба работает круглосуточно.
+              Инженеры, сантехники и электрики всегда дежурят на объекте, чтобы решить любую задачу в течение 15 минут.
               Ваше спокойствие под надежной защитой без выходных и праздников.
             </p>
           </div>
         </div>
-        
+
         <!-- Правая прокручиваемая часть с фото -->
         <div class="dispatch__right">
           <div class="dispatch__photo">
@@ -152,29 +142,20 @@
         <div class="news__header">
           <h2 class="news__visual-title">Новости</h2>
         </div>
-        
+
         <div class="news__grid">
           <!-- Колонка 1, Строка 1: Изображение -->
           <div class="news__image-container">
-            <div 
-              v-for="(news, index) in newsList" 
-              :key="'img-'+index"
-              class="news__image"
-              :class="{ 'is-active': activeNewsIndex === index }"
-            >
+            <div v-for="(news, index) in newsList" :key="'img-' + index" class="news__image"
+              :class="{ 'is-active': activeNewsIndex === index }">
               <img :src="news.image" alt="Новость" loading="lazy">
             </div>
           </div>
-          
+
           <!-- Колонка 2, Строка 1: Список новостей -->
           <div class="news__list">
-            <div 
-              class="news-list__item"
-              v-for="(news, index) in newsList"
-              :key="'item-'+index"
-              :class="{ 'is-active': activeNewsIndex === index }"
-              @mouseenter="onNewsHover(index)"
-            >
+            <div class="news-list__item" v-for="(news, index) in newsList" :key="'item-' + index"
+              :class="{ 'is-active': activeNewsIndex === index }" @mouseenter="onNewsHover(index)">
               <div class="news-list__date">{{ news.date }}</div>
               <h3 class="news-list__title">{{ news.title }}</h3>
             </div>
@@ -182,24 +163,21 @@
 
           <!-- Колонка 1, Строка 2: Текст новости и кнопка -->
           <div class="news__content">
-            <div 
-              v-for="(news, index) in newsList"
-              :key="'text-'+index"
-              class="news__excerpt"
-              :class="{ 'is-active': activeNewsIndex === index }"
-            >
+            <div v-for="(news, index) in newsList" :key="'text-' + index" class="news__excerpt"
+              :class="{ 'is-active': activeNewsIndex === index }">
               <p>{{ news.excerpt }}</p>
               <NuxtLink to="#" class="btn-arrow">
                 <span class="btn-arrow__text">Читать целиком</span>
                 <span class="btn-arrow__icon">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
                 </span>
               </NuxtLink>
             </div>
           </div>
-          
+
           <!-- Колонка 2, Строка 2: Кнопка "Все новости" -->
           <div class="news-list__footer">
             <NuxtLink to="#" class="news-list__view-all">Смотреть все новости (15)</NuxtLink>
@@ -212,43 +190,31 @@
     <section class="section-press" id="press" ref="pressSection">
       <div class="press__container">
         <h2 class="press__section-title">О нас пишут</h2>
-        
+
         <div class="press__list">
-          <div 
-            class="press__item"
-            v-for="(press, index) in pressList"
-            :key="index"
-            @mouseenter="onPressMouseMove($event)"
-            @mousemove="onPressMouseMove($event)"
-            :style="pressItemTops.length ? { transform: `translateY(${(scrollY + winHeight/2 - pressItemTops[index]) * (index % 2 === 0 ? 0.06 : -0.06)}px)` } : {}" 
-          >
+          <div class="press__item" v-for="(press, index) in pressList" :key="index"
+            @mouseenter="onPressMouseMove($event)" @mousemove="onPressMouseMove($event)"
+            :style="pressItemTops.length ? { transform: `translateY(${(scrollY + winHeight / 2 - pressItemTops[index]) * (index % 2 === 0 ? 0.06 : -0.06)}px)` } : {}">
             <!-- Фотография-подложка, проявляемая "фонариком" -->
             <div class="press__image-reveal">
-              <img 
-                :src="press.image" 
-                alt="" 
-                class="press__image" 
-                :style="press.imagePosition ? { objectPosition: press.imagePosition } : {}"
-              />
+              <img :src="press.image" alt="" class="press__image"
+                :style="press.imagePosition ? { objectPosition: press.imagePosition } : {}" />
             </div>
 
             <!-- Построчное/пословное проявление цитаты -->
             <div class="press__quote">
-              <span 
-                v-for="(word, wIndex) in press.quote.split(' ')" 
-                :key="wIndex" 
-                class="press__word-mask"
-              >
+              <span v-for="(word, wIndex) in press.quote.split(' ')" :key="wIndex" class="press__word-mask">
                 <span class="press__word" :style="{ transitionDelay: `${wIndex * 0.03}s` }">{{ word }}&nbsp;</span>
               </span>
             </div>
-            
+
             <div class="press__footer">
               <div class="press__source glass-effect">{{ press.source }}</div>
               <NuxtLink :to="press.link" class="press__link glass-effect">
                 <span>Читать статью</span>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </NuxtLink>
             </div>
@@ -266,126 +232,116 @@
         </p>
 
         <div class="debt__list">
-          <div 
-            class="debt__city" 
-            v-for="city in debtRegistry" 
-            :key="city.id"
-            :class="{ 'is-open': city.isOpen }"
-          >
+          <div class="debt__city" v-for="city in debtRegistry" :key="city.id" :class="{ 'is-open': city.isOpen }">
             <div class="debt__city-header" @click="toggleCity(city)">
               <h2 class="debt__city-title">{{ city.name }}</h2>
               <div class="debt__icon">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-plus"/>
+                  <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" class="icon-plus" />
                 </svg>
               </div>
             </div>
-            
+
             <div class="debt__city-body-wrapper">
               <div class="debt__city-body">
                 <div class="debt__complex-list">
-              <div 
-                class="debt__complex" 
-                v-for="complex in city.complexes" 
-                :key="complex.id"
-                :class="{ 'is-open': complex.isOpen }"
-              >
-                <!-- Шапка аккордеона ЖК -->
-                <div class="debt__header" @click="toggleComplex(complex)">
-                  <div class="debt__title-group">
-                    <h3 class="debt__complex-name">{{ complex.name }}</h3>
-                    <span class="debt__complex-address" v-if="complex.address">{{ complex.address }}</span>
-                  </div>
-                  <div class="debt__icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                      <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-plus"/>
-                    </svg>
-                  </div>
-                </div>
-                
-                <!-- Тело аккордеона ЖК -->
-                <div class="debt__body-wrapper">
-                  <div class="debt__body">
-                    <div class="debt__body-content">
-                      
-                      <div class="debt__building-list">
-                        <div 
-                          class="debt__building" 
-                          v-for="building in complex.buildings" 
-                          :key="building.id"
-                          :class="{ 'is-open': building.isOpen }"
-                        >
-                          <div class="debt__building-header" @click="toggleBuilding(building)">
-                            <h4 class="debt__building-name">{{ building.name }}</h4>
-                            <div class="debt__building-icon">
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                              </svg>
-                            </div>
-                          </div>
-                          
-                          <!-- Тело аккордеона Корпуса -->
-                          <div class="debt__building-body-wrapper">
-                            <div class="debt__building-body">
-                              <div class="debt__building-body-content">
-                                
-                                <!-- Поиск внутри конкретного корпуса -->
-                                <div class="debt__search-wrapper">
-                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="debt__search-icon">
-                                    <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <div class="debt__complex" v-for="complex in city.complexes" :key="complex.id"
+                    :class="{ 'is-open': complex.isOpen }">
+                    <!-- Шапка аккордеона ЖК -->
+                    <div class="debt__header" @click="toggleComplex(complex)">
+                      <div class="debt__title-group">
+                        <h3 class="debt__complex-name">{{ complex.name }}</h3>
+                        <span class="debt__complex-address" v-if="complex.address">{{ complex.address }}</span>
+                      </div>
+                      <div class="debt__icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                          <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" class="icon-plus" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    <!-- Тело аккордеона ЖК -->
+                    <div class="debt__body-wrapper">
+                      <div class="debt__body">
+                        <div class="debt__body-content">
+
+                          <div class="debt__building-list">
+                            <div class="debt__building" v-for="building in complex.buildings" :key="building.id"
+                              :class="{ 'is-open': building.isOpen }">
+                              <div class="debt__building-header" @click="toggleBuilding(building)">
+                                <h4 class="debt__building-name">{{ building.name }}</h4>
+                                <div class="debt__building-icon">
+                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="1.5"
+                                      stroke-linecap="round" stroke-linejoin="round" />
                                   </svg>
-                                  <input 
-                                    type="number" 
-                                    inputmode="numeric"
-                                    v-model="building.searchQuery" 
-                                    placeholder="Поиск по номеру квартиры..." 
-                                    class="debt__search-input"
-                                  />
                                 </div>
-                                
-                                <!-- Банковский реестр (Таблица) -->
-                                <div class="debt__table">
-                                  <div class="debt__table-header">
-                                    <div class="debt__col debt__col--apt">Квартира</div>
-                                    <div class="debt__col debt__col--period">Срок задолженности</div>
-                                    <div class="debt__col debt__col--amount">Сумма к оплате</div>
+                              </div>
+
+                              <!-- Тело аккордеона Корпуса -->
+                              <div class="debt__building-body-wrapper">
+                                <div class="debt__building-body">
+                                  <div class="debt__building-body-content">
+
+                                    <!-- Поиск внутри конкретного корпуса -->
+                                    <div class="debt__search-wrapper">
+                                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        class="debt__search-icon">
+                                        <path
+                                          d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+                                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                          stroke-linejoin="round" />
+                                      </svg>
+                                      <input type="number" inputmode="numeric" v-model="building.searchQuery"
+                                        placeholder="Поиск по номеру квартиры..." class="debt__search-input" />
+                                    </div>
+
+                                    <!-- Банковский реестр (Таблица) -->
+                                    <div class="debt__table">
+                                      <div class="debt__table-header">
+                                        <div class="debt__col debt__col--apt">Квартира</div>
+                                        <div class="debt__col debt__col--period">Срок задолженности</div>
+                                        <div class="debt__col debt__col--amount">Сумма к оплате</div>
+                                      </div>
+
+                                      <TransitionGroup name="debt-list" tag="div" class="debt__table-body">
+                                        <div class="debt__table-row" v-for="debtor in getFilteredDebtors(building)"
+                                          :key="debtor.apt">
+                                          <div class="debt__col debt__col--apt">
+                                            <span class="font-mono">№ {{ debtor.apt }}</span>
+                                          </div>
+                                          <div class="debt__col debt__col--period">{{ debtor.period }}</div>
+                                          <div class="debt__col debt__col--amount">
+                                            <span class="font-mono">{{ debtor.amount }}</span>
+                                          </div>
+                                        </div>
+                                      </TransitionGroup>
+
+                                      <Transition name="fade">
+                                        <div class="debt__empty" v-if="getFilteredDebtors(building).length === 0">
+                                          По запросу «{{ building.searchQuery }}» ничего не найдено.
+                                        </div>
+                                      </Transition>
+                                    </div>
+
                                   </div>
-                                  
-                                  <TransitionGroup name="debt-list" tag="div" class="debt__table-body">
-                                    <div class="debt__table-row" v-for="debtor in getFilteredDebtors(building)" :key="debtor.apt">
-                                      <div class="debt__col debt__col--apt">
-                                        <span class="font-mono">№ {{ debtor.apt }}</span>
-                                      </div>
-                                      <div class="debt__col debt__col--period">{{ debtor.period }}</div>
-                                      <div class="debt__col debt__col--amount">
-                                        <span class="font-mono">{{ debtor.amount }}</span>
-                                      </div>
-                                    </div>
-                                  </TransitionGroup>
-                                  
-                                  <Transition name="fade">
-                                    <div class="debt__empty" v-if="getFilteredDebtors(building).length === 0">
-                                      По запросу «{{ building.searchQuery }}» ничего не найдено.
-                                    </div>
-                                  </Transition>
                                 </div>
-                                
                               </div>
                             </div>
                           </div>
+
                         </div>
                       </div>
-                      
                     </div>
                   </div>
                 </div>
               </div>
-              </div>
-              </div>
-              </div>
             </div>
           </div>
         </div>
+      </div>
     </section>
   </div>
 </template>
@@ -400,34 +356,34 @@ let scrollLock = false
 const activateItem = (index, event) => {
   if (scrollLock) return
   if (activeAccordionIndex.value === index) return
-  
+
   activeAccordionIndex.value = index
-  
+
   if (!accordionRef.value) return
-  
+
   const el = event.currentTarget
   const rect = el.getBoundingClientRect()
   const containerRect = accordionRef.value.getBoundingClientRect()
-  
+
   const elLeft = rect.left - containerRect.left
   const expandedWidth = 640
   const paddingRight = 40
-  
+
   let delta = 0
-  
+
   // Если обрезано слева
   if (elLeft < 0) {
     delta = elLeft
-  } 
+  }
   // Если обрезано справа
   else if (elLeft + expandedWidth + paddingRight > containerRect.width) {
     delta = (elLeft + expandedWidth + paddingRight) - containerRect.width
   }
-  
+
   if (delta !== 0) {
     scrollLock = true
     accordionRef.value.scrollBy({ left: delta, behavior: 'smooth' })
-    
+
     // Блокируем смену активного элемента во время скролла, чтобы избежать багов (дребезга)
     setTimeout(() => {
       scrollLock = false
@@ -656,7 +612,7 @@ onMounted(() => {
   window.addEventListener('resize', updatePressOffset, { passive: true })
   onScroll()
   setTimeout(updatePressOffset, 100)
-  
+
   observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -664,7 +620,7 @@ onMounted(() => {
       }
     })
   }, {
-    threshold: 0.15 
+    threshold: 0.15
   })
 
   // Наблюдаем и за фото Dispatch, и за цитатами СМИ
@@ -721,12 +677,10 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    to bottom,
-    var(--color-overlay) 0%,
-    var(--color-header-border) 40%,
-    var(--color-overlay) 100%
-  );
+  background: linear-gradient(to bottom,
+      var(--color-overlay) 0%,
+      var(--color-header-border) 40%,
+      var(--color-overlay) 100%);
   z-index: var(--z-above);
 }
 
@@ -735,7 +689,8 @@ onUnmounted(() => {
   z-index: var(--z-top);
   text-align: center;
   padding: 0 var(--space-40);
-  margin-top: var(--space-80); /* offset for header */
+  margin-top: var(--space-80);
+  /* offset for header */
 }
 
 .hero__title {
@@ -801,8 +756,13 @@ onUnmounted(() => {
 }
 
 @keyframes scroll-down {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(200%); }
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(200%);
+  }
 }
 
 /* Responsive adjustments */
@@ -816,6 +776,7 @@ onUnmounted(() => {
   .hero__title {
     font-size: var(--space-40);
   }
+
   .hero__subtitle {
     font-size: var(--text-body-sm);
   }
@@ -851,7 +812,8 @@ onUnmounted(() => {
   line-height: var(--line-height-loose);
   color: var(--color-text);
   max-width: 600px;
-  margin-top: var(--space-16); /* Небольшое выравнивание относительно заголовка */
+  margin-top: var(--space-16);
+  /* Небольшое выравнивание относительно заголовка */
 }
 
 /* Стили для кнопки-ссылки */
@@ -893,7 +855,7 @@ onUnmounted(() => {
     grid-template-columns: 1fr;
     gap: var(--space-48);
   }
-  
+
   .projects__title {
     font-size: var(--text-h3);
   }
@@ -903,11 +865,11 @@ onUnmounted(() => {
   .section-projects {
     padding: var(--space-80) 0;
   }
-  
+
   .projects__title {
     font-size: var(--space-40);
   }
-  
+
   .projects__description {
     font-size: var(--text-body-sm);
   }
@@ -959,10 +921,12 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: flex-start;
   }
+
   .image-section__title {
     font-size: var(--space-40);
   }
 }
+
 /* Секция Преимущества (Аккордеон) */
 .section-advantages {
   padding: var(--space-140) 0;
@@ -1026,14 +990,19 @@ onUnmounted(() => {
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  padding-bottom: var(--space-24); /* Чтобы не обрезалась тень или hover */
-  padding-right: var(--space-40); /* Отступ в конце скролла */
-  scrollbar-width: none; /* Скрываем скроллбар в Firefox */
-  -webkit-overflow-scrolling: touch; /* Плавный скролл на iOS */
+  padding-bottom: var(--space-24);
+  /* Чтобы не обрезалась тень или hover */
+  padding-right: var(--space-40);
+  /* Отступ в конце скролла */
+  scrollbar-width: none;
+  /* Скрываем скроллбар в Firefox */
+  -webkit-overflow-scrolling: touch;
+  /* Плавный скролл на iOS */
 }
 
 .accordion::-webkit-scrollbar {
-  display: none; /* Скрываем скроллбар в Chrome/Safari */
+  display: none;
+  /* Скрываем скроллбар в Chrome/Safari */
 }
 
 .accordion__item {
@@ -1044,12 +1013,14 @@ onUnmounted(() => {
   border-radius: var(--radius-md);
   overflow: hidden;
   transition: width var(--anim-duration-slow) var(--anim-easing-smooth);
-  background-color: var(--color-dark); /* Темный фон для карточки */
+  background-color: var(--color-dark);
+  /* Темный фон для карточки */
   cursor: pointer;
 }
 
 .accordion__item.is-active {
-  width: 640px; /* Раскрытая ширина */
+  width: 640px;
+  /* Раскрытая ширина */
 }
 
 .accordion__bg {
@@ -1147,7 +1118,7 @@ onUnmounted(() => {
   .accordion__item {
     width: 280px;
   }
-  
+
   .accordion__item.is-active {
     width: 100%;
   }
@@ -1161,15 +1132,15 @@ onUnmounted(() => {
   .accordion {
     height: 500px;
   }
-  
+
   .accordion__item {
     width: 240px;
   }
-  
+
   .accordion__item.is-active {
     width: 85vw;
   }
-  
+
   .accordion__number {
     font-size: var(--space-60);
   }
@@ -1239,7 +1210,7 @@ onUnmounted(() => {
   border-radius: var(--radius-md);
   overflow: hidden;
   box-shadow: var(--shadow-lg);
-  
+
   /* Исходное состояние для анимации вылета справа */
   opacity: 0;
   transform: translateX(var(--space-120));
@@ -1275,24 +1246,24 @@ onUnmounted(() => {
   .dispatch__container {
     flex-direction: column;
   }
-  
+
   .dispatch__left {
     width: 100%;
     height: auto;
     position: relative;
     padding: var(--space-100) var(--space-40) var(--space-60);
   }
-  
+
   .dispatch__huge-text {
     font-size: var(--space-120);
   }
-  
+
   .dispatch__right {
     width: 100%;
     padding: 0 var(--space-40) var(--space-100) var(--space-40);
     gap: var(--space-60);
   }
-  
+
   .dispatch__photo--offset {
     width: 90%;
     margin-left: 10%;
@@ -1303,11 +1274,11 @@ onUnmounted(() => {
   .dispatch__huge-text {
     font-size: var(--text-hero);
   }
-  
+
   .dispatch__title {
     font-size: var(--text-h5);
   }
-  
+
   .dispatch__description {
     font-size: var(--text-body-sm);
   }
@@ -1341,7 +1312,8 @@ onUnmounted(() => {
 
 .news__image-container {
   width: 100%;
-  height: 100%; /* Растягивается на всю высоту ячейки грида (высоту списка новостей) */
+  height: 100%;
+  /* Растягивается на всю высоту ячейки грида (высоту списка новостей) */
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-md);
@@ -1376,12 +1348,14 @@ onUnmounted(() => {
 .news__content {
   position: relative;
   height: var(--space-160);
-  padding-top: var(--space-40); /* Отступ от картинки до текста */
+  padding-top: var(--space-40);
+  /* Отступ от картинки до текста */
 }
 
 .news__excerpt {
   position: absolute;
-  top: var(--space-40); /* Совпадает с padding-top */
+  top: var(--space-40);
+  /* Совпадает с padding-top */
   left: 0;
   width: 100%;
   opacity: 0;
@@ -1416,7 +1390,8 @@ onUnmounted(() => {
   padding: var(--space-48) 0;
   border-top: var(--border-width) solid var(--color-border);
   border-bottom: var(--border-width) solid var(--color-border);
-  margin-top: -var(--border-width); /* Схлопываем двойные границы */
+  margin-top: -var(--border-width);
+  /* Схлопываем двойные границы */
   cursor: pointer;
   transition: border-color var(--anim-duration-normal) ease;
   z-index: var(--z-base);
@@ -1442,12 +1417,14 @@ onUnmounted(() => {
   transition: transform var(--anim-duration-normal) var(--anim-easing-smooth), color var(--anim-duration-normal) ease;
 }
 
-.news-list__item:hover, .news-list__item.is-active {
+.news-list__item:hover,
+.news-list__item.is-active {
   border-color: var(--color-text);
-  z-index: var(--z-above); /* Чтобы активные границы были поверх соседних */
+  z-index: var(--z-above);
+  /* Чтобы активные границы были поверх соседних */
 }
 
-.news-list__item:hover .news-list__date, 
+.news-list__item:hover .news-list__date,
 .news-list__item.is-active .news-list__date {
   color: var(--color-text);
 }
@@ -1459,10 +1436,13 @@ onUnmounted(() => {
 
 .news-list__footer {
   display: flex;
-  align-items: center; /* Центрируем по вертикали */
+  align-items: center;
+  /* Центрируем по вертикали */
   justify-content: flex-start;
-  height: var(--space-160); /* Высота равна левому блоку */
-  border-bottom: var(--border-width) solid var(--color-border); /* Нижняя граница, о которой просили */
+  height: var(--space-160);
+  /* Высота равна левому блоку */
+  border-bottom: var(--border-width) solid var(--color-border);
+  /* Нижняя граница, о которой просили */
 }
 
 .news-list__view-all {
@@ -1503,14 +1483,16 @@ onUnmounted(() => {
 .press__list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-160); /* Огромный отступ между цитатами */
+  gap: var(--space-160);
+  /* Огромный отступ между цитатами */
 }
 
 .press__item {
   position: relative;
   display: flex;
   flex-direction: column;
-  isolation: isolate; /* Создаем контекст наложения, чтобы фото z-index:-1 не проваливалось под секцию */
+  isolation: isolate;
+  /* Создаем контекст наложения, чтобы фото z-index:-1 не проваливалось под секцию */
 }
 
 /* Асимметрия / Парящий ритм */
@@ -1552,7 +1534,8 @@ onUnmounted(() => {
   left: -var(--space-60);
   font-size: 240px;
   line-height: var(--line-height-none);
-  font-family: var(--font-family-serif); /* Классическая кавычка с засечками */
+  font-family: var(--font-family-serif);
+  /* Классическая кавычка с засечками */
   color: var(--color-border);
   opacity: 0.5;
   z-index: 0;
@@ -1618,7 +1601,7 @@ onUnmounted(() => {
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-widest);
   color: var(--color-text);
-  
+
   padding: var(--space-16) var(--space-24);
 }
 
@@ -1642,7 +1625,7 @@ onUnmounted(() => {
   opacity: 0;
   overflow: hidden;
   transition: opacity var(--anim-duration-medium) ease;
-  
+
   /* Начальная маска до первого движения мыши */
   -webkit-mask-image: radial-gradient(circle 250px at 50% 50%, black 15%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.1) 75%, transparent 100%);
   mask-image: radial-gradient(circle 250px at 50% 50%, black 15%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.1) 75%, transparent 100%);
@@ -1739,7 +1722,8 @@ onUnmounted(() => {
 }
 
 .debt__city.is-open .debt__city-header .icon-plus {
-  d: path("M5 12H19"); /* transform to minus */
+  d: path("M5 12H19");
+  /* transform to minus */
 }
 
 
@@ -1831,7 +1815,8 @@ onUnmounted(() => {
 .debt__building-list {
   display: flex;
   flex-direction: column;
-  padding-left: var(--space-24); /* Небольшой отступ для вложенности */
+  padding-left: var(--space-24);
+  /* Небольшой отступ для вложенности */
 }
 
 .debt__building {
@@ -2026,16 +2011,16 @@ onUnmounted(() => {
     grid-template-columns: 1fr;
     row-gap: var(--space-40);
   }
-  
+
   .news__image-container {
     height: 400px;
   }
-  
+
   .news-list__date {
     font-size: var(--text-subtitle);
     width: var(--space-100);
   }
-  
+
   .news-list__title {
     font-size: var(--text-body-lg);
   }
@@ -2046,52 +2031,54 @@ onUnmounted(() => {
     margin-right: 0;
     align-self: flex-start;
   }
-  
+
   .press__quote {
-  position: relative;
-  z-index: 1;
+    position: relative;
+    z-index: 1;
     font-size: var(--text-subtitle);
   }
-  
+
   .press__list {
     gap: var(--space-80);
   }
-  
+
   .press__item::before {
-  z-index: 1;
+    z-index: 1;
     font-size: var(--space-140);
     top: -var(--space-40);
     left: -var(--space-20);
   }
-  
+
   /* Debt section mobile */
   .debt__header {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-16);
   }
-  
+
   .debt__icon {
     position: absolute;
     right: 0;
     top: var(--space-40);
   }
-  
+
   .debt__complex {
     position: relative;
   }
-  
+
   .debt__table-header {
-    display: none; /* Прячем заголовки таблицы на мобилках */
+    display: none;
+    /* Прячем заголовки таблицы на мобилках */
   }
-  
+
   .debt__table-row {
     flex-direction: column;
     gap: var(--space-8);
     padding: var(--space-16);
   }
-  
-  .debt__col--apt, .debt__col--amount {
+
+  .debt__col--apt,
+  .debt__col--amount {
     flex: auto;
     text-align: left;
   }
