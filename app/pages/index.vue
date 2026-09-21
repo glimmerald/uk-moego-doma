@@ -716,6 +716,7 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   z-index: var(--z-base);
+  padding-top: var(--header-height);
 }
 
 .hero__video {
