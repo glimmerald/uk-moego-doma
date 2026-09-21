@@ -17,7 +17,7 @@
         ],
         "status": "Строится",
         "description": "Новый жилой комплекс в уютном зеленом районе Гурьевска.",
-        "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/DSC01791.jpg"
       }
     ]
   },
@@ -39,7 +39,7 @@
         ],
         "status": "Строится",
         "description": "Комфортная жизнь в ближайшем пригороде Краснодара.",
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/envato-labs-image-edit (2).png"
       }
     ]
   },
@@ -61,7 +61,7 @@
         ],
         "status": "Сдан",
         "description": "ЖК комфорт-класса в районе Краевой клинической больницы.",
-        "image": "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=400&q=80"
+        "image": "/images/Дома ССК/ЖК Свобода/SOL09842.jpg"
       },
       {
         "id": "trilogia",
@@ -73,7 +73,7 @@
         ],
         "status": "Сдан",
         "description": "Три современных дома в микрорайоне Гидростроителей.",
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80"
+        "image": "/images/Дома ССК/ЖК Трилогия/SOL00030.jpg"
       },
       {
         "id": "yunost",
@@ -85,7 +85,7 @@
         ],
         "status": "Сдан",
         "description": "Молодежный комплекс с продуманным благоустройством.",
-        "image": "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/envato-labs-image-edit (8)-2.jpg"
       },
       {
         "id": "kaskad",
@@ -97,7 +97,7 @@
         ],
         "status": "Сдан",
         "description": "Дом комфорт-класса в спокойном спальном районе.",
-        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80"
+        "image": "/images/Дома ССК/ЖК Каскад/SOL00046.jpg"
       },
       {
         "id": "prityazhenie",
@@ -109,7 +109,7 @@
         ],
         "status": "Сдан",
         "description": "Современный ЖК с активной коммерческой инфраструктурой.",
-        "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=400&q=80"
+        "image": "/images/Дома ССК/ЖК Притяжение/SOL09909.jpg"
       },
       {
         "id": "pokolenie",
@@ -121,7 +121,7 @@
         ],
         "status": "Сдан",
         "description": "Комплекс для всей семьи с безопасными дворами.",
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+        "image": "/images/Дома ССК/ЖК Поколение/SOL00245.jpg"
       },
       {
         "id": "fontany",
@@ -133,7 +133,7 @@
         ],
         "status": "Сдан",
         "description": "Авторский проект с ландшафтным дизайном.",
-        "image": "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/SOL04790 копия 3.jpg"
       },
       {
         "id": "perspektiva",
@@ -145,7 +145,7 @@
         ],
         "status": "Сдан",
         "description": "Масштабная застройка рядом с парком Галицкого.",
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/SOL05113 копия.jpg"
       },
       {
         "id": "dom-na-moskovskoy",
@@ -157,7 +157,7 @@
         ],
         "status": "Сдан",
         "description": "Уютный дом с закрытой территорией.",
-        "image": "https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=400&q=80"
+        "image": "/images/Дома ССК/ЖК Дом на Московской/SOL09895.jpg"
       },
       {
         "id": "otkritie",
@@ -169,7 +169,7 @@
         ],
         "status": "Сдан",
         "description": "Новый стандарт качества в Молодежном микрорайоне.",
-        "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/SOL05113 копия.jpg"
       },
       {
         "id": "stihiya",
@@ -181,7 +181,7 @@
         ],
         "status": "Строится",
         "description": "Четыре стихии воплощенные в архитектуре.",
-        "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/1.jpg"
       },
       {
         "id": "luchshiy-2",
@@ -193,7 +193,7 @@
         ],
         "status": "Строится",
         "description": "Продолжение популярного жилого комплекса.",
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/SOL05113 копия.jpg"
       },
       {
         "id": "role-clef",
@@ -205,7 +205,7 @@
         ],
         "status": "Премиум",
         "description": "Клубный дом премиум-класса в историческом центре.",
-        "image": "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/SOL04790 копия 3.jpg"
       },
       {
         "id": "serdce",
@@ -217,7 +217,7 @@
         ],
         "status": "Премиум",
         "description": "Сердце города. Проект с невероятными видами на стадион.",
-        "image": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/SOL05059 копия.jpg"
       },
       {
         "id": "flotiliya",
@@ -229,7 +229,7 @@
         ],
         "status": "Сдан",
         "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+        "image": "/images/Дома ССК/ЖК Флотилия/SOL09699.jpg"
       },
       {
         "id": "barselona",
@@ -241,7 +241,7 @@
         ],
         "status": "Сдан",
         "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+        "image": "/images/Дома ССК/ЖК Барселона/SOL00090.jpg"
       },
       {
         "id": "parusnaya",
@@ -253,7 +253,7 @@
         ],
         "status": "Сдан",
         "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/1.jpg"
       },
       {
         "id": "stolica",
@@ -265,7 +265,7 @@
         ],
         "status": "Сдан",
         "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/envato-labs-image-edit (8)-2.jpg"
       },
       {
         "id": "luchshiy-3",
@@ -277,7 +277,7 @@
         ],
         "status": "Сдан",
         "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/DSC09946 копия.jpg"
       },
       {
         "id": "main-city",
@@ -289,7 +289,7 @@
         ],
         "status": "Сдан",
         "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80"
+        "image": "/images/Дома ССК/Photos/DSC09946 копия.jpg"
       }
     ]
   }

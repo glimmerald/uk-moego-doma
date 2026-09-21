@@ -2,7 +2,7 @@
   <header :class="['app-header', 'glass-effect', { 'is-menu-open': isMenuOpen }]">
     <div class="app-header__container">
       <div class="app-header__logo">
-        <NuxtLink to="/">УК ПРЕМИУМ</NuxtLink>
+        <NuxtLink to="/">УК МОЕГО ДОМА</NuxtLink>
       </div>
       
       <!-- Центральное меню убрано по ТЗ -->

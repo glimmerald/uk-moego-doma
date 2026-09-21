@@ -139,16 +139,16 @@
         <!-- Правая прокручиваемая часть с фото -->
         <div class="dispatch__right">
           <div class="dispatch__photo">
-            <img src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=1000&q=80" alt="Служба заботы" loading="lazy">
+            <img src="/images/Фасад/DSC04411.jpg" alt="Служба заботы" loading="lazy">
           </div>
           <div class="dispatch__photo dispatch__photo--offset">
-            <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1000&q=80" alt="Инженер" loading="lazy">
+            <img src="/images/Фасад/DSC04615.jpg" alt="Инженер" loading="lazy">
           </div>
           <div class="dispatch__photo">
-            <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1000&q=80" alt="Техническое обслуживание" loading="lazy">
+            <img src="/images/Фасад/DSC04613.jpg" alt="Техническое обслуживание" loading="lazy">
           </div>
           <div class="dispatch__photo dispatch__photo--offset">
-            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1000&q=80" alt="Консьерж" loading="lazy">
+            <img src="/images/Фасад/DSC04603.jpg" alt="Консьерж" loading="lazy">
           </div>
         </div>
       </div>
@@ -218,7 +218,7 @@
     </section>
 
     <!-- Седьмая секция (Мы в СМИ - Асимметричная верстка) -->
-    <section class="section-press" id="press">
+    <section class="section-press" id="press" ref="pressSection">
       <div class="press__container">
         <h2 class="press__section-title">О нас пишут</h2>
         
@@ -229,11 +229,16 @@
             :key="index"
             @mouseenter="onPressMouseMove($event)"
             @mousemove="onPressMouseMove($event)"
-            :style="{ transform: `translateY(${scrollY * (index % 2 === 0 ? 0.05 : -0.05)}px)` }"
+            :style="pressItemTops.length ? { transform: `translateY(${(scrollY + winHeight/2 - pressItemTops[index]) * (index % 2 === 0 ? 0.06 : -0.06)}px)` } : {}" 
           >
             <!-- Фотография-подложка, проявляемая "фонариком" -->
             <div class="press__image-reveal">
-              <img :src="press.image" alt="" class="press__image" />
+              <img 
+                :src="press.image" 
+                alt="" 
+                class="press__image" 
+                :style="press.imagePosition ? { objectPosition: press.imagePosition } : {}"
+              />
             </div>
 
             <!-- Построчное/пословное проявление цитаты -->
@@ -436,12 +441,12 @@ const scrollAccordion = (direction) => {
 }
 
 const sliderImages = [
-  'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1200&q=80',
-  'https://images.unsplash.com/photo-1515263487990-61b07816b324?w=1200&q=80',
-  'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80',
-  'https://images.unsplash.com/photo-1460317442991-0ec209397118?w=1200&q=80',
-  'https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=1200&q=80',
-  'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=1200&q=80'
+  '/images/Фасад/DSC05127.jpg',
+  '/images/Фасад/DSC04986.jpg',
+  '/images/Фасад/DSC05052.jpg',
+  '/images/Фасад/DSC04826.jpg',
+  '/images/Фасад/DSC04824.jpg',
+  '/images/Фасад/DSC04402.jpg'
 ]
 
 const advantagesList = [
@@ -449,49 +454,49 @@ const advantagesList = [
     number: '> 15',
     title: 'Жилых комплексов',
     text: 'В портфеле нашей управляющей компании более 15 объектов премиум и бизнес-класса в разных городах.',
-    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80'
+    image: '/images/Фасад/DSC04808.jpg'
   },
   {
     number: '24/7',
     title: 'Служба заботы',
     text: 'Круглосуточная диспетчерская служба и консьерж-сервис, готовые решить любой вопрос за считанные минуты.',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80'
+    image: '/images/Фасад/DSC05913.jpg'
   },
   {
     number: '50к+',
     title: 'Счастливых жителей',
     text: 'Мы создаем комьюнити, где каждый житель чувствует себя в безопасности и максимальном комфорте.',
-    image: 'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?w=800&q=80'
+    image: '/images/Фасад/DSC04833.jpg'
   },
   {
     number: '10 лет',
     title: 'Безупречной работы',
     text: 'С 2014 года мы задаем новые стандарты управления недвижимостью на российском рынке.',
-    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80'
+    image: '/images/Фасад/DSC04416.jpg'
   },
   {
     number: '№ 1',
     title: 'Рейтинг доверия',
     text: 'Первое место по результатам независимых опросов среди резидентов элитных домов в 2023 году.',
-    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80'
+    image: '/images/Фасад/DSC04416.jpg'
   },
   {
     number: '15 мин',
     title: 'Скорость реакции',
     text: 'Среднее время прибытия мастера по заявке. Мы ценим ваше время и действуем на опережение.',
-    image: 'https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=800&q=80'
+    image: '/images/Фасад/DSC04414.jpg'
   },
   {
     number: '100%',
     title: 'Прозрачность',
     text: 'Полная детализация расходов и доступ к финансовой отчетности вашего дома через мобильное приложение.',
-    image: 'https://images.unsplash.com/photo-1515263487990-61b07816b324?w=800&q=80'
+    image: '/images/Фасад/DSC04788.jpg'
   },
   {
     number: '4',
     title: 'Региона',
     text: 'Мы успешно масштабируем наш премиальный сервис: Москва, Краснодар, Адыгея, Калининград.',
-    image: 'https://images.unsplash.com/photo-1518684079-3c830dcef090?w=800&q=80'
+    image: '/images/Фасад/DSC04827.jpg'
   }
 ]
 
@@ -505,31 +510,31 @@ const newsList = [
     date: '14 / 09',
     title: 'Старт продаж в новом клубном доме на набережной',
     excerpt: 'Уникальные видовые квартиры с террасами и собственным выходом к воде. Узнайте первыми о специальных условиях на старте.',
-    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1000&q=80'
+    image: '/images/Фасад/DSC05045.jpg'
   },
   {
     date: '28 / 08',
     title: 'Завершение монолитных работ в ЖК «Авангард»',
     excerpt: 'Мы идем с опережением графика на 2 месяца. Строители приступили к остеклению фасадов и монтажу инженерных систем.',
-    image: 'https://images.unsplash.com/photo-1515263487990-61b07816b324?w=1000&q=80'
+    image: '/images/Фасад/DSC04984.jpg'
   },
   {
     date: '12 / 08',
     title: 'Новые стандарты благоустройства внутренних дворов',
     excerpt: 'Ландшафтный дизайн от мировых бюро, всесезонные растения и зонирование для всех возрастов.',
-    image: 'https://images.unsplash.com/photo-1460317442991-0ec209397118?w=1000&q=80'
+    image: '/images/Фасад/DSC05455.jpg'
   },
   {
     date: '03 / 08',
     title: 'Наш проект получил премию Urban Awards 2024',
     excerpt: 'Жюри высоко оценило архитектурный облик и концепцию инфраструктуры нашего флагманского проекта.',
-    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1000&q=80'
+    image: '/images/Фасад/DSC04993.jpg'
   },
   {
     date: '18 / 07',
     title: 'Открытие премиального фитнес-клуба для резидентов',
     excerpt: 'Бассейн 25 метров, SPA-зона и новейшее оборудование. Доступ только для жителей комплекса по индивидуальной ключ-карте.',
-    image: 'https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=1000&q=80'
+    image: '/images/Фасад/DSC05046.jpg'
   }
 ]
 
@@ -538,13 +543,15 @@ import press2 from '@/assets/images/press/press-2.jpg'
 import press3 from '@/assets/images/press/press-3.jpg'
 import press4 from '@/assets/images/press/press-4.jpg'
 import press5 from '@/assets/images/press/press-5.jpg'
+import kazaryanImg from '@/assets/images/press/kazaryan.jpg'
 
 const pressList = [
   {
-    quote: 'Управляющая компания задает совершенно новый стандарт сервиса для премиальных объектов, опережая запросы самых требовательных резидентов. Мы видим, как внимание к деталям и персонализированный подход меняют представление о комфорте на рынке элитной недвижимости.',
-    source: 'Forbes',
-    link: '#',
-    image: press1
+    quote: '«Есть миф, что женщина не может руководить в ЖКХ. За 10 лет я научилась среди ночи рассказывать, где протекла кровля и как перезапустить тепловой пункт. Я открыта для людей и критики. Когда благодарность сменяет недовольство — это победа.» — Светлана Казарян, директор «УК Моего Дома»',
+    source: 'The Blueprint',
+    link: 'https://theblueprint.ru/career/special/domiland-interview',
+    image: kazaryanImg,
+    imagePosition: 'center calc(50% + 80px)'
   },
   {
     quote: 'Идеальный пример того, как смелый архитектурный замысел поддерживается безупречной, невидимой глазу эксплуатацией здания. Инженерные системы функционируют как швейцарские часы, обеспечивая жильцам максимальный уровень безопасности и абсолютную тишину.',
@@ -598,9 +605,25 @@ const getFilteredDebtors = (building) => {
 
 // Глобальный скролл для параллакса
 const scrollY = ref(0)
+const winHeight = ref(1000)
+const pressItemTops = ref([])
 
 const onScroll = () => {
   scrollY.value = window.scrollY
+}
+
+const updatePressOffset = () => {
+  if (typeof window === 'undefined') return
+  winHeight.value = window.innerHeight
+  const items = document.querySelectorAll('.press__item')
+  const newTops = []
+  items.forEach((item) => {
+    const oldTransform = item.style.transform
+    item.style.transform = 'none'
+    newTops.push(window.scrollY + item.getBoundingClientRect().top)
+    item.style.transform = oldTransform
+  })
+  pressItemTops.value = newTops
 }
 
 // Эффект "фонарика" (spotlight reveal) при наведении на блок
@@ -619,7 +642,9 @@ const onPressMouseMove = (e) => {
 
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', updatePressOffset, { passive: true })
   onScroll()
+  setTimeout(updatePressOffset, 100)
   
   observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -639,6 +664,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
+  window.removeEventListener('resize', updatePressOffset)
   if (observer) {
     observer.disconnect()
   }

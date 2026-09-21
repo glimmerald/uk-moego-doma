@@ -4,7 +4,7 @@
       
       <!-- Колонка 1: Бренд и описание -->
       <div class="app-footer__col app-footer__col--brand">
-        <NuxtLink to="/" class="app-footer__logo">УК ПРЕМИУМ</NuxtLink>
+        <NuxtLink to="/" class="app-footer__logo">УК МОЕГО ДОМА</NuxtLink>
         <p class="app-footer__desc">
           Профессиональное управление недвижимостью класса комфорт и премиум.
         </p>
@@ -47,7 +47,7 @@
         <h4 class="app-footer__title">Связь с нами</h4>
         <div class="app-footer__contact-info">
           <a href="tel:+74950000000" class="app-footer__phone">+7 (495) 000-00-00</a>
-          <a href="mailto:info@ukpremium.ru" class="app-footer__email">info@ukpremium.ru</a>
+          <a href="mailto:info@uk-moego-doma.ru" class="app-footer__email">info@uk-moego-doma.ru</a>
         </div>
         
         <div class="app-footer__socials">
@@ -69,7 +69,7 @@
     <div class="app-footer__bottom">
       <div class="app-footer__bottom-container">
         <div class="app-footer__bottom-left">
-          © {{ new Date().getFullYear() }} УК Премиум. Все права защищены.
+          © {{ new Date().getFullYear() }} УК Моего Дома. Все права защищены.
         </div>
         <div class="app-footer__bottom-center">
           Created by <span class="app-footer__author">Yellow Tomato</span>
