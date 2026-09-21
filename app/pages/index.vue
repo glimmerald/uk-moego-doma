@@ -3,13 +3,14 @@
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero__video-wrapper">
-        <iframe 
+        <video 
           class="hero__video"
-          src="https://www.youtube.com/embed/tO01J-M3g0U?autoplay=1&mute=1&controls=0&loop=1&playlist=tO01J-M3g0U&showinfo=0&modestbranding=1" 
-          frameborder="0" 
-          allow="autoplay; encrypted-media" 
-          allowfullscreen
-        ></iframe>
+          src="/main_video.mp4"
+          autoplay
+          loop
+          muted
+          playsinline
+        ></video>
         <!-- Overlay to make text and header more readable -->
         <div class="hero__overlay"></div>
       </div>
@@ -718,15 +719,9 @@ onUnmounted(() => {
 }
 
 .hero__video {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100vw;
-  height: 56.25vw; /* 16:9 */
-  min-height: 70vh;
-  min-width: 124.44vh; /* 16:9 */
-  transform: translate(-50%, -50%);
-  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .hero__overlay {
