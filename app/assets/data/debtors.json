@@ -2,7 +2,7 @@
   {
     "id": "city-1",
     "name": "г. Краснодар",
-    "isOpen": true,
+    "isOpen": false,
     "complexes": [
       {
         "id": "city-1-comp-1",
