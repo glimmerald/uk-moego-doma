@@ -219,7 +219,7 @@ watch(isMenuOpen, (isOpen) => {
   display: block;
   width: 100%;
   height: var(--border-width);
-  background-color: #fff;
+  background-color: var(--color-white);
   transition: transform var(--anim-duration-fast) ease, width var(--anim-duration-fast) ease, opacity var(--anim-duration-fast) ease;
   transform-origin: center;
 }
@@ -234,12 +234,12 @@ watch(isMenuOpen, (isOpen) => {
 
 /* Анимация бургера в крестик */
 .app-header__burger.is-active .app-header__burger-line:first-child {
-  transform: translateY(3.5px) rotate(45deg);
+  transform: translateY(var(--hamburger-offset)) rotate(45deg);
 }
 
 .app-header__burger.is-active .app-header__burger-line:last-child {
   width: 100%;
-  transform: translateY(-3.5px) rotate(-45deg);
+  transform: translateY(calc(var(--hamburger-offset) * -1)) rotate(-45deg);
 }
 
 /* Оверлей меню */
@@ -247,8 +247,8 @@ watch(isMenuOpen, (isOpen) => {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: var(--vw-100);
+  height: var(--vh-100);
   background-color: var(--color-overlay);
   backdrop-filter: blur(var(--space-4));
   z-index: var(--z-overlay);
@@ -259,10 +259,10 @@ watch(isMenuOpen, (isOpen) => {
   position: fixed;
   top: 0;
   right: 0;
-  width: 480px;
-  max-width: 100vw;
-  height: 100vh;
-  background-color: #fff;
+  width: var(--menu-width);
+  max-width: var(--vw-100);
+  height: var(--vh-100);
+  background-color: var(--color-white);
   z-index: var(--z-menu);
   padding: var(--space-120) var(--space-60) var(--space-60);
   display: flex;
@@ -341,7 +341,7 @@ watch(isMenuOpen, (isOpen) => {
 
 @media (max-width: 768px) {
   .app-menu__panel {
-    width: 100vw;
+    width: var(--vw-100);
     padding: var(--space-100) var(--space-32) var(--space-40);
   }
   

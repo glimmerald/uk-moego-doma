@@ -1,7 +1,7 @@
 <template>
   <div 
     class="carousel-container" 
-    :style="{ perspective: '1200px' }"
+    :style="{ perspective: 'var(--perspective-slider)' }"
     @pointerdown="onPointerDown"
     @pointermove="onPointerMove"
     @pointerup="onPointerUp"
@@ -169,7 +169,7 @@ const getSlideStyle = (index) => {
 .carousel-container {
   position: relative;
   width: 100%;
-  height: 600px;
+  height: var(--slider-height);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -181,7 +181,7 @@ const getSlideStyle = (index) => {
 .carousel-wrapper {
   position: relative;
   width: 50%;
-  max-width: 800px;
+  max-width: var(--slider-max-width);
   height: 100%;
   transform-style: preserve-3d;
   display: flex;
@@ -235,7 +235,7 @@ const getSlideStyle = (index) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #1a1a1a;
+  color: var(--color-dark);
   z-index: 100;
   transition: background 0.3s ease;
   cursor: pointer;
@@ -243,7 +243,7 @@ const getSlideStyle = (index) => {
 }
 
 .carousel-nav:hover {
-  background: #fff;
+  background: var(--color-white);
 }
 
 .carousel-nav--prev {

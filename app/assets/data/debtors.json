@@ -14933,5 +14933,224 @@
         ]
       }
     ]
+  },
+  {
+    "id": "yablonovsky",
+    "name": "пгт. Яблоновский",
+    "isOpen": false,
+    "complexes": [
+      {
+        "id": "yablonovsky-comp-1",
+        "name": "ЖК \"Дом на Луговой\"",
+        "address": "ул. Луговая, 1",
+        "isOpen": false,
+        "buildings": [
+          {
+            "id": "yablonovsky-comp-1-build-1",
+            "name": "корп. 1",
+            "isOpen": false,
+            "searchQuery": "",
+            "debtors": [
+              {
+                "apt": "19",
+                "amount": "35 931,00 ₽",
+                "period": "2 месяца"
+              },
+              {
+                "apt": "58",
+                "amount": "17 426,00 ₽",
+                "period": "4 месяца"
+              },
+              {
+                "apt": "67",
+                "amount": "35 153,00 ₽",
+                "period": "12 месяцев"
+              },
+              {
+                "apt": "123",
+                "amount": "21 640,00 ₽",
+                "period": "10 месяцев"
+              },
+              {
+                "apt": "134",
+                "amount": "23 331,00 ₽",
+                "period": "5 месяцев"
+              },
+              {
+                "apt": "175",
+                "amount": "17 392,00 ₽",
+                "period": "2 месяца"
+              },
+              {
+                "apt": "185",
+                "amount": "31 210,00 ₽",
+                "period": "8 месяцев"
+              },
+              {
+                "apt": "186",
+                "amount": "47 619,00 ₽",
+                "period": "13 месяцев"
+              },
+              {
+                "apt": "215",
+                "amount": "27 629,00 ₽",
+                "period": "9 месяцев"
+              },
+              {
+                "apt": "240",
+                "amount": "22 958,00 ₽",
+                "period": "6 месяцев"
+              }
+            ]
+          },
+          {
+            "id": "yablonovsky-comp-1-build-2",
+            "name": "корп. 2",
+            "isOpen": false,
+            "searchQuery": "",
+            "debtors": [
+              {
+                "apt": "14",
+                "amount": "44 611,00 ₽",
+                "period": "4 месяца"
+              },
+              {
+                "apt": "85",
+                "amount": "35 347,00 ₽",
+                "period": "13 месяцев"
+              },
+              {
+                "apt": "146",
+                "amount": "42 093,00 ₽",
+                "period": "2 месяца"
+              },
+              {
+                "apt": "231",
+                "amount": "13 687,00 ₽",
+                "period": "12 месяцев"
+              },
+              {
+                "apt": "237",
+                "amount": "37 772,00 ₽",
+                "period": "13 месяцев"
+              },
+              {
+                "apt": "255",
+                "amount": "20 541,00 ₽",
+                "period": "3 месяца"
+              },
+              {
+                "apt": "274",
+                "amount": "45 881,00 ₽",
+                "period": "5 месяцев"
+              },
+              {
+                "apt": "283",
+                "amount": "48 942,00 ₽",
+                "period": "5 месяцев"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "guryevsk",
+    "name": "г. Гурьевск",
+    "isOpen": false,
+    "complexes": [
+      {
+        "id": "guryevsk-comp-1",
+        "name": "ЖК \"Включи\"",
+        "address": "ул. Героя России Катериничева, 2",
+        "isOpen": false,
+        "buildings": [
+          {
+            "id": "guryevsk-comp-1-build-1",
+            "name": "Единый корпус",
+            "isOpen": false,
+            "searchQuery": "",
+            "debtors": [
+              {
+                "apt": "44",
+                "amount": "50 664,00 ₽",
+                "period": "9 месяцев"
+              },
+              {
+                "apt": "53",
+                "amount": "53 952,00 ₽",
+                "period": "2 месяца"
+              },
+              {
+                "apt": "80",
+                "amount": "6 465,00 ₽",
+                "period": "3 месяца"
+              },
+              {
+                "apt": "109",
+                "amount": "30 562,00 ₽",
+                "period": "10 месяцев"
+              },
+              {
+                "apt": "142",
+                "amount": "16 515,00 ₽",
+                "period": "3 месяца"
+              },
+              {
+                "apt": "143",
+                "amount": "22 142,00 ₽",
+                "period": "4 месяца"
+              },
+              {
+                "apt": "155",
+                "amount": "36 335,00 ₽",
+                "period": "11 месяцев"
+              },
+              {
+                "apt": "166",
+                "amount": "37 850,00 ₽",
+                "period": "13 месяцев"
+              },
+              {
+                "apt": "171",
+                "amount": "5 788,00 ₽",
+                "period": "6 месяцев"
+              },
+              {
+                "apt": "174",
+                "amount": "43 184,00 ₽",
+                "period": "6 месяцев"
+              },
+              {
+                "apt": "184",
+                "amount": "26 735,00 ₽",
+                "period": "6 месяцев"
+              },
+              {
+                "apt": "197",
+                "amount": "20 237,00 ₽",
+                "period": "8 месяцев"
+              },
+              {
+                "apt": "236",
+                "amount": "17 719,00 ₽",
+                "period": "9 месяцев"
+              },
+              {
+                "apt": "257",
+                "amount": "5 066,00 ₽",
+                "period": "2 месяца"
+              },
+              {
+                "apt": "259",
+                "amount": "15 243,00 ₽",
+                "period": "2 месяца"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]

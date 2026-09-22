@@ -41,7 +41,7 @@
       </div>
     </section>
 
-    <!-- Третья секция (Имиджевая) -->
+    <!-- Третья секция (Имиджевая)
     <section class="section-image" id="about">
       <div class="image-section__container">
         <div class="image-section__header">
@@ -57,6 +57,7 @@
         </div>
       </div>
     </section>
+    -->
 
     <!-- Четвертая секция (Преимущества - Аккордеон) -->
     <section class="section-advantages" id="advantages">
@@ -194,7 +195,7 @@
         <div class="press__list">
           <div class="press__item" v-for="(press, index) in pressList" :key="index"
             @mouseenter="onPressMouseMove($event)" @mousemove="onPressMouseMove($event)"
-            :style="pressItemTops.length ? { transform: `translateY(${(scrollY + winHeight / 2 - pressItemTops[index]) * (index % 2 === 0 ? 0.06 : -0.06)}px)` } : {}">
+            >
             <!-- Фотография-подложка, проявляемая "фонариком" -->
             <div class="press__image-reveal">
               <img :src="press.image" alt="" class="press__image"
@@ -204,7 +205,7 @@
             <!-- Построчное/пословное проявление цитаты -->
             <div class="press__quote">
               <span v-for="(word, wIndex) in press.quote.split(' ')" :key="wIndex" class="press__word-mask">
-                <span class="press__word" :style="{ transitionDelay: `${wIndex * 0.03}s` }">{{ word }}&nbsp;</span>
+                <span class="press__word" :style="{ transitionDelay: `calc(${wIndex} * var(--anim-word-step))` }">{{ word }}&nbsp;</span>
               </span>
             </div>
 
@@ -231,51 +232,53 @@
           Мы ценим прозрачность. Ниже представлена финансовая информация по объектам управления.
         </p>
 
-        <div class="debt__list">
-          <div class="debt__city" v-for="city in debtRegistry" :key="city.id" :class="{ 'is-open': city.isOpen }">
-            <div class="debt__city-header" @click="toggleCity(city)">
-              <h2 class="debt__city-title">{{ city.name }}</h2>
-              <div class="debt__icon">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round" class="icon-plus" />
-                </svg>
-              </div>
+        <div class="debt__tabs">
+          <button
+            class="debt__tab"
+            v-for="city in debtRegistry"
+            :key="city.id"
+            :class="{ 'is-active': activeCityId === city.id }"
+            @click="activeCityId = city.id"
+          >
+            {{ city.name }}
+          </button>
+        </div>
+
+        <div class="debt__list" v-if="activeCity">
+          
+          <!-- Выпадающий список ЖК -->
+          <div class="debt__complex-dropdown">
+            <div class="debt__dropdown-header" @click="isComplexDropdownOpen = !isComplexDropdownOpen">
+              <span class="debt__dropdown-title">
+                {{ activeComplex ? activeComplex.name : 'Выберите жилой комплекс...' }}
+              </span>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="debt__dropdown-icon" :class="{ 'is-rotated': isComplexDropdownOpen }">
+                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
             </div>
+            
+            <Transition name="fade">
+              <div class="debt__dropdown-options" v-if="isComplexDropdownOpen">
+                <div class="debt__dropdown-option" 
+                     v-for="complex in activeCity.complexes" :key="complex.id"
+                     @click="selectComplex(complex)">
+                  <span class="debt__option-name">{{ complex.name }}</span>
+                  <span class="debt__option-address" v-if="complex.address">{{ complex.address }}</span>
+                </div>
+              </div>
+            </Transition>
+          </div>
 
-            <div class="debt__city-body-wrapper">
-              <div class="debt__city-body">
-                <div class="debt__complex-list">
-                  <div class="debt__complex" v-for="complex in city.complexes" :key="complex.id"
-                    :class="{ 'is-open': complex.isOpen }">
-                    <!-- Шапка аккордеона ЖК -->
-                    <div class="debt__header" @click="toggleComplex(complex)">
-                      <div class="debt__title-group">
-                        <h3 class="debt__complex-name">{{ complex.name }}</h3>
-                        <span class="debt__complex-address" v-if="complex.address">{{ complex.address }}</span>
-                      </div>
-                      <div class="debt__icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                          <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                            stroke-linejoin="round" class="icon-plus" />
-                        </svg>
-                      </div>
-                    </div>
-
-                    <!-- Тело аккордеона ЖК -->
-                    <div class="debt__body-wrapper">
-                      <div class="debt__body">
-                        <div class="debt__body-content">
-
-                          <div class="debt__building-list">
-                            <div class="debt__building" v-for="building in complex.buildings" :key="building.id"
+          <Transition name="fade">
+            <div class="debt__complex-content" v-if="activeComplex">
+              <div class="debt__building-list">
+                            <div class="debt__building" v-for="building in activeComplex.buildings" :key="building.id"
                               :class="{ 'is-open': building.isOpen }">
                               <div class="debt__building-header" @click="toggleBuilding(building)">
                                 <h4 class="debt__building-name">{{ building.name }}</h4>
                                 <div class="debt__building-icon">
-                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                    <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="1.5"
-                                      stroke-linecap="round" stroke-linejoin="round" />
+                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-plus" />
                                   </svg>
                                 </div>
                               </div>
@@ -332,14 +335,8 @@
                             </div>
                           </div>
 
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
+          </Transition>
         </div>
       </div>
     </section>
@@ -514,7 +511,7 @@ const pressList = [
     source: 'The Blueprint',
     link: 'https://theblueprint.ru/career/special/domiland-interview',
     image: kazaryanImg,
-    imagePosition: 'center calc(50% + 140px)'
+    imagePosition: 'center calc(var(--percent-50) + var(--img-offset-140))'
   },
   {
     quote: 'Идеальный пример того, как смелый архитектурный замысел поддерживается безупречной, невидимой глазу эксплуатацией здания. Инженерные системы функционируют как швейцарские часы, обеспечивая жильцам максимальный уровень безопасности и абсолютную тишину.',
@@ -542,16 +539,43 @@ const pressList = [
   }
 ]
 
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, computed, nextTick } from 'vue'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger)
+}
+
 
 import debtorsData from '@/assets/data/debtors.json'
 
 // Наблюдатель для анимации появления (scroll reveal)
-let observer = null
-const activePressIndex = ref(-1)
 
 // Данные для секции "Реестр задолженностей"
 const debtRegistry = ref(debtorsData)
+const activeCityId = ref(debtorsData[0]?.id || '')
+const activeCity = computed(() => debtRegistry.value.find(c => c.id === activeCityId.value))
+
+const activeComplexId = ref(null)
+const isComplexDropdownOpen = ref(false)
+
+const activeComplex = computed(() => {
+  if (!activeCity.value) return null
+  return activeCity.value.complexes.find(c => c.id === activeComplexId.value)
+})
+
+const selectComplex = (complex) => {
+  activeComplexId.value = complex.id
+  isComplexDropdownOpen.value = false
+}
+
+import { watch } from 'vue'
+watch(activeCityId, () => {
+  activeComplexId.value = null
+  isComplexDropdownOpen.value = false
+})
+
 
 const toggleCity = (city) => {
   city.isOpen = !city.isOpen
@@ -570,29 +594,6 @@ const getFilteredDebtors = (building) => {
   return building.debtors.filter(d => d.apt.includes(building.searchQuery))
 }
 
-// Глобальный скролл для параллакса
-const scrollY = ref(0)
-const winHeight = ref(1000)
-const pressItemTops = ref([])
-
-const onScroll = () => {
-  scrollY.value = window.scrollY
-}
-
-const updatePressOffset = () => {
-  if (typeof window === 'undefined') return
-  winHeight.value = window.innerHeight
-  const items = document.querySelectorAll('.press__item')
-  const newTops = []
-  items.forEach((item) => {
-    const oldTransform = item.style.transform
-    item.style.transform = 'none'
-    newTops.push(window.scrollY + item.getBoundingClientRect().top)
-    item.style.transform = oldTransform
-  })
-  pressItemTops.value = newTops
-}
-
 // Эффект "фонарика" (spotlight reveal) при наведении на блок
 const onPressMouseMove = (e) => {
   const item = e.currentTarget
@@ -601,40 +602,82 @@ const onPressMouseMove = (e) => {
     const rect = imageReveal.getBoundingClientRect()
     const x = Math.round(e.clientX - rect.left)
     const y = Math.round(e.clientY - rect.top)
-    const mask = `radial-gradient(circle 250px at ${x}px ${y}px, black 15%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.1) 75%, transparent 100%)`
+    const mask = `radial-gradient(circle var(--press-spotlight-size) at ${x}px ${y}px, var(--color-spotlight-center) var(--percent-15), var(--color-spotlight-mid) var(--percent-50), var(--color-spotlight-edge) var(--percent-75), var(--color-spotlight-transparent) 100%)`
     imageReveal.style.webkitMaskImage = mask
     imageReveal.style.maskImage = mask
   }
 }
 
+
 onMounted(() => {
-  window.addEventListener('scroll', onScroll, { passive: true })
-  window.addEventListener('resize', updatePressOffset, { passive: true })
-  onScroll()
-  setTimeout(updatePressOffset, 100)
+  nextTick(() => {
+    // 1. Hero Animation
+    const heroTl = gsap.timeline();
+    heroTl.fromTo('.hero__title-line', 
+      { y: 50, opacity: 0 }, 
+      { y: 0, opacity: 1, duration: 1, stagger: 0.2, ease: 'power3.out' }
+    ).fromTo('.hero__subtitle', 
+      { y: 20, opacity: 0 }, 
+      { y: 0, opacity: 0.9, duration: 1, ease: 'power2.out' }, 
+      "-=0.5"
+    );
 
-  observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-revealed')
+    // 2. Dispatch Section Parallax
+    ScrollTrigger.matchMedia({
+      "(min-width: 1025px)": function() {
+        gsap.utils.toArray('.dispatch__photo').forEach(photo => {
+          const img = photo.querySelector('img');
+          if (!img) return;
+          gsap.fromTo(img, 
+            { yPercent: -20, scale: 1.4 },
+            {
+              yPercent: 20,
+              scale: 1.4,
+              ease: 'none',
+              scrollTrigger: {
+              trigger: photo,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true
+            }
+          });
+        });
       }
-    })
-  }, {
-    threshold: 0.15
-  })
+    });
 
-  // Наблюдаем и за фото Dispatch, и за цитатами СМИ
-  document.querySelectorAll('.dispatch__photo, .press__item').forEach(el => {
-    observer.observe(el)
-  })
+    // 3. Press Section Parallax (О нас пишут)
+    gsap.utils.toArray('.press__item').forEach((item, index) => {
+      const direction = index % 2 === 0 ? 1 : -1;
+      gsap.fromTo(item, 
+        { y: 100 * direction },
+        {
+          y: -100 * direction,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '.section-press',
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: true
+          }
+        }
+      );
+    });
+
+    // 4. Reveal items (News, Press, Dispatch photos)
+    const revealElements = gsap.utils.toArray('.dispatch__photo, .press__item, .news-list__item, .advantages__item');
+    revealElements.forEach(el => {
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 85%',
+        onEnter: () => el.classList.add('is-revealed'),
+        once: true
+      });
+    });
+  });
 })
 
 onUnmounted(() => {
-  window.removeEventListener('scroll', onScroll)
-  window.removeEventListener('resize', updatePressOffset)
-  if (observer) {
-    observer.disconnect()
-  }
+  ScrollTrigger.getAll().forEach(t => t.kill());
 })
 </script>
 
@@ -646,14 +689,14 @@ onUnmounted(() => {
 .hero {
   position: relative;
   width: 100%;
-  height: 70vh;
-  min-height: 500px;
+  height: var(--vh-70);
+  min-height: var(--accordion-height-mobile);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  color: #fff;
-  background-color: #fff;
+  color: var(--color-white);
+  background-color: var(--color-white);
 }
 
 .hero__video-wrapper {
@@ -663,7 +706,7 @@ onUnmounted(() => {
   width: 100%;
   height: calc(100% - var(--header-height));
   z-index: var(--z-base);
-  background-color: #fff;
+  background-color: var(--color-white);
 }
 
 .hero__video {
@@ -680,7 +723,7 @@ onUnmounted(() => {
   height: 100%;
   background: linear-gradient(to bottom,
       var(--color-overlay) 0%,
-      var(--color-header-border) 40%,
+      var(--color-header-border) var(--percent-40),
       var(--color-overlay) 100%);
   z-index: var(--z-above);
 }
@@ -714,15 +757,15 @@ onUnmounted(() => {
   font-weight: var(--font-weight-light);
   letter-spacing: var(--letter-spacing-widest);
   opacity: 0.9;
-  max-width: 600px;
+  max-width: var(--max-width-text);
   margin: 0 auto;
 }
 
 .hero__scroll-indicator {
   position: absolute;
   bottom: var(--space-40);
-  left: 50%;
-  transform: translateX(-50%);
+  left: var(--percent-50);
+  transform: translateX(var(--translate-half-neg));
   z-index: var(--z-top);
   display: flex;
   flex-direction: column;
@@ -751,18 +794,18 @@ onUnmounted(() => {
   top: 0;
   left: 0;
   width: 100%;
-  height: 50%;
-  background-color: #fff;
+  height: var(--percent-50);
+  background-color: var(--color-white);
   animation: scroll-down var(--anim-duration-marquee) ease-in-out infinite;
 }
 
 @keyframes scroll-down {
   0% {
-    transform: translateY(-100%);
+    transform: translateY(var(--translate-full-neg));
   }
 
   100% {
-    transform: translateY(200%);
+    transform: translateY(var(--translate-double));
   }
 }
 
@@ -812,7 +855,7 @@ onUnmounted(() => {
   font-weight: var(--font-weight-light);
   line-height: var(--line-height-loose);
   color: var(--color-text);
-  max-width: 600px;
+  max-width: var(--max-width-text);
   margin-top: var(--space-16);
   /* Небольшое выравнивание относительно заголовка */
 }
@@ -909,7 +952,7 @@ onUnmounted(() => {
   font-size: var(--text-body);
   line-height: var(--line-height-loose);
   color: var(--color-text);
-  max-width: 600px;
+  max-width: var(--max-width-text);
 }
 
 .image-section__slider-wrapper {
@@ -986,7 +1029,7 @@ onUnmounted(() => {
 
 .accordion {
   display: flex;
-  height: 600px;
+  height: var(--accordion-height);
   gap: var(--space-16);
   width: 100%;
   overflow-x: auto;
@@ -1010,7 +1053,7 @@ onUnmounted(() => {
   position: relative;
   /* Убираем flex: 1, ставим фиксированную ширину и flex-shrink: 0 */
   flex-shrink: 0;
-  width: 320px;
+  width: var(--accordion-item-width);
   border-radius: var(--radius-md);
   overflow: hidden;
   transition: width var(--anim-duration-slow) var(--anim-easing-smooth);
@@ -1020,7 +1063,7 @@ onUnmounted(() => {
 }
 
 .accordion__item.is-active {
-  width: 640px;
+  width: var(--accordion-item-active-width);
   /* Раскрытая ширина */
 }
 
@@ -1070,7 +1113,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  color: #fff;
+  color: var(--color-white);
 }
 
 .accordion__number {
@@ -1088,8 +1131,8 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: var(--space-16);
-  width: 450px;
-  max-width: 100vw;
+  width: var(--accordion-text-width);
+  max-width: var(--vw-100);
 }
 
 .accordion__title {
@@ -1111,13 +1154,13 @@ onUnmounted(() => {
 
 .accordion__item.is-active .accordion__description {
   opacity: 1;
-  max-height: 200px;
+  max-height: var(--accordion-desc-max-height);
   transform: translateY(0);
 }
 
 @media (max-width: 1024px) {
   .accordion__item {
-    width: 280px;
+    width: var(--accordion-item-width-tablet);
   }
 
   .accordion__item.is-active {
@@ -1125,21 +1168,21 @@ onUnmounted(() => {
   }
 
   .accordion__text-wrapper {
-    width: 320px;
+    width: var(--accordion-item-width);
   }
 }
 
 @media (max-width: 768px) {
   .accordion {
-    height: 500px;
+    height: var(--accordion-height-mobile);
   }
 
   .accordion__item {
-    width: 240px;
+    width: var(--accordion-item-width-mobile);
   }
 
   .accordion__item.is-active {
-    width: 85vw;
+    width: var(--vw-85);
   }
 
   .accordion__number {
@@ -1150,7 +1193,7 @@ onUnmounted(() => {
 /* Секция Аварийно-диспетчерская служба */
 .section-dispatch {
   background-color: var(--color-black);
-  color: #fff;
+  color: var(--color-white);
   position: relative;
 }
 
@@ -1161,9 +1204,9 @@ onUnmounted(() => {
 }
 
 .dispatch__left {
-  width: 50%;
+  width: var(--press-item-2-width);
   padding: 0 var(--space-40);
-  height: 100vh;
+  height: var(--vh-100);
   position: sticky;
   top: 0;
   display: flex;
@@ -1172,14 +1215,14 @@ onUnmounted(() => {
 }
 
 .dispatch__content {
-  max-width: 600px;
+  max-width: var(--max-width-text);
 }
 
 .dispatch__huge-text {
   font-size: var(--text-huge);
   font-weight: var(--font-weight-thin);
   line-height: var(--line-height-tight);
-  color: #fff;
+  color: var(--color-white);
   margin-bottom: var(--space-24);
   letter-spacing: var(--letter-spacing-tight);
 }
@@ -1198,7 +1241,7 @@ onUnmounted(() => {
 }
 
 .dispatch__right {
-  width: 50%;
+  width: var(--press-item-2-width);
   display: flex;
   flex-direction: column;
   padding: var(--space-140) var(--space-40) var(--space-140) 0;
@@ -1207,7 +1250,7 @@ onUnmounted(() => {
 
 .dispatch__photo {
   width: 100%;
-  aspect-ratio: 4/5;
+  aspect-ratio: var(--aspect-ratio-4-5);
   border-radius: var(--radius-md);
   overflow: hidden;
   box-shadow: var(--shadow-lg);
@@ -1226,22 +1269,19 @@ onUnmounted(() => {
 
 /* Асимметрия: сдвигаем четные фотки чуть влево для журнального вида */
 .dispatch__photo--offset {
-  width: 80%;
-  margin-left: 20%;
-  aspect-ratio: 3/4;
+  width: var(--dispatch-photo-offset-width);
+  margin-left: var(--dispatch-photo-offset-margin);
+  aspect-ratio: var(--aspect-ratio-3-4);
 }
 
 .dispatch__photo img {
-  width: 100%;
-  height: 100%;
+  width: var(--percent-100, 100%);
+  height: var(--percent-100, 100%);
   object-fit: cover;
   display: block;
-  transition: transform var(--anim-duration-slower) ease;
+  transform: scale(var(--scale-parallax));
 }
 
-.dispatch__photo:hover img {
-  transform: scale(1.05);
-}
 
 @media (max-width: 1024px) {
   .dispatch__container {
@@ -1266,8 +1306,8 @@ onUnmounted(() => {
   }
 
   .dispatch__photo--offset {
-    width: 90%;
-    margin-left: 10%;
+    width: var(--dispatch-photo-offset-mobile-width);
+    margin-left: var(--dispatch-photo-offset-mobile-margin);
   }
 }
 
@@ -1300,7 +1340,7 @@ onUnmounted(() => {
 
 .news__grid {
   display: grid;
-  grid-template-columns: 45% 1fr;
+  grid-template-columns: var(--news-grid-left-col) 1fr;
   column-gap: var(--space-80);
 }
 
@@ -1369,7 +1409,7 @@ onUnmounted(() => {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
-  transition-delay: 0.var(--anim-duration-marquee);
+  transition-delay: calc(var(--anim-duration-marquee) / 2);
 }
 
 .news__excerpt p {
@@ -1498,31 +1538,31 @@ onUnmounted(() => {
 
 /* Асимметрия / Парящий ритм */
 .press__item:nth-child(1) {
-  width: 60%;
+  width: var(--press-item-1-width);
   align-self: flex-start;
   margin-left: 0;
 }
 
 .press__item:nth-child(2) {
-  width: 50%;
+  width: var(--press-item-2-width);
   align-self: flex-end;
-  margin-right: 5%;
+  margin-right: var(--press-item-2-margin);
 }
 
 .press__item:nth-child(3) {
-  width: 55%;
+  width: var(--press-item-3-width);
   align-self: flex-start;
-  margin-left: 20%;
+  margin-left: var(--dispatch-photo-offset-margin);
 }
 
 .press__item:nth-child(4) {
-  width: 45%;
+  width: var(--press-item-4-width);
   align-self: flex-end;
-  margin-right: 15%;
+  margin-right: var(--press-item-4-margin);
 }
 
 .press__item:nth-child(5) {
-  width: 65%;
+  width: var(--press-item-5-width);
   align-self: center;
 }
 
@@ -1533,7 +1573,7 @@ onUnmounted(() => {
   position: absolute;
   top: -var(--space-80);
   left: -var(--space-60);
-  font-size: 240px;
+  font-size: var(--press-quote-bg-size);
   line-height: var(--line-height-none);
   font-family: var(--font-family-serif);
   /* Классическая кавычка с засечками */
@@ -1565,7 +1605,7 @@ onUnmounted(() => {
 /* Само слово прячем снизу */
 .press__word {
   display: inline-block;
-  transform: translateY(100%);
+  transform: translateY(var(--translate-full));
   opacity: 0;
   transition: transform var(--anim-duration-slower) var(--anim-easing-smooth), opacity var(--anim-duration-slower) ease;
 }
@@ -1628,8 +1668,8 @@ onUnmounted(() => {
   transition: opacity var(--anim-duration-medium) ease;
 
   /* Начальная маска до первого движения мыши */
-  -webkit-mask-image: radial-gradient(circle 250px at 50% 50%, black 15%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.1) 75%, transparent 100%);
-  mask-image: radial-gradient(circle 250px at 50% 50%, black 15%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.1) 75%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle var(--press-spotlight-size) at var(--percent-50) var(--percent-50), var(--color-spotlight-center) var(--percent-15), var(--color-spotlight-mid) var(--percent-50), var(--color-spotlight-edge) var(--percent-75), var(--color-spotlight-transparent) 100%);
+  mask-image: radial-gradient(circle var(--press-spotlight-size) at var(--percent-50) var(--percent-50), var(--color-spotlight-center) var(--percent-15), var(--color-spotlight-mid) var(--percent-50), var(--color-spotlight-edge) var(--percent-75), var(--color-spotlight-transparent) 100%);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-size: 100% 100%;
@@ -1656,12 +1696,12 @@ onUnmounted(() => {
 /* Секция 8: Реестр задолженностей */
 .section-debt {
   padding: var(--space-160) 0;
-  background-color: #fafafa;
+  background-color: var(--color-debt-bg);
   color: var(--color-text);
 }
 
 .debt__container {
-  max-width: 1000px;
+  max-width: var(--debt-container-max-width);
   margin: 0 auto;
   padding: 0 var(--space-40);
 }
@@ -1676,7 +1716,38 @@ onUnmounted(() => {
   font-size: var(--text-body-lg);
   color: var(--color-gray-600);
   margin-bottom: var(--space-80);
-  max-width: 600px;
+  max-width: var(--max-width-text);
+}
+
+.debt__tabs {
+  display: flex;
+  gap: var(--space-40);
+  margin-bottom: var(--space-60);
+  border-bottom: var(--border-width) solid var(--color-debt-border);
+}
+
+.debt__tab {
+  font-size: var(--text-h5);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-gray-400);
+  padding-bottom: var(--space-16);
+  position: relative;
+  transition: color var(--anim-duration-fast) ease;
+}
+
+.debt__tab:hover,
+.debt__tab.is-active {
+  color: var(--color-black);
+}
+
+.debt__tab.is-active::after {
+  content: '';
+  position: absolute;
+  bottom: calc(var(--border-width) * -1);
+  left: 0;
+  width: 100%;
+  height: calc(var(--border-width) * 2);
+  background-color: var(--color-black);
 }
 
 .debt__list {
@@ -1684,133 +1755,84 @@ onUnmounted(() => {
   flex-direction: column;
 }
 
-.debt__city {
-  margin-bottom: var(--space-80);
+
+.debt__complex-dropdown {
+  position: relative;
+  margin-bottom: var(--space-40);
+  z-index: 10;
 }
 
-.debt__city-header {
+.debt__dropdown-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: var(--space-24) 0;
+  border-bottom: var(--border-width) solid var(--color-black);
   cursor: pointer;
-  padding-bottom: var(--space-40);
-  border-bottom: var(--border-width) solid var(--color-border);
+  transition: opacity var(--anim-duration-fast) ease;
 }
 
-.debt__city.is-open .debt__city-header {
+.debt__dropdown-header:hover {
+  opacity: 0.7;
+}
+
+.debt__dropdown-title {
+  font-size: var(--text-h4);
+  font-weight: var(--font-weight-light);
+  color: var(--color-black);
+}
+
+.debt__dropdown-icon {
+  color: var(--color-black);
+  transition: transform var(--anim-duration-medium) var(--anim-easing-smooth);
+}
+
+.debt__dropdown-icon.is-rotated {
+  transform: rotate(180deg);
+}
+
+.debt__dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: var(--color-white);
+  box-shadow: var(--shadow-lg);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  overflow: hidden;
+  max-height: var(--max-height-dropdown);
+  overflow-y: auto;
+}
+
+.debt__dropdown-option {
+  padding: var(--space-24) var(--space-40);
+  cursor: pointer;
+  border-bottom: var(--border-width) solid var(--color-debt-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  transition: background-color var(--anim-duration-fast) ease;
+}
+
+.debt__dropdown-option:last-child {
   border-bottom: none;
 }
 
-.debt__city-title {
-  font-size: var(--text-h5);
+.debt__dropdown-option:hover {
+  background-color: var(--color-debt-hover);
+}
+
+.debt__option-name {
+  font-size: var(--text-body-lg);
   font-weight: var(--font-weight-regular);
-  color: #000;
-  margin: 0;
+  color: var(--color-black);
 }
 
-.debt__city-body-wrapper {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows var(--anim-duration-medium) var(--anim-easing-smooth);
-}
-
-.debt__city.is-open .debt__city-body-wrapper {
-  grid-template-rows: 1fr;
-}
-
-.debt__city-body {
-  overflow: hidden;
-}
-
-.debt__city.is-open .debt__city-header .icon-plus {
-  d: path("M5 12H19");
-  /* transform to minus */
-}
-
-
-.debt__complex-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.debt__complex {
-  border-bottom: var(--border-width) solid var(--color-border);
-}
-
-.debt__complex:first-child {
-  border-top: var(--border-width) solid var(--color-border);
-}
-
-.debt__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-40) 0;
-  cursor: pointer;
-}
-
-/* ... existing complex code ... */
-.debt__title-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
-}
-
-.debt__complex-name {
-  font-size: var(--text-h6);
-  font-weight: var(--font-weight-light);
-  transition: color var(--anim-duration-fast) ease;
-}
-
-.debt__complex-address {
+.debt__option-address {
   font-size: var(--text-body-sm);
-  color: var(--color-gray-300);
+  color: var(--color-gray-400);
 }
 
-.debt__header:hover .debt__complex-name {
-  color: #000;
-}
-
-.debt__icon {
-  width: var(--space-48);
-  height: var(--space-48);
-  border-radius: var(--radius-round);
-  border: var(--border-width) solid var(--color-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-gray-600);
-  transition: transform var(--anim-duration-normal) var(--anim-easing-smooth), background-color var(--anim-duration-fast) ease, color var(--anim-duration-fast) ease;
-}
-
-.debt__header:hover .debt__icon {
-  background-color: #f0f0f0;
-}
-
-.debt__complex.is-open .debt__icon {
-  transform: rotate(45deg);
-  background-color: #000;
-  color: #fff;
-  border-color: #000;
-}
-
-.debt__body-wrapper {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows var(--anim-duration-medium) var(--anim-easing-smooth);
-}
-
-.debt__complex.is-open .debt__body-wrapper {
-  grid-template-rows: 1fr;
-}
-
-.debt__body {
-  overflow: hidden;
-}
-
-.debt__body-content {
-  padding-bottom: var(--space-40);
-}
 
 /* Корпуса (Buildings) */
 .debt__building-list {
@@ -1821,7 +1843,7 @@ onUnmounted(() => {
 }
 
 .debt__building {
-  border-bottom: var(--border-width) solid #eaeaea;
+  border-bottom: var(--border-width) solid var(--color-debt-border);
 }
 
 .debt__building:last-child {
@@ -1839,7 +1861,7 @@ onUnmounted(() => {
 }
 
 .debt__building-header:hover {
-  color: #000;
+  color: var(--color-black);
 }
 
 .debt__building-name {
@@ -1848,15 +1870,30 @@ onUnmounted(() => {
 }
 
 .debt__building-icon {
-  transition: transform var(--anim-duration-fast) ease;
+  width: var(--space-48);
+  height: var(--space-48);
+  border-radius: var(--radius-round);
+  border: var(--border-width) solid var(--color-debt-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-600);
+  transition: transform var(--anim-duration-normal) var(--anim-easing-smooth), background-color var(--anim-duration-fast) ease, color var(--anim-duration-fast) ease, border-color var(--anim-duration-fast) ease;
+}
+
+.debt__building-header:hover .debt__building-icon {
+  background-color: var(--color-debt-hover);
 }
 
 .debt__building.is-open .debt__building-icon {
-  transform: rotate(180deg);
+  transform: rotate(45deg);
+  background-color: var(--color-black);
+  color: var(--color-white);
+  border-color: var(--color-black);
 }
 
 .debt__building.is-open .debt__building-header {
-  color: #000;
+  color: var(--color-black);
 }
 
 .debt__building-body-wrapper {
@@ -1882,7 +1919,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   padding: var(--space-16) var(--space-24);
-  background-color: #fff;
+  background-color: var(--color-white);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-sm);
   margin-bottom: var(--space-32);
@@ -1927,7 +1964,7 @@ onUnmounted(() => {
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-widest);
   color: var(--color-gray-300);
-  border-bottom: var(--border-width) solid #eaeaea;
+  border-bottom: var(--border-width) solid var(--color-debt-border);
 }
 
 /* Анимации для списка должников */
@@ -1965,13 +2002,13 @@ onUnmounted(() => {
 .debt__table-row {
   display: flex;
   padding: var(--space-24);
-  border-bottom: var(--border-width) solid #f0f0f0;
+  border-bottom: var(--border-width) solid var(--color-debt-hover);
   background-color: transparent;
-  transition: background-color 0.var(--anim-duration-marquee) ease;
+  transition: background-color calc(var(--anim-duration-marquee) / 2) ease;
 }
 
 .debt__table-row:hover {
-  background-color: #fff;
+  background-color: var(--color-white);
 }
 
 .debt__col {
@@ -1979,7 +2016,7 @@ onUnmounted(() => {
 }
 
 .debt__col--apt {
-  flex: 0 0 150px;
+  flex: 0 0 var(--debt-col-apt-width);
   color: var(--color-gray-600);
 }
 
@@ -1989,13 +2026,13 @@ onUnmounted(() => {
 }
 
 .debt__col--amount {
-  flex: 0 0 200px;
+  flex: 0 0 var(--debt-col-amount-width);
   text-align: right;
   font-weight: var(--font-weight-regular);
 }
 
 .font-mono {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: var(--font-family-mono);
   font-size: var(--text-body);
   letter-spacing: var(--letter-spacing-tight);
 }
@@ -2014,7 +2051,7 @@ onUnmounted(() => {
   }
 
   .news__image-container {
-    height: 400px;
+    height: var(--news-image-height-mobile);
   }
 
   .news-list__date {

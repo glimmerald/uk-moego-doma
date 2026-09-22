@@ -1,6 +1,5 @@
 <template>
   <div class="map-page">
-    <AppHeader />
     
     <!-- Информационная панель (Стекло) -->
     <div class="map-sidebar glass-effect">
@@ -25,20 +24,42 @@
         </div>
 
         <!-- Состояние 2: Город -->
-        <div v-else class="sidebar-content" key="city">
+        <div v-else class="sidebar-content sidebar-content--city" key="city">
           <button class="sidebar-back-btn" @click="returnToPlanet()">
             &larr; Вернуться к списку городов
           </button>
           <h1 class="sidebar-title">{{ activeCity?.name }}</h1>
-          <div class="sidebar-stats">
-            <div class="stat-box">
+          <div class="complex-directory">
+            <div class="complex-directory__header">
               <div class="stat-val">{{ activeCity?.complexes.length }}</div>
               <div class="stat-label">Жилых комплексов</div>
             </div>
+            
+            <div class="sidebar-complex-list">
+              <div 
+                v-for="complex in activeCity?.complexes" 
+                :key="complex.id"
+                class="complex-list-item"
+                :class="{ 'is-active': activeComplexId === complex.id }"
+                @mouseenter="hoverComplex(complex.id)"
+                @mouseleave="unhoverComplex()"
+                @click="toggleComplex(complex.id)"
+              >
+                <div class="complex-list-item__header">
+                  <img v-if="complex.image" :src="complex.image" class="complex-list-item__thumb" />
+                  <div class="complex-list-item__info">
+                    <h3 class="complex-list-item__title">{{ complex.name }}</h3>
+                    <p class="complex-list-item__address">{{ complex.address }}</p>
+                  </div>
+                </div>
+                <div class="complex-list-item__body">
+                  <div class="complex-list-item__body-content">
+                    <p class="complex-list-item__desc">{{ complex.description || 'Рыбная информация об этом ЖК. Здесь будет располагаться подробное описание инфраструктуры, преимуществ и особенностей жилого комплекса.' }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <p class="sidebar-desc" style="margin-top: 20px;">
-            Нажмите на маркер на карте, чтобы посмотреть информацию о конкретном жилом комплексе.
-          </p>
         </div>
       </Transition>
     </div>
@@ -67,7 +88,7 @@
     <Transition name="fade">
       <div 
         v-if="hoveredCity"
-        class="map-tooltip"
+        class="map-tooltip glass-effect"
         :style="{ top: tooltipY + 'px', left: tooltipX + 'px' }"
       >
         <div class="map-tooltip__title">{{ hoveredCity.name }}</div>
@@ -84,7 +105,6 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import AppHeader from '~/components/AppHeader.vue'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
@@ -92,6 +112,7 @@ const mapContainer = ref(null)
 let map = null
 const isDived = ref(false)
 const activeCity = ref(null)
+const activeComplexId = ref(null)
 
 const hoveredCity = ref(null)
 const hoveredComplex = ref(null)
@@ -104,11 +125,45 @@ let markers = []
 // Данные городов с реальными координатами [lng, lat]
 import cities from '~/data/cities.json'
 
+// Функция подсветки ЖК из списка
+const hoverComplex = (complexId) => {
+  const item = complexMarkers.find(m => m.complex.id === complexId)
+  if (item && item.marker) {
+    item.marker.getElement().classList.add('is-hovered')
+  }
+}
+
+const unhoverComplex = () => {
+  complexMarkers.forEach(m => {
+    if (m.marker) m.marker.getElement().classList.remove('is-hovered')
+  })
+}
+
+// Открытие информации по ЖК
+const toggleComplex = (complexId) => {
+  if (activeComplexId.value === complexId) {
+    activeComplexId.value = null
+  } else {
+    activeComplexId.value = complexId
+  }
+  
+  complexMarkers.forEach(m => {
+    if (m.marker) {
+      if (m.complex.id === activeComplexId.value) {
+        m.marker.getElement().classList.add('is-active')
+      } else {
+        m.marker.getElement().classList.remove('is-active')
+      }
+    }
+  })
+}
+
 // Функция возврата на общую планету
 const returnToPlanet = () => {
   if (!map) return
   isDived.value = false
   activeCity.value = null
+  activeComplexId.value = null
 
   // Убираем точки ЖК
   complexMarkers.forEach(m => m.marker.remove())
@@ -117,8 +172,8 @@ const returnToPlanet = () => {
 
   // Возвращаем камеру на Россию
   map.flyTo({
-    center: [50, 48],
-    zoom: 4.2,
+    center: [42, 48],
+    zoom: 5.2,
     pitch: 20, // Возвращаем легкий наклон, как было при входе
     bearing: 0,
     padding: { right: 450 },
@@ -209,7 +264,7 @@ const diveTo = (cityId) => {
     document.querySelectorAll('.city-marker-hitbox').forEach(el => {
       el.style.pointerEvents = 'none'
       el.style.opacity = '0'
-      el.style.transition = 'opacity 1s ease'
+      el.style.transition = 'opacity var(--anim-duration-slowest) var(--anim-easing-ease)'
     })
 
     // Показываем контур Краснодара поверх России
@@ -255,6 +310,7 @@ onMounted(() => {
     container: 'map',
     style: {
       version: 8,
+      glyphs: "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
       sources: {},
       layers: [
         {
@@ -268,8 +324,8 @@ onMounted(() => {
     },
     projection: 'globe',
     minZoom: 1.5,
-    zoom: 4.2,
-    center: [50, 48], // Смещаем левее, чтобы Sidebar справа не закрывал города 
+    zoom: 5.2,
+    center: [42, 48], // Смещаем левее, чтобы Sidebar справа не закрывал города 
     pitch: 0,
     
     // ЖЕСТКАЯ БЛОКИРОВКА ВСЕХ ВЗАИМОДЕЙСТВИЙ С КАРТОЙ
@@ -325,8 +381,8 @@ onMounted(() => {
       type: 'FeatureCollection',
       features: cities.map(c => ({
         type: 'Feature',
-        geometry: { type: 'Point', coordinates: c.coordinates },
-        properties: { id: c.id }
+        geometry: { type: 'Point', coordinates: c.globeCoordinates || c.coordinates },
+        properties: { id: c.id, name: c.name }
       }))
     }
 
@@ -361,12 +417,50 @@ onMounted(() => {
       }
     })
 
+    // Слой ПОДПИСЕЙ (WebGL) - нативный Mapbox для избежания багов CSS позиционирования
+    map.addLayer({
+      id: 'city-labels',
+      type: 'symbol',
+      source: 'cities-data',
+      layout: {
+        'text-field': ['get', 'name'],
+        'text-size': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          5, 14,    /* На общем плане (zoom 5) - обычный шрифт 14px */
+          10.5, 32  /* При приближении города (zoom 10.5) - крупный акцентный шрифт 32px */
+        ],
+        'text-offset': [
+          'match',
+          ['get', 'id'],
+          'krasnodar', ['literal', [0, -1.2]], // Сверху для Краснодара
+          'yablonovsky', ['literal', [0, 1.2]], // Снизу для Яблоновского
+          ['literal', [0, 1.2]] // По умолчанию снизу
+        ],
+        'text-anchor': [
+          'match',
+          ['get', 'id'],
+          'krasnodar', 'bottom',
+          'yablonovsky', 'top',
+          'top'
+        ],
+        'text-allow-overlap': true // Разрешаем перекрытие, чтобы всегда было видно, так как мы вручную развели их
+      },
+      paint: {
+        'text-color': '#111111',
+        'text-halo-color': 'rgba(255,255,255,0.8)',
+        'text-halo-width': 2,
+        'text-opacity-transition': { duration: 1500 }
+      }
+    })
+
     // Анимация пульса в WebGL
     let pulseFrame = 0
     const animatePulse = () => {
-      pulseFrame = (pulseFrame + 1) % 120
-      const progress = pulseFrame / 120
-      const radius = 5 + progress * 25 // Увеличиваем радиус
+      pulseFrame = (pulseFrame + 1) % 240
+      const progress = pulseFrame / 240
+      const radius = 5 + progress * 12.5 // Увеличиваем радиус (в 2 раза меньше)
       
       // Если мы внутри города, пульс не показываем
       const baseOpacity = isDived.value ? 0 : 0.8
@@ -380,18 +474,12 @@ onMounted(() => {
     }
     animatePulse()
 
-    // Добавляем маркеры городов (ТОЛЬКО ДЛЯ ТЕКСТА И ХОВЕРА)
+    // Добавляем маркеры городов (ТОЛЬКО ДЛЯ ХОВЕРА И КЛИКА, БЕЗ ТЕКСТА)
     cities.forEach(city => {
       const el = document.createElement('div')
       el.className = 'city-marker-hitbox'
-      
-      const label = document.createElement('div')
-      label.className = 'city-marker__label'
-      label.innerText = city.name
 
-      el.appendChild(label)
-
-            el.addEventListener('click', () => {
+      el.addEventListener('click', () => {
         diveTo(city.id)
       })
 
@@ -421,7 +509,7 @@ onMounted(() => {
         anchor: 'center',
         pitchAlignment: 'map'
       })
-        .setLngLat(city.coordinates)
+        .setLngLat(city.globeCoordinates || city.coordinates)
         .addTo(map)
         
       markers.push({ marker, el })
@@ -440,8 +528,8 @@ onMounted(() => {
     // Анимация входа
     setTimeout(() => {
       map.flyTo({
-        center: [50, 48],
-        zoom: 4.2,
+        center: [42, 48],
+        zoom: 5.2,
         pitch: 20,
         bearing: 0,
         duration: 3000,
@@ -474,10 +562,10 @@ onUnmounted(() => {
 <style scoped>
 .map-page {
   width: 100%;
-  height: 100vh;
+  height: var(--vh-100);
   position: relative;
-  padding-top: 0; 
-  background-color: #fff;
+  padding-top: var(--space-0); 
+  background-color: var(--color-white);
 }
 
 .map-container {
@@ -497,132 +585,136 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: var(--space-30);
+  height: var(--space-30);
 }
 
-:deep(.city-marker__label) {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%) scale(var(--marker-scale, 1));
-  transform-origin: top center;
-  margin-top: 4px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #555;
-  white-space: nowrap;
-  pointer-events: none;
-  transition: color 0.3s ease, font-weight 0.3s ease;
-}
-
-:deep(.city-marker-hitbox:hover .city-marker__label) {
-  color: #111111;
-  font-weight: 600;
-}
 
 /* Плавающий Тултип */
 .map-tooltip {
   position: fixed;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  padding: 16px 20px;
-  border-radius: 8px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  z-index: var(--z-overlay);
+  border: var(--border-width) solid var(--color-header-border);
+  padding: var(--space-32);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
   pointer-events: none;
   transform: translateY(0);
 }
 
 .map-tooltip__header {
-  font-size: 16px;
-  font-weight: 500;
-  color: #000;
-  margin-bottom: 4px;
+  font-size: var(--text-h5);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-black);
+  margin-bottom: var(--space-8);
 }
 
 .map-tooltip__count {
-  font-size: 12px;
-  color: #888;
-  margin-bottom: 12px;
+  font-size: var(--text-body-sm);
+  color: var(--color-gray-400);
+  margin-bottom: var(--space-20);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--letter-spacing-widest);
 }
 
 .map-tooltip__list {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 0;
-  margin: 0;
+  gap: var(--space-12);
+  padding: var(--space-0);
+  margin: var(--space-0);
 }
 
 .map-tooltip__list li {
-  font-size: 13px;
-  color: #444;
+  font-size: var(--text-body);
+  color: var(--color-gray-800);
   position: relative;
-  padding-left: 12px;
+  padding-left: var(--space-16);
 }
 
 .map-tooltip__list li::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 6px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background-color: #ccc;
+  left: var(--space-0);
+  top: var(--space-8);
+  width: var(--space-6);
+  height: var(--space-6);
+  border-radius: var(--radius-round);
+  background-color: var(--color-gray-200);
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity var(--anim-duration-fast) var(--anim-easing-ease), transform var(--anim-duration-fast) var(--anim-easing-ease);
 }
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: translateY(5px);
+  transform: translateY(var(--space-6));
 }
 /* --- ИНФОРМАЦИОННАЯ ПАНЕЛЬ (SIDEBAR) --- */
 .map-sidebar {
   position: absolute;
-  top: 120px;
-  right: 40px;
-  width: 400px;
-  max-height: calc(100vh - 160px);
-  z-index: 1000;
-  border-radius: 24px;
-  padding: 32px;
+  top: var(--space-120);
+  right: var(--space-40);
+  width: var(--space-560);
+  max-height: calc(var(--vh-100) - var(--space-160));
+  z-index: var(--z-overlay);
+  border-radius: var(--radius-xl);
+  padding: var(--space-48);
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+  overflow: hidden; /* Убираем глобальный скролл */
+  border: var(--border-width) solid var(--color-white-50);
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  max-height: calc(var(--vh-100) - var(--space-160) - var(--space-96)); /* Вычитаем паддинги (48 * 2) */
 }
 
 .sidebar-title {
-  font-size: 32px;
-  font-weight: 300;
-  margin-bottom: 16px;
-  color: #111;
-  letter-spacing: -0.02em;
+  font-size: var(--text-h2);
+  font-weight: var(--font-weight-light);
+  margin-bottom: var(--space-20);
+  color: var(--color-black);
+  letter-spacing: var(--letter-spacing-tight);
+  flex-shrink: 0;
 }
 
 .sidebar-desc {
-  font-size: 15px;
-  line-height: 1.5;
-  color: #555;
-  margin-bottom: 32px;
-  font-weight: 300;
+  font-size: var(--text-body-lg);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-gray-700);
+  margin-bottom: var(--space-40);
+  font-weight: var(--font-weight-light);
+  flex-shrink: 0;
 }
 
 .sidebar-cities {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-16);
+  overflow-y: auto;
+  padding-right: var(--space-8);
+  /* Без margin-right, чтобы не обрезать скроллбар */
+  flex: 1;
+}
+
+.sidebar-cities::-webkit-scrollbar {
+  width: var(--space-4);
+}
+.sidebar-cities::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-cities::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300);
+  border-radius: var(--radius-pill);
 }
 
 .sidebar-city-btn {
@@ -630,93 +722,101 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 12px;
-  font-size: 16px;
-  color: #111;
-  font-weight: 400;
-  transition: all 0.3s ease;
+  padding: var(--space-24) var(--space-32);
+  background: var(--color-white-50);
+  border: var(--border-width) solid var(--color-white-80);
+  border-radius: var(--radius-md);
+  font-size: var(--text-subtitle);
+  color: var(--color-black);
+  font-weight: var(--font-weight-regular);
+  transition: all var(--anim-duration-fast) ease;
   text-align: left;
 }
 
 .sidebar-city-btn:hover {
-  background: rgba(255, 255, 255, 0.9);
-  transform: translateX(-4px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  background: var(--color-accordion-bg);
+  box-shadow: var(--shadow-sm);
 }
 
 .city-badge {
-  background: #111;
-  color: #fff;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-weight: 500;
+  background: var(--color-black);
+  color: var(--color-white);
+  font-size: var(--text-small);
+  font-size: var(--text-body);
+  padding: var(--space-8) var(--space-16);
+  border-radius: var(--radius-pill);
+  font-weight: var(--font-weight-medium);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: var(--line-height-none);
 }
 
 .sidebar-back-btn {
-  display: inline-flex;
-  align-items: center;
-  color: #555;
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 24px;
-  transition: color 0.3s ease;
-  padding: 0;
-  background: transparent;
-  cursor: pointer;
+  align-self: flex-start;
+  margin-bottom: var(--space-32);
+  background: none;
   border: none;
+  font-size: var(--text-body);
+  color: var(--color-gray-500);
+  cursor: pointer;
+  padding: var(--space-0);
+  transition: color var(--anim-duration-fast) var(--anim-easing-ease);
+  flex-shrink: 0;
 }
 
 .sidebar-back-btn:hover {
-  color: #111;
+  color: var(--color-black);
 }
 
-.sidebar-stats {
+.complex-directory {
   display: flex;
-  gap: 20px;
-  margin-bottom: 24px;
-}
-
-.stat-box {
-  background: rgba(255, 255, 255, 0.5);
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  flex-direction: column;
   flex: 1;
+  min-height: 0; /* Важно для внутреннего скролла */
 }
 
-.stat-val {
-  font-size: 32px;
-  font-weight: 300;
-  color: #111;
-  margin-bottom: 4px;
+.complex-directory__header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-8);
+  padding-bottom: var(--space-24);
+  border-bottom: var(--border-width) solid var(--color-border);
+  flex-shrink: 0;
 }
 
-.stat-label {
-  font-size: 12px;
-  color: #666;
+.complex-directory__header .stat-val {
+  font-size: var(--text-h4);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-black);
+}
+
+.complex-directory__header .stat-label {
+  font-size: var(--text-caption);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: var(--letter-spacing-widest);
+  color: var(--color-gray-600);
 }
 
 :deep(.complex-marker) {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #111111;
-  border: 2px solid #ffffff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  width: var(--space-16);
+  height: var(--space-16);
+  border-radius: var(--radius-round);
+  background: var(--color-black);
+  border: var(--border-width-thick, var(--space-2)) solid var(--color-white);
+  box-shadow: inset 0 0 0 0 rgba(255, 244, 204, 0), var(--shadow-sm);
   cursor: pointer;
-  transition: width 0.3s ease, height 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  z-index: 10;
+  transition: 
+    transform var(--anim-duration-medium) var(--anim-easing-smooth), 
+    box-shadow var(--anim-duration-medium) var(--anim-easing-smooth), 
+    background var(--anim-duration-medium) var(--anim-easing-smooth), 
+    border-color var(--anim-duration-medium) var(--anim-easing-smooth);
+  z-index: var(--z-top);
   box-sizing: border-box;
 }
 
 :deep(.fade-in-marker) {
-  animation: fadeInMarker 0.8s ease-out forwards;
+  animation: fadeInMarker var(--anim-duration-slower) ease-out forwards;
 }
 
 @keyframes fadeInMarker {
@@ -729,36 +829,171 @@ onUnmounted(() => {
 }
 
 :deep(.complex-marker:hover) {
-  width: 22px;
-  height: 22px;
-  background: #e65100;
-  border-color: #ffffff;
-  box-shadow: 0 6px 14px rgba(230, 81, 0, 0.4);
+  transform: scale(1.15);
+  background: var(--color-glow-dim);
+  border-color: var(--color-glow-base);
+  box-shadow: inset 0 0 0 2px var(--color-glow-base), var(--shadow-firefly-hover);
+  z-index: calc(var(--z-top) + 1);
 }
 
 
 .complex-card {
   display: flex;
   flex-direction: column;
-  width: 200px;
+  width: var(--space-400);
 }
 .complex-card__image {
   width: 100%;
-  height: 120px;
+  height: var(--space-200);
   object-fit: cover;
-  border-radius: 4px;
-  margin-bottom: 12px;
+  border-radius: var(--space-4);
+  margin-bottom: var(--space-16);
 }
 .complex-card__title {
-  font-size: 15px;
-  font-weight: 500;
-  margin-bottom: 4px;
-  color: #000;
+  font-size: var(--text-h5);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-8);
+  color: var(--color-black);
 }
 .complex-card__address {
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 8px;
+  font-size: var(--text-body);
+  color: var(--color-gray-600);
+  margin-bottom: var(--space-8);
 }
 
+/* --- СПИСОК ЖК В ГОРОДЕ --- */
+.sidebar-content--city {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-complex-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  overflow-y: auto;
+  
+  /* Плавное растворение списка внизу (дорогой fade-эффект) */
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black calc(100% - var(--space-64)), transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black calc(100% - var(--space-64)), transparent 100%);
+  
+  /* Делаем огромные отступы для тени (т.к. у нее 50px blur) и компенсируем margin-ом.
+     Так как родитель не имеет overflow: hidden, а самый верхний .map-sidebar имеет 48px padding,
+     этот трюк идеально помещает тень в безопасную зону, не сдвигая сами карточки. */
+  padding-left: var(--space-48);
+  margin-left: calc(var(--space-48) * -1);
+  padding-right: var(--space-48);
+  margin-right: calc(var(--space-48) * -1);
+  
+  /* Вертикальные отступы */
+  padding-top: var(--space-24); /* Увеличен для визуального выравнивания (компенсация line-height заголовка и тени карточки) */
+  padding-bottom: var(--space-32);
+  
+  flex: 1;
+}
+
+.sidebar-complex-list::-webkit-scrollbar {
+  width: var(--space-4);
+}
+.sidebar-complex-list::-webkit-scrollbar-track {
+  background: transparent;
+  margin-top: var(--space-24);
+  margin-bottom: var(--space-16);
+}
+.sidebar-complex-list::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300);
+  border-radius: var(--radius-pill);
+}
+
+.complex-list-item {
+  background: var(--color-white);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-16);
+  cursor: pointer;
+  transition: border-color var(--anim-duration-fast) var(--anim-easing-ease), box-shadow var(--anim-duration-fast) var(--anim-easing-ease);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.complex-list-item:hover {
+  border-color: var(--color-gray-300);
+}
+
+.complex-list-item.is-active {
+  border-color: var(--color-black);
+  box-shadow: var(--shadow-md);
+}
+
+.complex-list-item__header {
+  display: flex;
+  gap: var(--space-16);
+  align-items: center;
+}
+
+.complex-list-item__thumb {
+  width: var(--space-60);
+  height: var(--space-60);
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.complex-list-item__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.complex-list-item__title {
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-black);
+}
+
+.complex-list-item__address {
+  font-size: var(--text-caption);
+  color: var(--color-gray-500);
+}
+
+.complex-list-item__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--anim-duration-medium) var(--anim-easing-smooth);
+}
+
+.complex-list-item.is-active .complex-list-item__body {
+  grid-template-rows: 1fr;
+}
+
+.complex-list-item__body-content {
+  overflow: hidden;
+  font-size: var(--text-body-sm);
+  color: var(--color-gray-700);
+  line-height: var(--line-height-relaxed);
+}
+
+.complex-list-item__desc {
+  padding-top: var(--space-16);
+  margin: var(--space-0);
+}
+
+/* Маркеры на карте (активные состояния) */
+:deep(.complex-marker.is-hovered) {
+  transform: scale(1.15);
+  background: var(--color-glow-dim);
+  border-color: var(--color-glow-base);
+  box-shadow: inset 0 0 0 2px var(--color-glow-base), var(--shadow-firefly-hover);
+  z-index: calc(var(--z-top) + 1);
+}
+
+:deep(.complex-marker.is-active) {
+  transform: scale(1.15);
+  background: var(--color-glow-base);
+  border-color: var(--color-glow-base);
+  box-shadow: inset 0 0 0 2px var(--color-glow-base), var(--shadow-firefly-active);
+  z-index: calc(var(--z-top) + 2);
+}
 </style>

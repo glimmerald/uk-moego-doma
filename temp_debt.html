@@ -1,0 +1,126 @@
+        </p>
+
+        <div class="debt__list">
+          <div 
+            class="debt__city" 
+            v-for="city in debtRegistry" 
+            :key="city.id"
+            :class="{ 'is-open': city.isOpen }"
+          >
+            <div class="debt__city-header" @click="toggleCity(city)">
+              <h2 class="debt__city-title">{{ city.name }}</h2>
+              <div class="debt__icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-plus"/>
+                </svg>
+              </div>
+            </div>
+            
+            <div class="debt__city-body-wrapper">
+              <div class="debt__city-body">
+                <div class="debt__complex-list">
+              <div 
+                class="debt__complex" 
+                v-for="complex in city.complexes" 
+                :key="complex.id"
+                :class="{ 'is-open': complex.isOpen }"
+              >
+                <!-- Шапка аккордеона ЖК -->
+                <div class="debt__header" @click="toggleComplex(complex)">
+                  <div class="debt__title-group">
+                    <h3 class="debt__complex-name">{{ complex.name }}</h3>
+                    <span class="debt__complex-address" v-if="complex.address">{{ complex.address }}</span>
+                  </div>
+                  <div class="debt__icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-plus"/>
+                    </svg>
+                  </div>
+                </div>
+                
+                <!-- Тело аккордеона ЖК -->
+                <div class="debt__body-wrapper">
+                  <div class="debt__body">
+                    <div class="debt__body-content">
+                      
+                      <div class="debt__building-list">
+                        <div 
+                          class="debt__building" 
+                          v-for="building in complex.buildings" 
+                          :key="building.id"
+                          :class="{ 'is-open': building.isOpen }"
+                        >
+                          <div class="debt__building-header" @click="toggleBuilding(building)">
+                            <h4 class="debt__building-name">{{ building.name }}</h4>
+                            <div class="debt__building-icon">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                            </div>
+                          </div>
+                          
+                          <!-- Тело аккордеона Корпуса -->
+                          <div class="debt__building-body-wrapper">
+                            <div class="debt__building-body">
+                              <div class="debt__building-body-content">
+                                
+                                <!-- Поиск внутри конкретного корпуса -->
+                                <div class="debt__search-wrapper">
+                                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="debt__search-icon">
+                                    <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                  </svg>
+                                  <input 
+                                    type="number" 
+                                    inputmode="numeric"
+                                    v-model="building.searchQuery" 
+                                    placeholder="Поиск по номеру квартиры..." 
+                                    class="debt__search-input"
+                                  />
+                                </div>
+                                
+                                <!-- Банковский реестр (Таблица) -->
+                                <div class="debt__table">
+                                  <div class="debt__table-header">
+                                    <div class="debt__col debt__col--apt">Квартира</div>
+                                    <div class="debt__col debt__col--period">Срок задолженности</div>
+                                    <div class="debt__col debt__col--amount">Сумма к оплате</div>
+                                  </div>
+                                  
+                                  <TransitionGroup name="debt-list" tag="div" class="debt__table-body">
+                                    <div class="debt__table-row" v-for="debtor in getFilteredDebtors(building)" :key="debtor.apt">
+                                      <div class="debt__col debt__col--apt">
+                                        <span class="font-mono">№ {{ debtor.apt }}</span>
+                                      </div>
+                                      <div class="debt__col debt__col--period">{{ debtor.period }}</div>
+                                      <div class="debt__col debt__col--amount">
+                                        <span class="font-mono">{{ debtor.amount }}</span>
+                                      </div>
+                                    </div>
+                                  </TransitionGroup>
+                                  
+                                  <Transition name="fade">
+                                    <div class="debt__empty" v-if="getFilteredDebtors(building).length === 0">
+                                      По запросу «{{ building.searchQuery }}» ничего не найдено.
+                                    </div>
+                                  </Transition>
+                                </div>
+                                
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>

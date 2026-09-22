@@ -8,4 +8,7 @@ export default defineNuxtConfig({
       failOnError: false,
     },
   },
+  build: {
+    transpile: ['gsap'],
+  },
 })

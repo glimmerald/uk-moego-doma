@@ -15,6 +15,12 @@
   --color-bg-alt: #f9f9f9;
   --color-white: #ffffff;
   
+  /* Firefly / Marker Glow */
+  --color-glow-base: #FFF4CC; /* Pale warm white (shifted from yellow) */
+  --color-glow-dim: #5C5740; /* 30% lit version of the base color */
+  --shadow-firefly-hover: 0 0 4px rgba(255, 244, 204, 0.9), 0 0 10px rgba(255, 244, 204, 0.6);
+  --shadow-firefly-active: 0 0 4px rgba(255, 244, 204, 1), 0 0 12px rgba(255, 244, 204, 0.8), 0 0 20px rgba(255, 244, 204, 0.5);
+  
   --color-bg: var(--color-white);
   --color-text: var(--color-dark);
   --color-text-light: var(--color-gray-500);
@@ -28,8 +34,11 @@
   --color-header-border-light: rgba(255, 255, 255, 0.2);
   --color-accordion-bg: rgba(255, 255, 255, 0.9);
   --color-text-semi-transparent: rgba(255, 255, 255, 0.7);
+  --color-white-50: rgba(255, 255, 255, 0.5);
   --color-white-80: rgba(255, 255, 255, 0.8);
   --color-line-semi-transparent: rgba(255, 255, 255, 0.3);
+  
+  --color-primary: #e65100;
   
   /* Typography */
   --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -38,6 +47,8 @@
   --font-weight-thin: 200;
   --font-weight-light: 300;
   --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
   
   --text-huge: 180px;
   --text-hero: 80px;
@@ -73,6 +84,7 @@
   
   /* Spacing */
   --space-0: 0px;
+  --space-2: 2px;
   --space-4: 4px;
   --space-6: 6px;
   --space-8: 8px;
@@ -80,7 +92,9 @@
   --space-12: 12px;
   --space-16: 16px;
   --space-20: 20px;
+  --space-22: 22px;
   --space-24: 24px;
+  --space-30: 30px;
   --space-32: 32px;
   --space-40: 40px;
   --space-48: 48px;
@@ -92,6 +106,12 @@
   --space-120: 120px;
   --space-140: 140px;
   --space-160: 160px;
+  --space-200: 200px;
+  --space-300: 300px;
+  --space-400: 400px;
+  --space-480: 480px;
+  --space-560: 560px;
+  --space-600: 600px;
 
   /* Layout */
   --header-height: 80px;
@@ -101,12 +121,16 @@
   /* Borders and Shadows */
   --border-width: 1px;
   --radius-sm: 8px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 20px;
   --radius-round: 50%;
   
   --shadow-lg: 0 20px 60px rgba(0,0,0,0.3);
   --shadow-md: 0 20px 50px rgba(0,0,0,0.15);
+  --shadow-sm: 0 10px 20px rgba(0,0,0,0.05);
+  --shadow-card: 0 10px 40px rgba(0,0,0,0.1);
   --shadow-menu: -10px 0 30px rgba(0,0,0,0.05);
   
   /* Animations */
@@ -132,6 +156,85 @@
   --z-menu: 999;
   --z-header: 1000;
   --z-header-content: 1001;
+
+  /* Component specific layout & sizes */
+  --accordion-height: 600px;
+  --accordion-height-mobile: 500px;
+  --accordion-item-width: 320px;
+  --accordion-item-active-width: 640px;
+  --accordion-item-width-tablet: 280px;
+  --accordion-item-width-mobile: 240px;
+  --accordion-text-width: 450px;
+  --accordion-text-width-tablet: 320px;
+  --accordion-desc-max-height: 200px;
+  --news-grid-left-col: 45%;
+  --news-image-height-mobile: 400px;
+  --debt-container-max-width: 1000px;
+  --debt-col-apt-width: 150px;
+  --debt-col-amount-width: 200px;
+
+  /* Asymmetric Press Layout */
+  --press-item-1-width: 60%;
+  --press-item-2-width: 50%;
+  --press-item-3-width: 55%;
+  --press-item-4-width: 45%;
+  --press-item-5-width: 65%;
+  --press-item-2-margin: 5%;
+  --press-item-3-margin: 20%;
+  --press-item-4-margin: 15%;
+  --press-quote-bg-size: 240px;
+  --press-spotlight-size: 250px;
+
+  /* Dispatch Layout */
+  --dispatch-photo-offset-width: 80%;
+  --dispatch-photo-offset-margin: 20%;
+  --dispatch-photo-offset-mobile-width: 90%;
+  --dispatch-photo-offset-mobile-margin: 10%;
+
+  /* Proportions */
+  --aspect-ratio-4-5: 4/5;
+  --aspect-ratio-3-4: 3/4;
+
+  /* Additional Colors */
+  --color-debt-bg: #fafafa;
+  --color-debt-border: #eaeaea;
+  --color-debt-hover: #f0f0f0;
+
+  /* Spotlight Mask Colors */
+  --color-spotlight-center: black;
+  --color-spotlight-mid: rgba(0, 0, 0, 0.45);
+  --color-spotlight-edge: rgba(0, 0, 0, 0.1);
+  --color-spotlight-transparent: transparent;
+
+  /* Additional Typography */
+  --font-family-mono: 'Courier New', Courier, monospace;
+
+  /* Strict No-Hardcode Tokens */
+  --percent-15: 15%;
+  --percent-40: 40%;
+  --percent-50: 50%;
+  --percent-75: 75%;
+  --vh-70: 70vh;
+  --vh-100: 100vh;
+  --vw-85: 85vw;
+  --vw-100: 100vw;
+  --translate-half: 50%;
+  --translate-half-neg: -50%;
+  --translate-full: 100%;
+  --translate-full-neg: -100%;
+  --translate-double: 200%;
+  --max-width-text: 600px;
+  --max-height-dropdown: 400px;
+  --img-offset-140: 140px;
+  --anim-word-step: 0.03s;
+  --scale-parallax: 1.4;
+  
+  --max-width-footer-col: 320px;
+  --hamburger-offset: 3.5px;
+  --menu-width: 480px;
+  --slider-height: 600px;
+  --slider-max-width: 800px;
+  --perspective-slider: 1200px;
 }
 
 /* Reset */

@@ -19,6 +19,10 @@
         "description": "Новый жилой комплекс в уютном зеленом районе Гурьевска.",
         "image": "/optimized/Дома ССК/Photos/DSC01791.webp"
       }
+    ],
+    "globeCoordinates": [
+      20.6037,
+      54.7745
     ]
   },
   {
@@ -41,6 +45,10 @@
         "description": "Комфортная жизнь в ближайшем пригороде Краснодара.",
         "image": "/optimized/Дома ССК/Photos/envato-labs-image-edit (2).webp"
       }
+    ],
+    "globeCoordinates": [
+      38.9,
+      44.9
     ]
   },
   {
@@ -291,6 +299,10 @@
         "description": "Новый современный жилой комплекс под управлением УК.",
         "image": "/optimized/Дома ССК/Photos/DSC09946 копия.webp"
       }
+    ],
+    "globeCoordinates": [
+      39.0,
+      45.1
     ]
   }
 ]

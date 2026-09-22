@@ -125,7 +125,7 @@ const handleNavClick = (link) => {
 <style scoped>
 .app-footer {
   background-color: var(--color-black);
-  color: #fff;
+  color: var(--color-white);
   padding-top: var(--space-100);
   border-top: var(--border-width) solid var(--color-dark-border);
 }
@@ -149,7 +149,7 @@ const handleNavClick = (link) => {
   letter-spacing: var(--letter-spacing-uppercase);
   text-transform: uppercase;
   font-weight: var(--font-weight-regular);
-  color: #fff;
+  color: var(--color-white);
   text-decoration: none;
   margin-bottom: var(--space-24);
 }
@@ -158,7 +158,7 @@ const handleNavClick = (link) => {
   font-size: var(--text-small);
   line-height: var(--line-height-loose);
   color: var(--color-gray-400);
-  max-width: 320px;
+  max-width: var(--max-width-footer-col);
   margin-bottom: var(--space-40);
 }
 
@@ -192,7 +192,7 @@ const handleNavClick = (link) => {
 }
 
 .app-footer__link:hover {
-  color: #fff;
+  color: var(--color-white);
   transform: translateX(var(--space-4));
 }
 
@@ -206,7 +206,7 @@ const handleNavClick = (link) => {
 .app-footer__phone {
   font-size: var(--text-subtitle);
   font-weight: var(--font-weight-light);
-  color: #fff;
+  color: var(--color-white);
   text-decoration: none;
   transition: opacity var(--anim-duration-fast) ease;
 }
@@ -221,7 +221,7 @@ const handleNavClick = (link) => {
 .app-footer__phone:hover,
 .app-footer__email:hover {
   opacity: 0.8;
-  color: #fff;
+  color: var(--color-white);
 }
 
 .app-footer__socials {
@@ -238,7 +238,7 @@ const handleNavClick = (link) => {
 }
 
 .app-footer__social-link:hover {
-  color: #fff;
+  color: var(--color-white);
 }
 
 /* Подподвал */
@@ -269,7 +269,7 @@ const handleNavClick = (link) => {
 }
 
 .app-footer__author {
-  color: #fff;
+  color: var(--color-white);
   font-weight: var(--font-weight-regular);
 }
 
@@ -284,7 +284,7 @@ const handleNavClick = (link) => {
 }
 
 .app-footer__bottom-right a:hover {
-  color: #fff;
+  color: var(--color-white);
 }
 
 @media (max-width: 1024px) {

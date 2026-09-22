@@ -10,7 +10,7 @@
 
 <style scoped>
 .layout-default {
-  min-height: 100vh;
+  min-height: var(--vh-100);
   display: flex;
   flex-direction: column;
 }
