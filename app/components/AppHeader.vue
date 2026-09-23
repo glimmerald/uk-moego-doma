@@ -12,6 +12,9 @@
         <a :href="contactsData.reception.link" class="app-header__phone">
           <span class="app-header__phone-label">{{ contactsData.reception.label }}:</span> {{ contactsData.reception.phone }}
         </a>
+        <a :href="contactsData.dispatch.link" class="app-header__phone">
+          <span class="app-header__phone-label">АДС:</span> {{ contactsData.dispatch.phone }}
+        </a>
         <button 
           class="app-header__burger" 
           @click="toggleMenu"
