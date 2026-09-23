@@ -125,37 +125,40 @@ let markers = []
 // Данные городов с реальными координатами [lng, lat]
 import cities from '~/data/cities.json'
 
-// Функция подсветки ЖК из списка
+// Функция активации ЖК (по ховеру)
 const hoverComplex = (complexId) => {
-  const item = complexMarkers.find(m => m.complex.id === complexId)
-  if (item && item.marker) {
-    item.marker.getElement().classList.add('is-hovered')
-  }
-}
-
-const unhoverComplex = () => {
-  complexMarkers.forEach(m => {
-    if (m.marker) m.marker.getElement().classList.remove('is-hovered')
-  })
-}
-
-// Открытие информации по ЖК
-const toggleComplex = (complexId) => {
-  if (activeComplexId.value === complexId) {
-    activeComplexId.value = null
-  } else {
-    activeComplexId.value = complexId
-  }
-  
+  activeComplexId.value = complexId
   complexMarkers.forEach(m => {
     if (m.marker) {
-      if (m.complex.id === activeComplexId.value) {
+      if (m.complex.id === complexId) {
         m.marker.getElement().classList.add('is-active')
       } else {
         m.marker.getElement().classList.remove('is-active')
       }
     }
   })
+}
+
+// Деактивация ЖК
+const unhoverComplex = () => {
+  activeComplexId.value = null
+  complexMarkers.forEach(m => {
+    if (m.marker) m.marker.getElement().classList.remove('is-active')
+  })
+}
+
+// Клик теперь может, например, центрировать карту на ЖК
+const toggleComplex = (complexId) => {
+  const item = complexMarkers.find(m => m.complex.id === complexId)
+  if (item && map) {
+    map.flyTo({
+      center: item.complex.coordinates,
+      zoom: 14,
+      pitch: 45,
+      duration: 2000,
+      essential: true
+    })
+  }
 }
 
 // Функция возврата на общую планету
@@ -277,22 +280,33 @@ const diveTo = (cityId) => {
   city.complexes.forEach(complex => {
     if (!complex.coordinates) return
     
-    const el = document.createElement('div')
-    el.className = 'complex-marker fade-in-marker'
+    const wrapper = document.createElement('div')
+    wrapper.className = 'complex-marker-wrapper fade-in-marker'
     
-    el.addEventListener('mouseenter', (e) => {
+    const el = document.createElement('div')
+    el.className = 'complex-marker'
+    
+    wrapper.appendChild(el)
+    
+    wrapper.addEventListener('mouseenter', (e) => {
       hoveredComplex.value = complex
       updateComplexTooltipPosition(e)
       window.addEventListener('mousemove', updateComplexTooltipPosition)
+      hoverComplex(complex.id)
     })
 
-    el.addEventListener('mouseleave', () => {
+    wrapper.addEventListener('mouseleave', () => {
       hoveredComplex.value = null
       window.removeEventListener('mousemove', updateComplexTooltipPosition)
+      unhoverComplex()
+    })
+    
+    wrapper.addEventListener('click', () => {
+      toggleComplex(complex.id)
     })
 
     const marker = new mapboxgl.Marker({ 
-      element: el,
+      element: wrapper,
       pitchAlignment: 'map'
     })
       .setLngLat(complex.coordinates)
@@ -512,18 +526,51 @@ onMounted(() => {
         .setLngLat(city.globeCoordinates || city.coordinates)
         .addTo(map)
         
-      markers.push({ marker, el })
+      markers.push({ marker, city })
     })
 
-    // Динамический масштаб маркеров от зума
-    const updateMarkerScale = () => {
+    // Динамический масштаб и позиционирование маркеров
+    const updateMapState = () => {
       const z = map.getZoom()
+      
       // На зуме 4 масштаб 100%, на зуме 1.5 масштаб 40%
       const scale = Math.max(0.4, Math.min(1, (z - 1) / 3))
       document.getElementById('map').style.setProperty('--marker-scale', scale)
+      
+      // Плавно сводим искусственные координаты к реальным при приближении от зума 5 к зуму 9
+      const coordFactor = Math.max(0, Math.min(1, (z - 5) / 4))
+      
+      const newFeatures = cities.map((c, i) => {
+        const start = c.globeCoordinates || c.coordinates
+        const end = c.coordinates
+        const currentLng = start[0] + (end[0] - start[0]) * coordFactor
+        const currentLat = start[1] + (end[1] - start[1]) * coordFactor
+        const currentCoords = [currentLng, currentLat]
+        
+        // Обновляем HTML маркеры
+        if (markers[i] && markers[i].marker) {
+          markers[i].marker.setLngLat(currentCoords)
+        }
+        
+        return {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: currentCoords },
+          properties: { id: c.id, name: c.name }
+        }
+      })
+      
+      // Обновляем WebGL слой
+      const source = map.getSource('cities-data')
+      if (source) {
+        source.setData({
+          type: 'FeatureCollection',
+          features: newFeatures
+        })
+      }
     }
-    map.on('zoom', updateMarkerScale)
-    updateMarkerScale() // Инициализация
+    
+    map.on('zoom', updateMapState)
+    updateMapState() // Вычисляем координаты под стартовый зум
 
     // Анимация входа
     setTimeout(() => {
@@ -798,20 +845,29 @@ onUnmounted(() => {
   color: var(--color-gray-600);
 }
 
-:deep(.complex-marker) {
+:deep(.complex-marker-wrapper) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: var(--space-16);
   height: var(--space-16);
+  cursor: pointer;
+  z-index: var(--z-top);
+}
+
+:deep(.complex-marker) {
+  width: 100%;
+  height: 100%;
   border-radius: var(--radius-round);
   background: var(--color-black);
   border: var(--border-width-thick, var(--space-2)) solid var(--color-white);
   box-shadow: inset 0 0 0 0 rgba(255, 244, 204, 0), var(--shadow-sm);
-  cursor: pointer;
+  scale: 1;
   transition: 
-    transform var(--anim-duration-medium) var(--anim-easing-smooth), 
+    scale var(--anim-duration-medium) var(--anim-easing-smooth), 
     box-shadow var(--anim-duration-medium) var(--anim-easing-smooth), 
     background var(--anim-duration-medium) var(--anim-easing-smooth), 
     border-color var(--anim-duration-medium) var(--anim-easing-smooth);
-  z-index: var(--z-top);
   box-sizing: border-box;
 }
 
@@ -820,19 +876,18 @@ onUnmounted(() => {
 }
 
 @keyframes fadeInMarker {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-:deep(.complex-marker:hover) {
-  transform: scale(1.15);
+:deep(.complex-marker-wrapper:hover .complex-marker) {
+  scale: 1.15;
   background: var(--color-glow-dim);
   border-color: var(--color-glow-base);
   box-shadow: inset 0 0 0 2px var(--color-glow-base), var(--shadow-firefly-hover);
+}
+
+:deep(.complex-marker-wrapper:hover) {
   z-index: calc(var(--z-top) + 1);
 }
 
@@ -981,19 +1036,25 @@ onUnmounted(() => {
 }
 
 /* Маркеры на карте (активные состояния) */
-:deep(.complex-marker.is-hovered) {
-  transform: scale(1.15);
+:deep(.complex-marker-wrapper.is-hovered .complex-marker) {
+  scale: 1.15;
   background: var(--color-glow-dim);
   border-color: var(--color-glow-base);
   box-shadow: inset 0 0 0 2px var(--color-glow-base), var(--shadow-firefly-hover);
+}
+
+:deep(.complex-marker-wrapper.is-hovered) {
   z-index: calc(var(--z-top) + 1);
 }
 
-:deep(.complex-marker.is-active) {
-  transform: scale(1.15);
+:deep(.complex-marker-wrapper.is-active .complex-marker) {
+  scale: 1.15;
   background: var(--color-glow-base);
   border-color: var(--color-glow-base);
   box-shadow: inset 0 0 0 2px var(--color-glow-base), var(--shadow-firefly-active);
+}
+
+:deep(.complex-marker-wrapper.is-active) {
   z-index: calc(var(--z-top) + 2);
 }
 </style>

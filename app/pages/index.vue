@@ -115,6 +115,9 @@
               Инженеры, сантехники и электрики всегда дежурят на объекте, чтобы решить любую задачу в течение 15 минут.
               Ваше спокойствие под надежной защитой без выходных и праздников.
             </p>
+            <a :href="contactsData.dispatch.link" class="dispatch__phone">
+              {{ contactsData.dispatch.phone }}
+            </a>
           </div>
         </div>
 
@@ -345,6 +348,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import contactsData from '@/assets/data/contacts.json'
 
 const accordionRef = ref(null)
 const activeAccordionIndex = ref(null)
@@ -1240,6 +1244,25 @@ onUnmounted(() => {
   color: var(--color-text-semi-transparent);
 }
 
+.dispatch__phone {
+  display: inline-flex;
+  align-items: center;
+  margin-top: var(--space-48);
+  font-size: var(--text-h4);
+  font-weight: var(--font-weight-light);
+  color: var(--color-white);
+  text-decoration: none;
+  letter-spacing: var(--letter-spacing-widest);
+  border-bottom: 1px solid var(--color-line-semi-transparent);
+  padding-bottom: var(--space-8);
+  transition: border-color var(--anim-duration-fast) ease, opacity var(--anim-duration-fast) ease;
+}
+
+.dispatch__phone:hover {
+  border-color: var(--color-white);
+  opacity: 0.9;
+}
+
 .dispatch__right {
   width: var(--press-item-2-width);
   display: flex;
@@ -1322,6 +1345,11 @@ onUnmounted(() => {
 
   .dispatch__description {
     font-size: var(--text-body-sm);
+  }
+
+  .dispatch__phone {
+    font-size: var(--text-subtitle);
+    margin-top: var(--space-32);
   }
 }
 

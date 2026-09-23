@@ -46,7 +46,14 @@
       <div class="app-footer__col app-footer__col--contacts">
         <h4 class="app-footer__title">Связь с нами</h4>
         <div class="app-footer__contact-info">
-          <a href="tel:+74950000000" class="app-footer__phone">+7 (495) 000-00-00</a>
+          <div class="app-footer__contact-group">
+            <span class="app-footer__contact-label">{{ contactsData.reception.label }}</span>
+            <a :href="contactsData.reception.link" class="app-footer__phone">{{ contactsData.reception.phone }}</a>
+          </div>
+          <div class="app-footer__contact-group">
+            <span class="app-footer__contact-label">{{ contactsData.dispatch.label }}</span>
+            <a :href="contactsData.dispatch.link" class="app-footer__phone">{{ contactsData.dispatch.phone }}</a>
+          </div>
           <a href="mailto:info@uk-moego-doma.ru" class="app-footer__email">info@uk-moego-doma.ru</a>
         </div>
         
@@ -86,6 +93,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'nuxt/app'
 import menuData from '@/assets/data/menu.json'
+import contactsData from '@/assets/data/contacts.json'
 
 const route = useRoute()
 
@@ -199,8 +207,21 @@ const handleNavClick = (link) => {
 .app-footer__contact-info {
   display: flex;
   flex-direction: column;
-  gap: var(--space-12);
+  gap: var(--space-20);
   margin-bottom: var(--space-40);
+}
+
+.app-footer__contact-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.app-footer__contact-label {
+  font-size: var(--text-micro);
+  letter-spacing: var(--letter-spacing-uppercase);
+  text-transform: uppercase;
+  color: var(--color-gray-600);
 }
 
 .app-footer__phone {

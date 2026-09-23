@@ -9,7 +9,9 @@
       <div class="app-header__spacer"></div>
 
       <div class="app-header__actions">
-        <a href="tel:+74950000000" class="app-header__phone">+7 (495) 000-00-00</a>
+        <a :href="contactsData.reception.link" class="app-header__phone">
+          <span class="app-header__phone-label">{{ contactsData.reception.label }}:</span> {{ contactsData.reception.phone }}
+        </a>
         <button 
           class="app-header__burger" 
           @click="toggleMenu"
@@ -74,6 +76,7 @@
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRoute } from 'nuxt/app'
 import menuData from '@/assets/data/menu.json'
+import contactsData from '@/assets/data/contacts.json'
 
 const route = useRoute()
 const isMenuOpen = ref(false)
@@ -93,16 +96,12 @@ const closeMenu = () => {
 const handleNavClick = (link) => {
   closeMenu()
   
-  // Если ссылка ведет на якорь на главной странице (например, /#news)
   if (link.startsWith('/#') && route.path === '/') {
     const hash = link.replace('/', '')
     
-    // Небольшая задержка, чтобы меню успело начать закрываться 
-    // и разблокировался скролл (overflow: hidden убрался)
     setTimeout(() => {
       const el = document.querySelector(hash)
       if (el) {
-        // Учитываем высоту хедера (около 80px)
         const headerOffset = 80
         const elementPosition = el.getBoundingClientRect().top
         const offsetPosition = elementPosition + window.pageYOffset - headerOffset
@@ -114,7 +113,6 @@ const handleNavClick = (link) => {
       }
     }, 150)
   } else if (link.includes('#') && route.path === link.split('#')[0]) {
-    // Если это локальный якорь на другой странице (например, /documents#general и мы находимся на /documents)
     const hash = '#' + link.split('#')[1]
     setTimeout(() => {
       const el = document.querySelector(hash)
@@ -126,14 +124,12 @@ const handleNavClick = (link) => {
       }
     }, 150)
   } else {
-    // Иначе это переход на другую страницу (или главную с другой страницы)
     navigateTo(link)
   }
 }
 
-// Блокируем скролл на body при открытом меню
 watch(isMenuOpen, (isOpen) => {
-  if (import.meta.client) { // Проверка, что код выполняется в браузере (на клиенте)
+  if (import.meta.client) {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
     } else {
@@ -191,10 +187,24 @@ watch(isMenuOpen, (isOpen) => {
 }
 
 .app-header__phone {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  white-space: nowrap;
+  flex-shrink: 0;
   font-size: var(--text-body-sm);
   letter-spacing: var(--letter-spacing-widest);
   opacity: 0.9;
   transition: opacity var(--anim-duration-fast) ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.app-header__phone-label {
+  font-size: var(--text-micro);
+  letter-spacing: var(--letter-spacing-uppercase);
+  text-transform: uppercase;
+  opacity: 0.5;
 }
 
 .app-header__phone:hover {
@@ -213,6 +223,7 @@ watch(isMenuOpen, (isOpen) => {
   border: none;
   cursor: pointer;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .app-header__burger-line {
