@@ -104,7 +104,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useRoute, useRouter } from '#app'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
@@ -122,8 +123,22 @@ const tooltipY = ref(0)
 let complexMarkers = []
 let markers = []
 
+const route = useRoute()
+const router = useRouter()
+
 // Данные городов с реальными координатами [lng, lat]
 import cities from '~/data/cities.json'
+
+watch(() => route.hash, (newHash) => {
+  if (newHash) {
+    const cityId = newHash.replace('#', '')
+    if (cityId !== activeCity.value?.id) {
+      diveTo(cityId)
+    }
+  } else if (isDived.value) {
+    returnToPlanet()
+  }
+})
 
 // Функция активации ЖК (по ховеру)
 const hoverComplex = (complexId) => {
@@ -167,6 +182,10 @@ const returnToPlanet = () => {
   isDived.value = false
   activeCity.value = null
   activeComplexId.value = null
+  
+  if (route.hash) {
+    router.replace({ hash: '' })
+  }
 
   // Убираем точки ЖК
   complexMarkers.forEach(m => m.marker.remove())
@@ -206,11 +225,28 @@ const returnToPlanet = () => {
 
 // Функция нырка в город
 const diveTo = (cityId) => {
+  if (activeCity.value?.id === cityId && isDived.value) return
+  
   const city = cities.find(c => c.id === cityId)
   if (!city || !map) return
   
+  // Если мы уже были в другом городе, нужно убрать его декорации и маркеры
+  if (activeCity.value) {
+    const prevId = activeCity.value.id
+    if (map.getLayer(`${prevId}-fill`)) map.setPaintProperty(`${prevId}-fill`, 'fill-opacity', 0)
+    if (map.getLayer(`${prevId}-border`)) map.setPaintProperty(`${prevId}-border`, 'line-opacity', 0)
+    
+    // Убираем маркеры ЖК предыдущего города
+    complexMarkers.forEach(m => m.marker.remove())
+    complexMarkers = []
+  }
+
   isDived.value = true
   activeCity.value = city
+  
+  if (route.hash !== `#${cityId}`) {
+    router.replace({ hash: `#${cityId}` })
+  }
 
   // 1. Полет камеры
   map.flyTo({
@@ -361,36 +397,73 @@ onMounted(() => {
   })
 
   map.on('load', () => {
-    map.addSource('countries', {
+    // Источник: GeoJSON только с регионами РФ
+    map.addSource('russia-regions-data', {
       type: 'geojson',
-      data: '/countries.geojson'
+      data: 'https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/russia.geojson'
     })
 
-    // Только граница России (Оранжевая)
-    map.addLayer({
-      id: 'russia-border',
-      type: 'line',
-      source: 'countries',
-      filter: ['==', 'admin', 'Russia'],
-      paint: {
-        'line-color': 'rgba(0, 0, 0, 0.3)', // Тонкая графитовая граница
-        'line-width': 1.5
-      }
-    })
-
-    // Только заливка России
+    // Идеальная заливка России, собранная из самих регионов (гарантирует 100% совпадение границ)
     map.addLayer({
       id: 'russia-fill',
       type: 'fill',
-      source: 'countries',
-      filter: ['==', 'admin', 'Russia'],
+      source: 'russia-regions-data',
       paint: {
         'fill-color': '#eaeaea',
         'fill-opacity': 1
       }
     })
 
-    // Создаем GeoJSON с городами для WebGL
+    // Подключаем стандартный векторный слой Mapbox для водоемов
+    map.addSource('mapbox-streets-water', {
+      type: 'vector',
+      url: 'mapbox://mapbox.mapbox-streets-v8'
+    })
+
+    // ОЗЕРА И ШИРОКИЕ РЕКИ (полигоны) - фильтруем ОКЕАНЫ, чтобы не было конфликта с береговой линией!
+    map.addLayer({
+      id: 'water-lakes',
+      type: 'fill',
+      source: 'mapbox-streets-water',
+      'source-layer': 'water',
+      filter: ['!=', 'class', 'ocean'], // Исключаем океаны
+      paint: {
+        'fill-color': '#ffffff', // Вода будет белой, создавая нежный контраст с серой землей
+        'fill-opacity': 0.7
+      }
+    })
+
+    // РЕКИ И КАНАЛЫ (линии)
+    map.addLayer({
+      id: 'water-rivers',
+      type: 'line',
+      source: 'mapbox-streets-water',
+      'source-layer': 'waterway',
+      paint: {
+        'line-color': '#ffffff',
+        'line-width': 1,
+        'line-opacity': 0.7
+      }
+    })
+
+    // Единые границы регионов и страны
+    map.addLayer({
+      id: 'russia-regions',
+      type: 'line',
+      source: 'russia-regions-data',
+      paint: {
+        'line-color': 'rgba(0, 0, 0, 0.08)', // Более неяркий и деликатный цвет
+        'line-width': 1.5, // Сделали потолще по просьбе
+        'line-dasharray': [3, 3], // Чуть более разряженный пунктир для толстой линии
+        'line-opacity': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          6, 1,    // До 6-го зума (вид всей страны) границы полностью видны
+          9, 0     // К 9-му зуму (подлет к городу) границы плавно растворяются
+        ]
+      }
+    })
     const citiesGeoJSON = {
       type: 'FeatureCollection',
       features: cities.map(c => ({
@@ -572,17 +645,28 @@ onMounted(() => {
     map.on('zoom', updateMapState)
     updateMapState() // Вычисляем координаты под стартовый зум
 
-    // Анимация входа
+    // Анимация входа или загрузка по хэшу
     setTimeout(() => {
-      map.flyTo({
-        center: [42, 48],
-        zoom: 5.2,
-        pitch: 20,
-        bearing: 0,
-        duration: 3000,
-        essential: true,
-        easing: (t) => t * (2 - t)
-      })
+      let foundCity = false
+      if (route.hash) {
+        const cityId = route.hash.replace('#', '')
+        if (cities.find(c => c.id === cityId)) {
+          foundCity = true
+          diveTo(cityId)
+        }
+      }
+      
+      if (!foundCity) {
+        map.flyTo({
+          center: [42, 48],
+          zoom: 5.2,
+          pitch: 20,
+          bearing: 0,
+          duration: 3000,
+          essential: true,
+          easing: (t) => t * (2 - t)
+        })
+      }
     }, 500)
   })
 })

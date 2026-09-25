@@ -4,8 +4,6 @@
     <section class="hero">
       <div class="hero__video-wrapper">
         <video class="hero__video" src="/main_video.mp4" autoplay loop muted playsinline></video>
-        <!-- Overlay to make text and header more readable -->
-        <div class="hero__overlay"></div>
       </div>
 
 
@@ -719,19 +717,6 @@ onUnmounted(() => {
   object-fit: cover;
 }
 
-.hero__overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to bottom,
-      var(--color-overlay) 0%,
-      var(--color-header-border) var(--percent-40),
-      var(--color-overlay) 100%);
-  z-index: var(--z-above);
-}
-
 .hero__content {
   position: relative;
   z-index: var(--z-top);
@@ -860,8 +845,7 @@ onUnmounted(() => {
   line-height: var(--line-height-loose);
   color: var(--color-text);
   max-width: var(--max-width-text);
-  margin-top: var(--space-16);
-  /* Небольшое выравнивание относительно заголовка */
+  margin-top: calc(var(--space-4) * -1);
 }
 
 /* Стили для кнопки-ссылки */
@@ -1575,6 +1559,7 @@ onUnmounted(() => {
   width: var(--press-item-2-width);
   align-self: flex-end;
   margin-right: var(--press-item-2-margin);
+  margin-top: var(--space-120);
 }
 
 .press__item:nth-child(3) {
@@ -1592,6 +1577,7 @@ onUnmounted(() => {
 .press__item:nth-child(5) {
   width: var(--press-item-5-width);
   align-self: center;
+  margin-top: var(--space-120);
 }
 
 /* Огромная фоновая кавычка (как в первой идее) */
@@ -1660,6 +1646,7 @@ onUnmounted(() => {
   font-family: var(--font-family-serif);
   letter-spacing: var(--letter-spacing-wide);
   padding: var(--space-16) var(--space-24);
+  border-radius: var(--radius-xs);
 }
 
 .press__link {
@@ -1670,6 +1657,7 @@ onUnmounted(() => {
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-widest);
   color: var(--color-text);
+  border-radius: var(--radius-xs);
 
   padding: var(--space-16) var(--space-24);
 }

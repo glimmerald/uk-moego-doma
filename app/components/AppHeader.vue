@@ -116,6 +116,10 @@ const handleNavClick = (link) => {
       }
     }, 150)
   } else if (link.includes('#') && route.path === link.split('#')[0]) {
+    if (route.path === '/map') {
+      navigateTo(link)
+      return
+    }
     const hash = '#' + link.split('#')[1]
     setTimeout(() => {
       const el = document.querySelector(hash)

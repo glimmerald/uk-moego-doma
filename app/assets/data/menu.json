@@ -27,9 +27,9 @@
     "map": {
       "title": "Карта объектов",
       "items": [
-        { "title": "Краснодар", "link": "/map#krd" },
-        { "title": "Республика Адыгея", "link": "/map#adygea" },
-        { "title": "Калининград", "link": "/map#kaliningrad" }
+        { "title": "Краснодар", "link": "/map#krasnodar" },
+        { "title": "Республика Адыгея", "link": "/map#yablonovsky" },
+        { "title": "Калининград", "link": "/map#guryevsk" }
       ]
     }
   }
