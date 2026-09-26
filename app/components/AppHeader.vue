@@ -179,6 +179,14 @@ watch(isMenuOpen, (isOpen) => {
   font-weight: var(--font-weight-regular);
   z-index: var(--z-header-content); /* Поверх оверлея */
   position: relative;
+  transition: opacity var(--anim-duration-fast) ease;
+}
+
+.app-header.is-menu-open .app-header__logo {
+  @media (max-width: 1024px) {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 .app-header__spacer {

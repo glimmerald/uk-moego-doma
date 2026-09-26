@@ -79,7 +79,7 @@
         </div>
 
         <div class="accordion-wrapper">
-          <div class="accordion" ref="accordionRef" @pointerleave="deactivateItem">
+          <div class="accordion" ref="accordionRef" @pointerleave="deactivateItem" @scroll="handleAccordionScroll" @touchstart="onTouchStart" @touchend="onTouchEnd" @touchcancel="onTouchEnd">
             <div class="accordion__item" :class="{ 'is-active': activeAccordionIndex === index }"
               v-for="(adv, index) in advantagesList" :key="index" @pointermove="activateItem(index, $event)">
               <div class="accordion__bg">
@@ -146,7 +146,7 @@
         </div>
 
         <div class="news__grid">
-          <!-- Колонка 1, Строка 1: Изображение -->
+          <!-- Колонка 1, Строка 1: Изображение (Только Десктоп) -->
           <div class="news__image-container">
             <div v-for="(news, index) in newsList" :key="'img-' + index" class="news__image"
               :class="{ 'is-active': activeNewsIndex === index }">
@@ -154,16 +154,42 @@
             </div>
           </div>
 
-          <!-- Колонка 2, Строка 1: Список новостей -->
+          <!-- Колонка 2, Строка 1: Список новостей (Десктоп) / Аккордеон (Мобилка) -->
           <div class="news__list">
             <div class="news-list__item" v-for="(news, index) in newsList" :key="'item-' + index"
-              :class="{ 'is-active': activeNewsIndex === index }" @mouseenter="onNewsHover(index)">
-              <div class="news-list__date">{{ news.date }}</div>
-              <h3 class="news-list__title">{{ news.title }}</h3>
+              :class="{ 'is-active': activeNewsIndex === index }" 
+              @mouseenter="onNewsHover(index)"
+              @click="onNewsClick(index)">
+              
+              <div class="news-list__header">
+                <div class="news-list__date">{{ news.date }}</div>
+                <h3 class="news-list__title">{{ news.title }}</h3>
+              </div>
+              
+              <!-- Контент аккордеона (Только Мобилка) -->
+              <div class="news-list__mobile-body">
+                <div class="news-list__mobile-inner">
+                  <div class="news-list__mobile-image">
+                    <img :src="news.image" alt="Новость" loading="lazy">
+                  </div>
+                  <div class="news-list__mobile-excerpt">
+                    <p>{{ news.excerpt }}</p>
+                    <NuxtLink to="#" class="btn-arrow">
+                      <span class="btn-arrow__text">Читать целиком</span>
+                      <span class="btn-arrow__icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                          <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                      </span>
+                    </NuxtLink>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 
-          <!-- Колонка 1, Строка 2: Текст новости и кнопка -->
+          <!-- Колонка 1, Строка 2: Текст новости и кнопка (Только Десктоп) -->
           <div class="news__content">
             <div v-for="(news, index) in newsList" :key="'text-' + index" class="news__excerpt"
               :class="{ 'is-active': activeNewsIndex === index }">
@@ -349,7 +375,7 @@ import { ref } from 'vue'
 import contactsData from '@/assets/data/contacts.json'
 
 const accordionRef = ref(null)
-const activeAccordionIndex = ref(null)
+const activeAccordionIndex = ref(0)
 let scrollLock = false
 
 const activateItem = (index, event) => {
@@ -363,6 +389,12 @@ const activateItem = (index, event) => {
   const el = event.currentTarget
   const rect = el.getBoundingClientRect()
   const containerRect = accordionRef.value.getBoundingClientRect()
+
+  if (window.innerWidth <= 1024) {
+    // На мобилке просто крутим карточку в центр, scroll-snap поможет
+    el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+    return
+  }
 
   const elLeft = rect.left - containerRect.left
   const expandedWidth = 640
@@ -392,13 +424,93 @@ const activateItem = (index, event) => {
 
 const deactivateItem = () => {
   if (scrollLock) return
+  if (window.innerWidth <= 1024) return // На мобилке не снимаем активный класс при отпускании пальца
   activeAccordionIndex.value = null
 }
 
+let scrollTimeout = null
+let isDragging = false
+let hasScrolled = false
+
+const onTouchStart = () => {
+  if (window.innerWidth > 1024) return
+  isDragging = true
+  hasScrolled = false
+}
+
+const onTouchEnd = () => {
+  if (window.innerWidth > 1024) return
+  isDragging = false
+  handleAccordionScroll()
+}
+
+const handleAccordionScroll = () => {
+  if (window.innerWidth > 1024 || scrollLock) return
+
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout)
+  }
+
+  scrollTimeout = setTimeout(() => {
+    if (isDragging) return // Не раскрываем, пока палец на экране
+    if (!accordionRef.value) return
+
+    const container = accordionRef.value
+    const children = Array.from(container.children)
+    const windowCenter = window.innerWidth / 2
+
+    let bestIndex = 0
+    let minDiff = Infinity
+
+    children.forEach((child, index) => {
+      const rect = child.getBoundingClientRect()
+      // Центр карточки относительно окна
+      const childCenter = rect.left + rect.width / 2
+      const diff = Math.abs(windowCenter - childCenter)
+      
+      if (diff < minDiff) {
+        minDiff = diff
+        bestIndex = index
+      }
+    })
+
+    activeAccordionIndex.value = bestIndex
+    targetAccordionIndex = null // Сбрасываем таргет
+  }, 150)
+}
+
+let targetAccordionIndex = null
+
 const scrollAccordion = (direction) => {
   if (accordionRef.value) {
-    const scrollAmount = 350;
-    accordionRef.value.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    if (window.innerWidth <= 1024) {
+      let currentIndex = targetAccordionIndex !== null ? targetAccordionIndex : (activeAccordionIndex.value !== null ? activeAccordionIndex.value : 0)
+      
+      const children = Array.from(accordionRef.value.children)
+      let newIndex = currentIndex + direction
+      if (newIndex < 0) newIndex = 0
+      if (newIndex >= children.length) newIndex = children.length - 1
+      
+      if (newIndex === currentIndex) return
+
+      targetAccordionIndex = newIndex
+
+      // Сначала плавно доезжаем до нужной карточки (ширина не меняется, нет рывков)
+      children[newIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+      
+      // Всю остальную магию (раскрытие после остановки) берет на себя handleAccordionScroll!
+      // Мы убрали scrollLock, так что можно спамить кликами сколько угодно!
+    } else {
+      if (scrollLock) return
+      scrollLock = true
+      const scrollAmount = 350
+      accordionRef.value.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' })
+      
+      setTimeout(() => {
+        scrollLock = false
+        handleAccordionScroll()
+      }, 500)
+    }
   }
 }
 
@@ -464,7 +576,16 @@ const advantagesList = [
 
 const activeNewsIndex = ref(0)
 const onNewsHover = (index) => {
-  activeNewsIndex.value = index
+  if (window.innerWidth > 1024) {
+    activeNewsIndex.value = index
+  }
+}
+const onNewsClick = (index) => {
+  if (activeNewsIndex.value === index) {
+    activeNewsIndex.value = null
+  } else {
+    activeNewsIndex.value = index
+  }
 }
 
 const newsList = [
@@ -598,6 +719,8 @@ const getFilteredDebtors = (building) => {
 
 // Эффект "фонарика" (spotlight reveal) при наведении на блок
 const onPressMouseMove = (e) => {
+  if (window.innerWidth <= 1024) return;
+  
   const item = e.currentTarget
   const imageReveal = item.querySelector('.press__image-reveal')
   if (imageReveal) {
@@ -625,44 +748,44 @@ onMounted(() => {
     );
 
     // 2. Dispatch Section Parallax
-    ScrollTrigger.matchMedia({
-      "(min-width: 1025px)": function() {
-        gsap.utils.toArray('.dispatch__photo').forEach(photo => {
-          const img = photo.querySelector('img');
-          if (!img) return;
-          gsap.fromTo(img, 
-            { yPercent: -20, scale: 1.4 },
-            {
-              yPercent: 20,
-              scale: 1.4,
-              ease: 'none',
-              scrollTrigger: {
-              trigger: photo,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: true
-            }
-          });
-        });
-      }
-    });
-
-    // 3. Press Section Parallax (О нас пишут)
-    gsap.utils.toArray('.press__item').forEach((item, index) => {
-      const direction = index % 2 === 0 ? 1 : -1;
-      gsap.fromTo(item, 
-        { y: 100 * direction },
+    gsap.utils.toArray('.dispatch__photo').forEach(photo => {
+      const img = photo.querySelector('img');
+      if (!img) return;
+      gsap.fromTo(img, 
+        { yPercent: -20, scale: 1.4 },
         {
-          y: -100 * direction,
+          yPercent: 20,
+          scale: 1.4,
           ease: 'none',
           scrollTrigger: {
-            trigger: '.section-press',
+            trigger: photo,
             start: 'top bottom',
             end: 'bottom top',
             scrub: true
           }
         }
       );
+    });
+
+    // 3. Press Section Parallax (О нас пишут) - Только Десктоп
+    let mm = gsap.matchMedia();
+    mm.add("(min-width: 1025px)", () => {
+      gsap.utils.toArray('.press__item').forEach((item, index) => {
+        const direction = index % 2 === 0 ? 1 : -1;
+        gsap.fromTo(item, 
+          { y: 100 * direction },
+          {
+            y: -100 * direction,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: '.section-press',
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true
+            }
+          }
+        );
+      });
     });
 
     // 4. Reveal items (News, Press, Dispatch photos)
@@ -685,14 +808,14 @@ onUnmounted(() => {
 
 <style scoped>
 .page-index {
-  /* No special styles for the page wrapper yet */
+  overflow-x: hidden;
 }
 
 .hero {
   position: relative;
   width: 100%;
   height: var(--vh-70);
-  min-height: var(--accordion-height-mobile);
+  min-height: var(--accordion-height);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -853,7 +976,7 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   gap: var(--space-16);
-  font-size: var(--text-caption);
+  font-size: var(--text-body-lg);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-widest);
   color: var(--color-text);
@@ -875,6 +998,11 @@ onUnmounted(() => {
   transition: transform var(--anim-duration-fast) ease, background-color var(--anim-duration-fast) ease, color var(--anim-duration-fast) ease;
 }
 
+.btn-arrow__icon svg {
+  width: 50%;
+  height: 50%;
+}
+
 .btn-arrow:hover .btn-arrow__icon {
   transform: translateX(var(--space-8));
   background-color: var(--color-text);
@@ -885,25 +1013,17 @@ onUnmounted(() => {
 @media (max-width: 1024px) {
   .projects__container {
     grid-template-columns: 1fr;
-    gap: var(--space-48);
+    gap: var(--space-80);
   }
 
   .projects__title {
-    font-size: var(--text-h3);
+    margin-bottom: var(--space-20);
   }
 }
 
 @media (max-width: 768px) {
   .section-projects {
     padding: var(--space-80) 0;
-  }
-
-  .projects__title {
-    font-size: var(--space-40);
-  }
-
-  .projects__description {
-    font-size: var(--text-body-sm);
   }
 }
 
@@ -969,8 +1089,7 @@ onUnmounted(() => {
 .advantages__container {
   max-width: var(--container-max-width);
   margin: 0 auto;
-  /* Убираем правый паддинг, чтобы слайдер уходил в край экрана */
-  padding-left: var(--space-40);
+  padding: 0 var(--space-40);
 }
 
 .advantages__header {
@@ -989,6 +1108,7 @@ onUnmounted(() => {
 .advantages__controls {
   display: flex;
   gap: var(--space-16);
+  padding-right: 0; /* controls already inside padded container */
 }
 
 .slider-btn {
@@ -1005,14 +1125,17 @@ onUnmounted(() => {
   transition: background-color var(--anim-duration-fast) ease, color var(--anim-duration-fast) ease;
 }
 
-.slider-btn:hover {
-  background-color: var(--color-text);
-  color: var(--color-bg);
+@media (hover: hover) {
+  .slider-btn:hover {
+    background-color: var(--color-text);
+    color: var(--color-bg);
+  }
 }
 
 .accordion-wrapper {
   position: relative;
-  width: 100%;
+  margin: 0 calc(var(--space-40) * -1);
+  width: auto;
 }
 
 .accordion {
@@ -1024,6 +1147,7 @@ onUnmounted(() => {
   overflow-y: hidden;
   padding-bottom: var(--space-24);
   /* Чтобы не обрезалась тень или hover */
+  padding-left: var(--space-40);
   padding-right: var(--space-40);
   /* Отступ в конце скролла */
   scrollbar-width: none;
@@ -1147,34 +1271,28 @@ onUnmounted(() => {
 }
 
 @media (max-width: 1024px) {
+  .accordion {
+    scroll-snap-type: x mandatory;
+    /* Увеличиваем правый отступ, чтобы последняя (узкая) карточка могла физически доскроллиться до центра экрана */
+    padding-right: calc(var(--space-40) * 2);
+  }
+
   .accordion__item {
-    width: var(--accordion-item-width-tablet);
+    scroll-snap-align: center;
+    scroll-snap-stop: always; /* Карточки листаются строгими "щелчками" */
+    /* Неактивная карточка поменьше, чтобы соседние сильнее выглядывали */
+    width: calc(100vw - var(--space-40) * 4);
   }
 
   .accordion__item.is-active {
-    width: 100%;
+    /* Активная карточка ровно по ширине основного контейнера */
+    width: calc(100vw - var(--space-40) * 2);
   }
 
   .accordion__text-wrapper {
-    width: var(--accordion-item-width);
-  }
-}
-
-@media (max-width: 768px) {
-  .accordion {
-    height: var(--accordion-height-mobile);
-  }
-
-  .accordion__item {
-    width: var(--accordion-item-width-mobile);
-  }
-
-  .accordion__item.is-active {
-    width: var(--vw-85);
-  }
-
-  .accordion__number {
-    font-size: var(--space-60);
+    /* Фиксируем ширину текста такой, какой она будет в РАСКРЫТОЙ карточке.
+       Тогда при CSS-транзиции ширины карточки текст не будет перестраиваться по строкам. */
+    width: calc(100vw - var(--space-40) * 4);
   }
 }
 
@@ -1302,38 +1420,27 @@ onUnmounted(() => {
     padding: var(--space-100) var(--space-40) var(--space-60);
   }
 
-  .dispatch__huge-text {
-    font-size: var(--space-120);
-  }
-
   .dispatch__right {
     width: 100%;
     padding: 0 var(--space-40) var(--space-100) var(--space-40);
     gap: var(--space-60);
   }
 
+  /* Исправляем залезание фотографий за пределы экрана на мобилках */
   .dispatch__photo--offset {
-    width: var(--dispatch-photo-offset-mobile-width);
-    margin-left: var(--dispatch-photo-offset-mobile-margin);
+    width: 85%;
+    margin-left: 15%;
   }
-}
-
-@media (max-width: 768px) {
-  .dispatch__huge-text {
-    font-size: var(--text-hero);
+  /* Исходное состояние для мобилок: обычные фото летят слева, смещенные - справа */
+  .dispatch__photo {
+    transform: translateX(calc(var(--space-120) * -1));
   }
-
-  .dispatch__title {
-    font-size: var(--text-h5);
+  .dispatch__photo--offset {
+    transform: translateX(var(--space-120));
   }
-
-  .dispatch__description {
-    font-size: var(--text-body-sm);
-  }
-
-  .dispatch__phone {
-    font-size: var(--text-subtitle);
-    margin-top: var(--space-32);
+  /* Восстанавливаем нулевое положение после раскрытия */
+  .dispatch__photo.is-revealed {
+    transform: translateX(0);
   }
 }
 
@@ -1439,7 +1546,9 @@ onUnmounted(() => {
 .news-list__item {
   position: relative;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
   padding: var(--space-48) 0;
   border-top: var(--border-width) solid var(--color-border);
   border-bottom: var(--border-width) solid var(--color-border);
@@ -1448,6 +1557,16 @@ onUnmounted(() => {
   cursor: pointer;
   transition: border-color var(--anim-duration-normal) ease;
   z-index: var(--z-base);
+}
+
+.news-list__header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.news-list__mobile-body {
+  display: none; /* Скрыто на десктопе */
 }
 
 .news-list__item:first-child {
@@ -1467,6 +1586,7 @@ onUnmounted(() => {
   font-size: var(--text-h6);
   font-weight: var(--font-weight-light);
   line-height: var(--line-height-heading);
+  color: var(--color-gray-500); /* Делаем неактивный заголовок бледнее */
   transition: transform var(--anim-duration-normal) var(--anim-easing-smooth), color var(--anim-duration-normal) ease;
 }
 
@@ -1484,6 +1604,7 @@ onUnmounted(() => {
 
 .news-list__item:hover .news-list__title,
 .news-list__item.is-active .news-list__title {
+  color: var(--color-text);
   transform: translateX(var(--space-16));
 }
 
@@ -1971,6 +2092,8 @@ onUnmounted(() => {
 .debt__table {
   display: flex;
   flex-direction: column;
+  container-type: inline-size;
+  container-name: debttable;
 }
 
 .debt__table-header {
@@ -2066,41 +2189,128 @@ onUnmounted(() => {
     row-gap: var(--space-40);
   }
 
-  .news__image-container {
-    height: var(--news-image-height-mobile);
+  /* Скрываем десктопные колонки с фото и текстом */
+  .news__image-container,
+  .news__content {
+    display: none;
+  }
+
+  /* Стили для аккордеона внутри списка */
+  .news-list__mobile-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows var(--anim-duration-slow) ease, opacity var(--anim-duration-slow) ease;
+  }
+
+  .news-list__mobile-inner {
+    overflow: hidden;
+    padding-top: 0;
+    transition: padding-top var(--anim-duration-slow) ease;
+  }
+
+  .news-list__item.is-active .news-list__mobile-body {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .news-list__item.is-active .news-list__mobile-inner {
+    padding-top: var(--space-32);
+  }
+
+  /* Стили для заголовка аккордеона (мобилка) */
+  .news-list__header {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: var(--space-16);
   }
 
   .news-list__date {
-    font-size: var(--text-subtitle);
-    width: var(--space-100);
+    width: 100%;
+    text-align: right;
+    font-size: var(--text-body-sm); /* Делаем дату чуть компактнее */
   }
 
   .news-list__title {
-    font-size: var(--text-body-lg);
+    width: 100%;
+  }
+
+  /* Отключаем десктопный ховер-сдвиг заголовка, так как он не нужен на мобилке */
+  .news-list__item:hover .news-list__title,
+  .news-list__item.is-active .news-list__title {
+    transform: none;
+  }
+
+  .news-list__mobile-image {
+    width: 100%;
+    height: var(--news-image-height);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: var(--space-24);
+  }
+
+  .news-list__mobile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .news-list__mobile-excerpt p {
+    font-size: var(--text-body);
+    line-height: var(--line-height-loose);
+    color: var(--color-gray-600);
+    margin-bottom: var(--space-24);
+  }
+
+  /* Press section mobile cards */
+  .press__list {
+    gap: var(--space-160);
   }
 
   .press__item:nth-child(n) {
     width: 100%;
     margin-left: 0;
     margin-right: 0;
-    align-self: flex-start;
+    align-self: stretch;
+    margin-top: 0;
+  }
+
+  .press__item::before {
+    display: none; /* Убираем фоновую гигантскую кавычку на мобилке */
+  }
+
+  .press__image-reveal {
+    position: relative;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--news-image-height); /* Или другая высота, например 250px */
+    opacity: 1 !important; /* Всегда видим на мобилке */
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+    margin-bottom: var(--space-24);
+    border-radius: var(--radius-md);
+  }
+
+  .press__image {
+    object-position: center center !important; /* Отменяем индивидуальный сдвиг первого фото */
   }
 
   .press__quote {
     position: relative;
     z-index: 1;
     font-size: var(--text-subtitle);
+    margin-bottom: var(--space-24);
   }
 
-  .press__list {
-    gap: var(--space-80);
-  }
-
-  .press__item::before {
-    z-index: 1;
-    font-size: var(--space-140);
-    top: -var(--space-40);
-    left: -var(--space-20);
+  /* На мобилке кнопки без стекла, просто текст */
+  .press__footer .glass-effect {
+    background: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    padding: 0 !important;
   }
 
   /* Debt section mobile */
@@ -2119,7 +2329,9 @@ onUnmounted(() => {
   .debt__complex {
     position: relative;
   }
+}
 
+@container debttable (max-width: 600px) {
   .debt__table-header {
     display: none;
     /* Прячем заголовки таблицы на мобилках */
