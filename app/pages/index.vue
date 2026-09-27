@@ -296,8 +296,13 @@
             </Transition>
           </div>
 
-          <Transition name="fade">
-            <div class="debt__complex-content" v-if="activeComplex">
+          <Transition 
+            @enter="onComplexEnter" 
+            @leave="onComplexLeave" 
+            :css="false"
+            mode="out-in"
+          >
+            <div class="debt__complex-content" v-if="activeComplex" :key="activeComplex.id">
               <div class="debt__building-list">
                             <div class="debt__building" v-for="building in activeComplex.buildings" :key="building.id"
                               :class="{ 'is-open': building.isOpen }">
@@ -693,6 +698,30 @@ const selectComplex = (complex) => {
   isComplexDropdownOpen.value = false
 }
 
+const onComplexEnter = (el, done) => {
+  gsap.fromTo(el,
+    { height: 0, opacity: 0, overflow: 'hidden' },
+    { 
+      height: el.scrollHeight, 
+      opacity: 1, 
+      duration: 0.4, 
+      ease: 'power2.out', 
+      onComplete: () => {
+        el.style.height = 'auto'
+        el.style.overflow = 'visible'
+        done()
+      }
+    }
+  )
+}
+
+const onComplexLeave = (el, done) => {
+  gsap.fromTo(el,
+    { height: el.scrollHeight, opacity: 1, overflow: 'hidden' },
+    { height: 0, opacity: 0, duration: 0.4, ease: 'power2.out', onComplete: done }
+  )
+}
+
 import { watch } from 'vue'
 watch(activeCityId, () => {
   activeComplexId.value = null
@@ -960,6 +989,7 @@ onUnmounted(() => {
   margin-bottom: var(--space-40);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-wide);
+  margin-left: -0.04em; /* Оптическое выравнивание шрифта (убираем пустой отступ слева от буквы Н) */
 }
 
 .projects__description {
@@ -1869,7 +1899,7 @@ onUnmounted(() => {
   color: var(--color-gray-400);
   padding-bottom: var(--space-16);
   position: relative;
-  transition: color var(--anim-duration-fast) ease;
+  transition: color var(--anim-duration-medium) ease;
 }
 
 .debt__tab:hover,
@@ -1877,7 +1907,7 @@ onUnmounted(() => {
   color: var(--color-black);
 }
 
-.debt__tab.is-active::after {
+.debt__tab::after {
   content: '';
   position: absolute;
   bottom: calc(var(--border-width) * -1);
@@ -1885,6 +1915,12 @@ onUnmounted(() => {
   width: 100%;
   height: calc(var(--border-width) * 2);
   background-color: var(--color-black);
+  opacity: 0;
+  transition: opacity var(--anim-duration-medium) ease;
+}
+
+.debt__tab.is-active::after {
+  opacity: 1;
 }
 
 .debt__list {
@@ -2314,6 +2350,42 @@ onUnmounted(() => {
   }
 
   /* Debt section mobile */
+  .debt__tabs {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-16);
+    border-bottom: none;
+    margin-bottom: var(--space-40);
+  }
+
+  .debt__tab {
+    padding-bottom: var(--space-8);
+    width: 100%;
+    text-align: left;
+    border-bottom: var(--border-width) solid var(--color-debt-border);
+  }
+
+  .debt__tab::after {
+    bottom: calc(var(--border-width) * -1);
+  }
+
+  .debt__dropdown-options-wrapper {
+    position: relative;
+    top: 0;
+    box-shadow: none;
+    border: var(--border-width) solid transparent;
+    border-top: none;
+    
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--anim-duration-slow) ease, border-color var(--anim-duration-slow) ease, opacity var(--anim-duration-slow) ease;
+  }
+
+  .debt__complex-dropdown.is-open .debt__dropdown-options-wrapper {
+    grid-template-rows: 1fr;
+    border-color: var(--color-debt-border);
+  }
+
   .debt__header {
     flex-direction: column;
     align-items: flex-start;

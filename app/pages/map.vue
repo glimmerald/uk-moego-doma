@@ -3,7 +3,14 @@
     
     <!-- Информационная панель (Стекло) -->
     <div class="map-sidebar glass-effect">
-      <Transition name="fade" mode="out-in">
+      <Transition 
+        @before-leave="onSidebarBeforeLeave"
+        @leave="onSidebarLeave"
+        @before-enter="onSidebarBeforeEnter"
+        @enter="onSidebarEnter"
+        :css="false"
+        mode="out-in"
+      >
         <!-- Состояние 1: Планета -->
         <div v-if="!isDived" class="sidebar-content" key="planet">
           <h1 class="sidebar-title">Наши ЖК</h1>
@@ -108,9 +115,76 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute, useRouter } from '#app'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
+import gsap from 'gsap'
+
+// --- GSAP Hooks for Sidebar Smooth Height Transition ---
+const onSidebarBeforeLeave = (el) => {
+  const parent = el.parentElement
+  if (!parent) return
+  // Freeze parent height to prevent snapping to 0 when element unmounts
+  parent.style.height = `${parent.offsetHeight}px`
+  parent.style.overflow = 'hidden'
+}
+
+const onSidebarLeave = (el, done) => {
+  gsap.to(el, {
+    opacity: 0,
+    y: -10,
+    duration: 0.2,
+    ease: 'power2.in',
+    onComplete: done
+  })
+}
+
+const onSidebarBeforeEnter = (el) => {
+  el.style.opacity = 0
+  el.style.transform = 'translateY(10px)'
+}
+
+const onSidebarEnter = (el, done) => {
+  const parent = el.parentElement
+  if (!parent) {
+    done()
+    return
+  }
+  
+  // 1. Remember the frozen height
+  const startHeight = parent.offsetHeight
+  
+  // 2. Remove height temporarily so it expands to fit the new content
+  parent.style.height = 'auto'
+  
+  // 3. Measure the natural height with the new content
+  const targetHeight = parent.offsetHeight
+  
+  // 4. Reset to frozen height for the start of the animation
+  parent.style.height = `${startHeight}px`
+  
+  // 5. Animate parent height
+  gsap.to(parent, {
+    height: targetHeight,
+    duration: 0.4,
+    ease: 'power2.out',
+    onComplete: () => {
+      parent.style.height = '' // Clear explicit height after animation
+      parent.style.overflow = ''
+    }
+  })
+  
+  // 6. Animate content in
+  gsap.to(el, {
+    opacity: 1,
+    y: 0,
+    duration: 0.4,
+    ease: 'power2.out',
+    onComplete: done
+  })
+}
+// -----------------------------------------------------
 
 const mapContainer = ref(null)
 let map = null
+let pulseAnimationId = null
 const isDived = ref(false)
 const activeCity = ref(null)
 const activeComplexId = ref(null)
@@ -176,6 +250,34 @@ const toggleComplex = (complexId) => {
   }
 }
 
+const getPlanetPadding = () => {
+  if (typeof window === 'undefined') return { right: 0 }
+  return window.innerWidth > 1024 ? { right: 450 } : { bottom: window.innerHeight * 0.55 }
+}
+
+const getCityPadding = () => {
+  if (typeof window === 'undefined') return { right: 0, top: 0 }
+  return window.innerWidth > 1024 ? { right: 450, top: 200 } : { bottom: window.innerHeight * 0.55 }
+}
+
+const getPlanetCenter = () => {
+  if (typeof window === 'undefined') return [42, 48]
+  // На мобилках сдвигаем центр левее, чтобы влез Калининград и Краснодар в вертикальный экран
+  return window.innerWidth > 1024 ? [42, 48] : [32, 50]
+}
+
+const getPlanetZoom = () => {
+  if (typeof window === 'undefined') return 5.2
+  // На мобилках сильно отдаляем, чтобы в вертикальный формат влезла ширина России
+  return window.innerWidth > 1024 ? 5.2 : 3.6
+}
+
+const getPlanetPitch = () => {
+  if (typeof window === 'undefined') return 20
+  // На мобилках наклоняем карту чуть сильнее (+15 градусов), чтобы дать больше обзора
+  return window.innerWidth > 1024 ? 20 : 35
+}
+
 // Функция возврата на общую планету
 const returnToPlanet = () => {
   if (!map) return
@@ -194,11 +296,11 @@ const returnToPlanet = () => {
 
   // Возвращаем камеру на Россию
   map.flyTo({
-    center: [42, 48],
-    zoom: 5.2,
-    pitch: 20, // Возвращаем легкий наклон, как было при входе
+    center: getPlanetCenter(),
+    zoom: getPlanetZoom(),
+    pitch: getPlanetPitch(), // Возвращаем наклон в зависимости от платформы
     bearing: 0,
-    padding: { right: 450 },
+    padding: getPlanetPadding(),
     duration: 3000,
     essential: true,
     easing: (t) => t * (2 - t)
@@ -254,7 +356,7 @@ const diveTo = (cityId) => {
     zoom: 10.54, // Увеличили еще на 15% (было 10.34)
     pitch: 0, // Смотрим перпендикулярно сверху вниз
     bearing: 0,
-    padding: { right: 450, top: 200 }, // top: 200 смещает центр города ниже, чтобы он помещался в кадре
+    padding: getCityPadding(), // top: 200 смещает центр города ниже, чтобы он помещался в кадре (на десктопе)
     duration: 3000,
     essential: true,
     easing: (t) => t * (2 - t)
@@ -374,8 +476,8 @@ onMounted(() => {
     },
     projection: 'globe',
     minZoom: 1.5,
-    zoom: 5.2,
-    center: [42, 48], // Смещаем левее, чтобы Sidebar справа не закрывал города 
+    zoom: getPlanetZoom(),
+    center: getPlanetCenter(), 
     pitch: 0,
     
     // ЖЕСТКАЯ БЛОКИРОВКА ВСЕХ ВЗАИМОДЕЙСТВИЙ С КАРТОЙ
@@ -545,6 +647,7 @@ onMounted(() => {
     // Анимация пульса в WebGL
     let pulseFrame = 0
     const animatePulse = () => {
+      if (!map) return // Stop if map is destroyed
       pulseFrame = (pulseFrame + 1) % 240
       const progress = pulseFrame / 240
       const radius = 5 + progress * 12.5 // Увеличиваем радиус (в 2 раза меньше)
@@ -557,7 +660,7 @@ onMounted(() => {
         map.setPaintProperty('city-pulse', 'circle-radius', radius)
         map.setPaintProperty('city-pulse', 'circle-opacity', opacity)
       }
-      requestAnimationFrame(animatePulse)
+      pulseAnimationId = requestAnimationFrame(animatePulse)
     }
     animatePulse()
 
@@ -658,10 +761,11 @@ onMounted(() => {
       
       if (!foundCity) {
         map.flyTo({
-          center: [42, 48],
-          zoom: 5.2,
-          pitch: 20,
+          center: getPlanetCenter(),
+          zoom: getPlanetZoom(),
+          pitch: getPlanetPitch(),
           bearing: 0,
+          padding: getPlanetPadding(),
           duration: 3000,
           essential: true,
           easing: (t) => t * (2 - t)
@@ -683,10 +787,13 @@ const updateTooltipPosition = (event) => {
 }
 
 onUnmounted(() => {
+  if (pulseAnimationId) cancelAnimationFrame(pulseAnimationId)
   markers.forEach(m => m.marker.remove())
   complexMarkers.forEach(m => m.marker.remove())
   if (map) map.remove()
   window.removeEventListener('mousemove', updateTooltipPosition)
+  window.removeEventListener('mousemove', updateComplexTooltipPosition)
+  map = null
 })
 </script>
 
@@ -873,8 +980,8 @@ onUnmounted(() => {
   background: var(--color-black);
   color: var(--color-white);
   font-size: var(--text-small);
-  font-size: var(--text-body);
-  padding: var(--space-8) var(--space-16);
+  padding: var(--space-8) var(--space-8);
+  min-width: 36px;
   border-radius: var(--radius-pill);
   font-weight: var(--font-weight-medium);
   display: inline-flex;
@@ -968,7 +1075,7 @@ onUnmounted(() => {
   scale: 1.15;
   background: var(--color-glow-dim);
   border-color: var(--color-glow-base);
-  box-shadow: inset 0 0 0 2px var(--color-glow-base), var(--shadow-firefly-hover);
+  box-shadow: inset 0 0 0 var(--space-2) var(--color-glow-base), var(--shadow-firefly-hover);
 }
 
 :deep(.complex-marker-wrapper:hover) {
@@ -1124,7 +1231,7 @@ onUnmounted(() => {
   scale: 1.15;
   background: var(--color-glow-dim);
   border-color: var(--color-glow-base);
-  box-shadow: inset 0 0 0 2px var(--color-glow-base), var(--shadow-firefly-hover);
+  box-shadow: inset 0 0 0 var(--space-2) var(--color-glow-base), var(--shadow-firefly-hover);
 }
 
 :deep(.complex-marker-wrapper.is-hovered) {
@@ -1135,10 +1242,60 @@ onUnmounted(() => {
   scale: 1.15;
   background: var(--color-glow-base);
   border-color: var(--color-glow-base);
-  box-shadow: inset 0 0 0 2px var(--color-glow-base), var(--shadow-firefly-active);
+  box-shadow: inset 0 0 0 var(--space-2) var(--color-glow-base), var(--shadow-firefly-active);
 }
 
 :deep(.complex-marker-wrapper.is-active) {
   z-index: calc(var(--z-top) + 2);
+}
+
+@media (max-width: 1024px) {
+  .map-page {
+    display: block; /* revert flex */
+  }
+
+  .map-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    flex-shrink: unset;
+  }
+
+  .map-sidebar {
+    position: absolute;
+    top: auto;
+    bottom: var(--space-20);
+    left: var(--space-20);
+    right: var(--space-20);
+    width: auto;
+    max-height: 55vh;
+    border-radius: var(--radius-xl);
+    padding: var(--space-24);
+    margin-top: 0;
+    z-index: var(--z-overlay);
+    /* Restore glass effect properties that were overridden */
+    background: var(--color-accordion-bg);
+    border: var(--border-width) solid var(--color-white-50);
+  }
+
+  .sidebar-content {
+    max-height: none;
+    height: 100%;
+  }
+
+  .map-tooltip {
+    display: none;
+  }
+
+  .sidebar-complex-list {
+    padding-left: var(--space-0);
+    margin-left: var(--space-0);
+    padding-right: var(--space-0);
+    margin-right: var(--space-0);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, black calc(100% - var(--space-32)), transparent 100%);
+    mask-image: linear-gradient(to bottom, black 0%, black calc(100% - var(--space-32)), transparent 100%);
+  }
 }
 </style>

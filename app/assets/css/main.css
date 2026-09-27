@@ -52,19 +52,19 @@
   --text-huge: clamp(60px, 10vw, 180px);
   --text-hero: clamp(40px, 7vw, 80px);
   --text-h1: clamp(36px, 5vw, 64px);
-  --text-h2: clamp(32px, 4.5vw, 56px);
-  --text-h3: clamp(28px, 4vw, 48px);
-  --text-h4: clamp(24px, 3.5vw, 36px);
-  --text-h5: clamp(22px, 3vw, 32px);
-  --text-h6: clamp(20px, 2.5vw, 28px);
-  --text-subtitle: clamp(18px, 2vw, 24px);
-  --text-body-lg: clamp(16px, 2vw, 20px);
-  --text-body: clamp(16px, 1.5vw, 18px);
-  --text-body-sm: 16px;
-  --text-small: 15px;
-  --text-caption: 14px;
-  --text-tiny: 13px;
-  --text-micro: 12px;
+  --text-h2: clamp(26px, 4.5vw, 56px);
+  --text-h3: clamp(24px, 4vw, 48px);
+  --text-h4: clamp(22px, 3.5vw, 36px);
+  --text-h5: clamp(20px, 3vw, 32px);
+  --text-h6: clamp(18px, 2.5vw, 28px);
+  --text-subtitle: clamp(16px, 2vw, 24px);
+  --text-body-lg: clamp(15px, 2vw, 20px);
+  --text-body: clamp(14px, 1.5vw, 18px);
+  --text-body-sm: 14px;
+  --text-small: 13px;
+  --text-caption: 12px;
+  --text-tiny: 11px;
+  --text-micro: 10px;
   
   --line-height-tight: 0.8;
   --line-height-none: 1;
@@ -89,15 +89,15 @@
   --space-8: 8px;
   --space-10: 10px;
   --space-12: 12px;
-  --space-16: clamp(12px, 2vw, 16px);
-  --space-20: clamp(16px, 2vw, 20px);
-  --space-22: clamp(16px, 2vw, 22px);
-  --space-24: clamp(18px, 2.5vw, 24px);
-  --space-30: clamp(20px, 3vw, 30px);
-  --space-32: clamp(20px, 3vw, 32px);
-  --space-40: clamp(24px, 4vw, 40px);
-  --space-48: clamp(28px, 4vw, 48px);
-  --space-56: clamp(32px, 5vw, 56px);
+  --space-16: clamp(10px, 2vw, 16px);
+  --space-20: clamp(12px, 2vw, 20px);
+  --space-22: clamp(14px, 2vw, 22px);
+  --space-24: clamp(14px, 2.5vw, 24px);
+  --space-30: clamp(16px, 3vw, 30px);
+  --space-32: clamp(16px, 3vw, 32px);
+  --space-40: clamp(20px, 4vw, 40px);
+  --space-48: clamp(24px, 4vw, 48px);
+  --space-56: clamp(28px, 5vw, 56px);
   --space-60: clamp(32px, 5vw, 60px);
   --space-64: clamp(36px, 5vw, 64px);
   --space-80: clamp(40px, 6vw, 80px);
@@ -168,6 +168,7 @@
   --debt-container-max-width: 1000px;
   --debt-col-apt-width: 150px;
   --debt-col-amount-width: 200px;
+  --map-mobile-height: 400px;
 
   /* Asymmetric Press Layout */
   --press-item-1-width: 60%;

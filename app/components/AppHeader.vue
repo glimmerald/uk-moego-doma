@@ -152,11 +152,13 @@ watch(isMenuOpen, (isOpen) => {
   top: 0;
   left: 0;
   width: 100%;
+  height: var(--header-height);
   z-index: var(--z-header);
-  padding: var(--space-24) 0;
   border-bottom: var(--border-width) solid var(--color-header-border);
   color: var(--color-dark);
   transition: background-color var(--anim-duration-normal) ease, backdrop-filter var(--anim-duration-normal) ease, border-color var(--anim-duration-normal) ease;
+  display: flex;
+  align-items: center;
 }
 
 .app-header .app-header__burger-line {
@@ -164,6 +166,7 @@ watch(isMenuOpen, (isOpen) => {
 }
 
 .app-header__container {
+  width: 100%;
   max-width: var(--container-max-width);
   margin: 0 auto;
   padding: 0 var(--space-40);
