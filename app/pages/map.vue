@@ -516,8 +516,8 @@ onMounted(() => {
       }
     })
 
-    // Подключаем стандартный векторный слой Mapbox для водоемов
-    map.addSource('mapbox-streets-water', {
+    // Подключаем стандартный векторный слой Mapbox для инфраструктуры (вода, дороги, здания)
+    map.addSource('mapbox-streets-v8', {
       type: 'vector',
       url: 'mapbox://mapbox.mapbox-streets-v8'
     })
@@ -526,7 +526,7 @@ onMounted(() => {
     map.addLayer({
       id: 'water-lakes',
       type: 'fill',
-      source: 'mapbox-streets-water',
+      source: 'mapbox-streets-v8',
       'source-layer': 'water',
       filter: ['!=', 'class', 'ocean'], // Исключаем океаны
       paint: {
@@ -539,12 +539,66 @@ onMounted(() => {
     map.addLayer({
       id: 'water-rivers',
       type: 'line',
-      source: 'mapbox-streets-water',
+      source: 'mapbox-streets-v8',
       'source-layer': 'waterway',
       paint: {
         'line-color': '#ffffff',
         'line-width': 1,
         'line-opacity': 0.7
+      }
+    })
+
+    // ДОРОГИ
+    map.addLayer({
+      id: 'roads',
+      type: 'line',
+      source: 'mapbox-streets-v8',
+      'source-layer': 'road',
+      paint: {
+        'line-color': '#ffffff',
+        'line-width': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          10, 0.5,
+          15, 2
+        ],
+        'line-opacity': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          8, 0,
+          11, 0.5,
+          15, 1
+        ]
+      }
+    })
+
+    // ЗДАНИЯ (3D)
+    map.addLayer({
+      id: '3d-buildings',
+      source: 'mapbox-streets-v8',
+      'source-layer': 'building',
+      filter: ['==', 'extrude', 'true'],
+      type: 'fill-extrusion',
+      minzoom: 12,
+      paint: {
+        'fill-extrusion-color': '#f2f2f2', // Чуть светлее земли (#eaeaea), чтобы здания слегка выделялись
+        'fill-extrusion-height': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          12, 0,
+          14, ['get', 'height']
+        ],
+        'fill-extrusion-base': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          12, 0,
+          14, ['get', 'min_height']
+        ],
+        'fill-extrusion-opacity': 0.8
       }
     })
 
