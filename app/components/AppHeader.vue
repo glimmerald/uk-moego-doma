@@ -192,6 +192,12 @@ watch(isMenuOpen, (isOpen) => {
   }
 }
 
+.app-header.is-menu-open .app-header__phone {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .app-header__spacer {
   flex: 1;
 }
@@ -213,7 +219,7 @@ watch(isMenuOpen, (isOpen) => {
   font-size: var(--text-body-sm);
   letter-spacing: var(--letter-spacing-widest);
   opacity: 0.9;
-  transition: opacity var(--anim-duration-fast) ease;
+  transition: opacity var(--anim-duration-fast) ease, visibility var(--anim-duration-fast) ease;
   text-decoration: none;
   color: inherit;
 }

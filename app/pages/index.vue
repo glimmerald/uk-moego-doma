@@ -3,7 +3,27 @@
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero__video-wrapper">
-        <video class="hero__video" src="/main_video.mp4" autoplay loop muted playsinline></video>
+        <video
+          ref="ambientVideoRef"
+          class="hero__video-ambient"
+          src="/main_video.mp4"
+          autoplay
+          loop
+          muted
+          playsinline
+          aria-hidden="true"
+        ></video>
+        <div class="hero__video-inner">
+          <video
+            ref="mainVideoRef"
+            class="hero__video"
+            src="/main_video.mp4"
+            autoplay
+            loop
+            muted
+            playsinline
+          ></video>
+        </div>
       </div>
 
 
@@ -376,8 +396,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import contactsData from '@/assets/data/contacts.json'
+
+// Hero Video Elements (Main & Ambient Backlight)
+const mainVideoRef = ref(null)
+const ambientVideoRef = ref(null)
 
 const accordionRef = ref(null)
 const activeAccordionIndex = ref(0)
@@ -581,15 +605,22 @@ const advantagesList = [
 
 const activeNewsIndex = ref(0)
 const onNewsHover = (index) => {
-  if (window.innerWidth > 1024) {
+  if (typeof window !== 'undefined' && window.innerWidth > 1024) {
     activeNewsIndex.value = index
   }
 }
 const onNewsClick = (index) => {
-  if (activeNewsIndex.value === index) {
-    activeNewsIndex.value = null
+  if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
+    // На мобильных устройствах работает как аккордеон (открыть/закрыть)
+    activeNewsIndex.value = activeNewsIndex.value === index ? null : index
   } else {
+    // На десктопе клик фиксирует новость и никогда не прячет картинку
     activeNewsIndex.value = index
+  }
+}
+const handleNewsResize = () => {
+  if (typeof window !== 'undefined' && window.innerWidth > 1024 && activeNewsIndex.value === null) {
+    activeNewsIndex.value = 0
   }
 }
 
@@ -667,7 +698,6 @@ const pressList = [
   }
 ]
 
-import { onMounted, onUnmounted, computed, nextTick } from 'vue'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -722,7 +752,6 @@ const onComplexLeave = (el, done) => {
   )
 }
 
-import { watch } from 'vue'
 watch(activeCityId, () => {
   activeComplexId.value = null
   isComplexDropdownOpen.value = false
@@ -764,6 +793,22 @@ const onPressMouseMove = (e) => {
 
 
 onMounted(() => {
+  // Hero Video Ambient Sync
+  if (mainVideoRef.value && ambientVideoRef.value) {
+    const syncVideos = () => {
+      if (mainVideoRef.value && ambientVideoRef.value) {
+        if (Math.abs(mainVideoRef.value.currentTime - ambientVideoRef.value.currentTime) > 0.15) {
+          ambientVideoRef.value.currentTime = mainVideoRef.value.currentTime
+        }
+      }
+    }
+    mainVideoRef.value.addEventListener('timeupdate', syncVideos)
+    mainVideoRef.value.addEventListener('seeking', syncVideos)
+    mainVideoRef.value.addEventListener('play', () => {
+      ambientVideoRef.value?.play()
+    })
+  }
+
   nextTick(() => {
     // 1. Hero Animation
     const heroTl = gsap.timeline();
@@ -828,23 +873,27 @@ onMounted(() => {
       });
     });
   });
+
+  window.addEventListener('resize', handleNewsResize);
 })
 
 onUnmounted(() => {
+  window.removeEventListener('resize', handleNewsResize);
   ScrollTrigger.getAll().forEach(t => t.kill());
 })
 </script>
 
 <style scoped>
 .page-index {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .hero {
   position: relative;
   width: 100%;
   height: var(--vh-70);
-  min-height: var(--accordion-height);
+  min-height: var(--hero-min-height);
+  max-height: var(--hero-max-height);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -860,13 +909,45 @@ onUnmounted(() => {
   width: 100%;
   height: calc(100% - var(--header-height));
   z-index: var(--z-base);
-  background-color: var(--color-white);
+  background-color: var(--color-black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
-.hero__video {
+.hero__video-ambient {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: blur(var(--hero-ambient-blur)) saturate(var(--hero-ambient-saturate)) brightness(var(--hero-ambient-brightness));
+  transform: scale(var(--hero-ambient-scale));
+  opacity: var(--hero-ambient-opacity);
+  pointer-events: none;
+  z-index: var(--z-behind);
+}
+
+.hero__video-inner {
+  position: relative;
+  z-index: var(--z-above);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.hero__video {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: var(--aspect-ratio-16-9);
+  object-fit: contain;
+  box-shadow: var(--hero-ambient-shadow);
+  pointer-events: auto;
 }
 
 .hero__content {
@@ -952,18 +1033,43 @@ onUnmounted(() => {
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
-  .hero__title {
-    font-size: var(--space-60);
+  .hero {
+    height: calc(100vw * 9 / 16 + var(--header-height));
+    min-height: 0;
+    max-height: none;
+    background-color: var(--color-white);
+  }
+
+  .hero__video-wrapper {
+    background-color: var(--color-white);
+  }
+
+  .hero__video-ambient {
+    display: none;
+  }
+
+  .hero__video-inner {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero__video {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    object-fit: cover;
+    box-shadow: none;
   }
 }
 
-@media (max-width: 768px) {
-  .hero__title {
-    font-size: var(--space-40);
+@media (max-width: 480px) {
+  .hero__scroll-indicator {
+    bottom: var(--space-20);
+    gap: var(--space-8);
   }
 
-  .hero__subtitle {
-    font-size: var(--text-body-sm);
+  .hero__scroll-line {
+    height: var(--space-32);
   }
 }
 
@@ -1042,12 +1148,31 @@ onUnmounted(() => {
 /* Адаптив */
 @media (max-width: 1024px) {
   .projects__container {
-    grid-template-columns: 1fr;
-    gap: var(--space-80);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-32);
+  }
+
+  .projects__left {
+    display: contents;
   }
 
   .projects__title {
-    margin-bottom: var(--space-20);
+    order: 1;
+    margin-bottom: 0;
+  }
+
+  .projects__right {
+    order: 2;
+  }
+
+  .projects__description {
+    margin-top: 0;
+  }
+
+  .projects__left .btn-arrow {
+    order: 3;
+    margin-top: var(--space-12);
   }
 }
 
@@ -1311,18 +1436,18 @@ onUnmounted(() => {
     scroll-snap-align: center;
     scroll-snap-stop: always; /* Карточки листаются строгими "щелчками" */
     /* Неактивная карточка поменьше, чтобы соседние сильнее выглядывали */
-    width: calc(100vw - var(--space-40) * 4);
+    width: min(calc(100vw - var(--space-40) * 4), var(--accordion-item-width-tablet));
   }
 
   .accordion__item.is-active {
-    /* Активная карточка ровно по ширине основного контейнера */
-    width: calc(100vw - var(--space-40) * 2);
+    /* Активная карточка сбалансирована под мобильные и планшеты */
+    width: min(calc(100vw - var(--space-40) * 2), var(--accordion-item-active-width-tablet));
   }
 
   .accordion__text-wrapper {
-    /* Фиксируем ширину текста такой, какой она будет в РАСКРЫТОЙ карточке.
-       Тогда при CSS-транзиции ширины карточки текст не будет перестраиваться по строкам. */
-    width: calc(100vw - var(--space-40) * 4);
+    /* Фиксируем ширину текста такой, какой она будет в РАСКРЫТОЙ карточке */
+    width: min(calc(100vw - var(--space-40) * 4), calc(var(--accordion-item-active-width-tablet) - var(--space-40) * 2));
+    max-width: 100%;
   }
 }
 
@@ -1345,6 +1470,7 @@ onUnmounted(() => {
   height: var(--vh-100);
   position: sticky;
   top: 0;
+  align-self: flex-start;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1385,7 +1511,7 @@ onUnmounted(() => {
   color: var(--color-white);
   text-decoration: none;
   letter-spacing: var(--letter-spacing-widest);
-  border-bottom: 1px solid var(--color-line-semi-transparent);
+  border-bottom: var(--border-width) solid var(--color-line-semi-transparent);
   padding-bottom: var(--space-8);
   transition: border-color var(--anim-duration-fast) ease, opacity var(--anim-duration-fast) ease;
 }
@@ -1456,16 +1582,15 @@ onUnmounted(() => {
     gap: var(--space-60);
   }
 
-  /* Исправляем залезание фотографий за пределы экрана на мобилках */
-  .dispatch__photo--offset {
-    width: 85%;
-    margin-left: 15%;
-  }
-  /* Исходное состояние для мобилок: обычные фото летят слева, смещенные - справа */
+  /* Исправляем залезание фотографий за пределы экрана на мобилках и калибруем высоту на планшетах */
   .dispatch__photo {
+    max-height: var(--dispatch-photo-max-height-tablet);
     transform: translateX(calc(var(--space-120) * -1));
   }
   .dispatch__photo--offset {
+    width: var(--percent-85);
+    margin-left: var(--percent-15);
+    max-height: var(--dispatch-photo-max-height-tablet);
     transform: translateX(var(--space-120));
   }
   /* Восстанавливаем нулевое положение после раскрытия */
@@ -1476,7 +1601,7 @@ onUnmounted(() => {
 
 /* Секция Новости (Editorial List) */
 .section-news {
-  padding: var(--space-140) 0;
+  padding: var(--space-100) 0;
   background-color: var(--color-bg);
   color: var(--color-text);
 }
@@ -1497,7 +1622,7 @@ onUnmounted(() => {
   font-size: var(--text-h2);
   font-weight: var(--font-weight-light);
   text-transform: uppercase;
-  margin-bottom: var(--space-40);
+  margin-bottom: var(--space-32);
 }
 
 .news__image-container {
@@ -1537,14 +1662,14 @@ onUnmounted(() => {
 
 .news__content {
   position: relative;
-  height: var(--space-160);
-  padding-top: var(--space-40);
+  height: var(--space-120);
+  padding-top: var(--space-24);
   /* Отступ от картинки до текста */
 }
 
 .news__excerpt {
   position: absolute;
-  top: var(--space-40);
+  top: var(--space-24);
   /* Совпадает с padding-top */
   left: 0;
   width: 100%;
@@ -1579,7 +1704,7 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
-  padding: var(--space-48) 0;
+  padding: var(--space-32) 0;
   border-top: var(--border-width) solid var(--color-border);
   border-bottom: var(--border-width) solid var(--color-border);
   margin-top: -var(--border-width);
@@ -1643,7 +1768,7 @@ onUnmounted(() => {
   align-items: center;
   /* Центрируем по вертикали */
   justify-content: flex-start;
-  height: var(--space-160);
+  height: var(--space-120);
   /* Высота равна левому блоку */
   border-bottom: var(--border-width) solid var(--color-border);
   /* Нижняя граница, о которой просили */

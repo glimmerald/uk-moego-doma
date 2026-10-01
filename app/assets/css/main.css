@@ -29,7 +29,7 @@
   --color-overlay: rgba(0, 0, 0, 0.4);
   --color-overlay-medium: rgba(0, 0, 0, 0.5);
   --color-overlay-dark: rgba(0, 0, 0, 0.8);
-  --color-header-bg: rgba(255, 255, 255, 0.95);
+  --color-header-bg: var(--color-white);
   --color-header-border: rgba(0, 0, 0, 0.1);
   --color-header-border-light: rgba(255, 255, 255, 0.2);
   --color-accordion-bg: rgba(255, 255, 255, 0.9);
@@ -49,17 +49,17 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
-  --text-huge: clamp(60px, 10vw, 180px);
-  --text-hero: clamp(40px, 7vw, 80px);
-  --text-h1: clamp(36px, 5vw, 64px);
-  --text-h2: clamp(26px, 4.5vw, 56px);
-  --text-h3: clamp(24px, 4vw, 48px);
-  --text-h4: clamp(22px, 3.5vw, 36px);
-  --text-h5: clamp(20px, 3vw, 32px);
-  --text-h6: clamp(18px, 2.5vw, 28px);
-  --text-subtitle: clamp(16px, 2vw, 24px);
-  --text-body-lg: clamp(15px, 2vw, 20px);
-  --text-body: clamp(14px, 1.5vw, 18px);
+  --text-huge: clamp(64px, calc(4.4vw + 47px), 160px);
+  --text-hero: clamp(36px, calc(2vw + 28px), 80px);
+  --text-h1: clamp(32px, calc(1.5vw + 26px), 64px);
+  --text-h2: clamp(26px, calc(1.2vw + 21px), 52px);
+  --text-h3: clamp(22px, calc(0.9vw + 18px), 42px);
+  --text-h4: clamp(20px, calc(0.65vw + 17px), 34px);
+  --text-h5: clamp(18px, calc(0.45vw + 16px), 28px);
+  --text-h6: clamp(16px, calc(0.35vw + 15px), 24px);
+  --text-subtitle: clamp(15px, calc(0.3vw + 14px), 22px);
+  --text-body-lg: clamp(14px, calc(0.25vw + 13px), 18px);
+  --text-body: clamp(13px, calc(0.2vw + 12px), 16px);
   --text-body-sm: 14px;
   --text-small: 13px;
   --text-caption: 12px;
@@ -89,33 +89,33 @@
   --space-8: 8px;
   --space-10: 10px;
   --space-12: 12px;
-  --space-16: clamp(10px, 2vw, 16px);
-  --space-20: clamp(12px, 2vw, 20px);
-  --space-22: clamp(14px, 2vw, 22px);
-  --space-24: clamp(14px, 2.5vw, 24px);
-  --space-30: clamp(16px, 3vw, 30px);
-  --space-32: clamp(16px, 3vw, 32px);
-  --space-40: clamp(20px, 4vw, 40px);
-  --space-48: clamp(24px, 4vw, 48px);
-  --space-56: clamp(28px, 5vw, 56px);
-  --space-60: clamp(32px, 5vw, 60px);
-  --space-64: clamp(36px, 5vw, 64px);
-  --space-80: clamp(40px, 6vw, 80px);
-  --space-100: clamp(48px, 8vw, 100px);
-  --space-120: clamp(60px, 10vw, 120px);
-  --space-140: clamp(64px, 10vw, 140px);
-  --space-160: clamp(80px, 12vw, 160px);
-  --space-200: clamp(100px, 15vw, 200px);
-  --space-300: clamp(150px, 20vw, 300px);
-  --space-400: clamp(200px, 25vw, 400px);
-  --space-480: clamp(240px, 30vw, 480px);
-  --space-560: clamp(280px, 35vw, 560px);
-  --space-600: clamp(300px, 40vw, 600px);
+  --space-16: clamp(10px, calc(0.3vw + 9px), 16px);
+  --space-20: clamp(12px, calc(0.35vw + 11px), 20px);
+  --space-22: clamp(13px, calc(0.4vw + 11px), 22px);
+  --space-24: clamp(14px, calc(0.45vw + 12px), 24px);
+  --space-30: clamp(16px, calc(0.6vw + 14px), 30px);
+  --space-32: clamp(16px, calc(0.7vw + 13px), 32px);
+  --space-40: clamp(20px, calc(0.9vw + 16px), 40px);
+  --space-48: clamp(20px, calc(1.3vw + 15px), 48px);
+  --space-56: clamp(24px, calc(1.5vw + 18px), 56px);
+  --space-60: clamp(26px, calc(1.6vw + 20px), 60px);
+  --space-64: clamp(28px, calc(1.7vw + 21px), 64px);
+  --space-80: clamp(36px, calc(2vw + 28px), 80px);
+  --space-100: clamp(44px, calc(2.6vw + 34px), 100px);
+  --space-120: clamp(48px, calc(3.3vw + 35px), 120px);
+  --space-140: clamp(56px, calc(3.8vw + 41px), 140px);
+  --space-160: clamp(64px, calc(4.4vw + 47px), 160px);
+  --space-200: clamp(80px, calc(5.5vw + 59px), 200px);
+  --space-300: clamp(120px, calc(8vw + 89px), 300px);
+  --space-400: clamp(160px, calc(11vw + 117px), 400px);
+  --space-480: clamp(190px, calc(13vw + 139px), 480px);
+  --space-560: clamp(220px, calc(15vw + 162px), 560px);
+  --space-600: clamp(240px, calc(16.5vw + 176px), 600px);
 
   /* Layout */
-  --header-height: clamp(60px, 8vw, 80px);
+  --header-height: clamp(60px, calc(0.9vw + 56px), 80px);
   --container-max-width: 1600px;
-  --container-padding: clamp(20px, 5vw, 40px);
+  --container-padding: clamp(20px, calc(0.9vw + 16px), 40px);
   
   /* Borders and Shadows */
   --border-width: 1px;
@@ -158,9 +158,13 @@
   --z-header-content: 1001;
 
   /* Component specific layout & sizes */
+  --hero-min-height: 460px;
+  --hero-max-height: clamp(480px, calc(100vw * 10 / 16 + var(--header-height)), 950px);
   --accordion-height: clamp(500px, 60vh, 600px);
   --accordion-item-width: clamp(240px, 25vw, 320px);
   --accordion-item-active-width: clamp(320px, 45vw, 640px);
+  --accordion-item-width-tablet: 300px;
+  --accordion-item-active-width-tablet: 520px;
   --accordion-text-width: clamp(280px, 30vw, 450px);
   --accordion-desc-max-height: 200px;
   --news-grid-left-col: 45%;
@@ -187,8 +191,17 @@
   --dispatch-photo-offset-margin: clamp(10%, 15vw, 20%);
 
   /* Proportions */
+  --aspect-ratio-16-9: 16/9;
   --aspect-ratio-4-5: 4/5;
   --aspect-ratio-3-4: 3/4;
+
+  /* Hero Ambient Video Backlight */
+  --hero-ambient-blur: 50px;
+  --hero-ambient-opacity: 0.75;
+  --hero-ambient-scale: 1.15;
+  --hero-ambient-saturate: 160%;
+  --hero-ambient-brightness: 0.85;
+  --hero-ambient-shadow: 0 0 50px rgba(0, 0, 0, 0.6);
 
   /* Additional Colors */
   --color-debt-bg: #fafafa;
@@ -209,6 +222,8 @@
   --percent-40: 40%;
   --percent-50: 50%;
   --percent-75: 75%;
+  --percent-85: 85%;
+  --dispatch-photo-max-height-tablet: clamp(380px, 50vh, 520px);
   --vh-70: 70vh;
   --vh-100: 100vh;
   --vw-85: 85vw;
@@ -240,7 +255,7 @@
 }
 
 html, body {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
