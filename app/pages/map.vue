@@ -47,6 +47,7 @@
                 v-for="complex in activeCity?.complexes" 
                 :key="complex.id"
                 class="complex-list-item"
+                :data-id="complex.id"
                 :class="{ 'is-active': activeComplexId === complex.id }"
                 @mouseenter="hoverComplex(complex.id)"
                 @mouseleave="unhoverComplex()"
@@ -111,7 +112,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from '#app'
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
@@ -236,46 +237,77 @@ const unhoverComplex = () => {
   })
 }
 
-// Клик теперь может, например, центрировать карту на ЖК
+// Клик активирует карточку, разворачивает описание и центрирует камеру с учетом паддинга
 const toggleComplex = (complexId) => {
+  if (activeComplexId.value === complexId) {
+    activeComplexId.value = null
+    unhoverComplex()
+    if (activeCity.value && map) {
+      map.flyTo({
+        center: activeCity.value.coordinates,
+        zoom: 10.54,
+        pitch: 0,
+        padding: getCityPadding(),
+        duration: 1500,
+        essential: true
+      })
+    }
+    return
+  }
+
+  hoverComplex(complexId)
   const item = complexMarkers.find(m => m.complex.id === complexId)
   if (item && map) {
     map.flyTo({
       center: item.complex.coordinates,
       zoom: 14,
       pitch: 45,
+      padding: getCityPadding(),
       duration: 2000,
       essential: true
     })
   }
+
+  nextTick(() => {
+    const cardEl = document.querySelector(`.complex-list-item[data-id="${complexId}"]`)
+    cardEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  })
 }
 
 const getPlanetPadding = () => {
   if (typeof window === 'undefined') return { right: 0 }
-  return window.innerWidth > 1024 ? { right: 450 } : { bottom: window.innerHeight * 0.55 }
+  return window.innerWidth > 768 
+    ? { right: Math.min(Math.round(window.innerWidth * 0.32), 450), top: 60 } 
+    : { bottom: Math.round(window.innerHeight * 0.48), top: 70 }
 }
 
 const getCityPadding = () => {
   if (typeof window === 'undefined') return { right: 0, top: 0 }
-  return window.innerWidth > 1024 ? { right: 450, top: 200 } : { bottom: window.innerHeight * 0.55 }
+  return window.innerWidth > 768 
+    ? { right: Math.min(Math.round(window.innerWidth * 0.32), 450), top: Math.min(Math.round(window.innerHeight * 0.15), 180) } 
+    : { bottom: Math.round(window.innerHeight * 0.52), top: 70 }
 }
 
 const getPlanetCenter = () => {
-  if (typeof window === 'undefined') return [42, 48]
-  // На мобилках сдвигаем центр левее, чтобы влез Калининград и Краснодар в вертикальный экран
-  return window.innerWidth > 1024 ? [42, 48] : [32, 50]
+  if (typeof window === 'undefined') return [40, 48]
+  if (window.innerWidth > 1440) return [40, 48]
+  if (window.innerWidth > 768) return [34, 49]
+  return [31, 50]
 }
 
 const getPlanetZoom = () => {
-  if (typeof window === 'undefined') return 5.2
-  // На мобилках сильно отдаляем, чтобы в вертикальный формат влезла ширина России
-  return window.innerWidth > 1024 ? 5.2 : 3.6
+  if (typeof window === 'undefined') return 5.0
+  if (window.innerWidth > 1920) return 5.2
+  if (window.innerWidth > 1440) return 4.8
+  if (window.innerWidth > 1024) return 4.5
+  if (window.innerWidth > 768) return 4.0
+  if (window.innerWidth > 480) return 3.8
+  return 3.5
 }
 
 const getPlanetPitch = () => {
   if (typeof window === 'undefined') return 20
-  // На мобилках наклоняем карту чуть сильнее (+15 градусов), чтобы дать больше обзора
-  return window.innerWidth > 1024 ? 20 : 35
+  return window.innerWidth > 768 ? 20 : 35
 }
 
 // Функция возврата на общую планету
@@ -484,10 +516,8 @@ onMounted(() => {
     interactive: false
   })
 
-  // Фикс рассинхронизации размеров холста
-  window.addEventListener('resize', () => {
-    if (map) map.resize()
-  })
+  // Фикс рассинхронизации холста и авто-калибровка камеры при повороте устройства/ресайзе
+  window.addEventListener('resize', handleResize)
 
   map.on('style.load', () => {
     map.setFog({
@@ -830,6 +860,34 @@ onMounted(() => {
 })
 
 
+let resizeTimer = null
+const handleResize = () => {
+  if (!map) return
+  map.resize()
+  clearTimeout(resizeTimer)
+  resizeTimer = setTimeout(() => {
+    if (!map) return
+    if (!isDived.value) {
+      map.easeTo({
+        center: getPlanetCenter(),
+        zoom: getPlanetZoom(),
+        pitch: getPlanetPitch(),
+        padding: getPlanetPadding(),
+        duration: 400
+      })
+    } else if (activeCity.value) {
+      const targetCoords = activeComplexId.value
+        ? (complexMarkers.find(m => m.complex.id === activeComplexId.value)?.complex.coordinates || activeCity.value.coordinates)
+        : activeCity.value.coordinates
+      map.easeTo({
+        center: targetCoords,
+        padding: getCityPadding(),
+        duration: 400
+      })
+    }
+  }, 250)
+}
+
 const updateComplexTooltipPosition = (event) => {
   tooltipX.value = event.clientX + 15
   tooltipY.value = event.clientY + 15
@@ -842,6 +900,8 @@ const updateTooltipPosition = (event) => {
 
 onUnmounted(() => {
   if (pulseAnimationId) cancelAnimationFrame(pulseAnimationId)
+  if (resizeTimer) clearTimeout(resizeTimer)
+  window.removeEventListener('resize', handleResize)
   markers.forEach(m => m.marker.remove())
   complexMarkers.forEach(m => m.marker.remove())
   if (map) map.remove()
@@ -879,6 +939,16 @@ onUnmounted(() => {
   justify-content: center;
   width: var(--space-30);
   height: var(--space-30);
+}
+
+:deep(.city-marker-hitbox)::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--space-48);
+  height: var(--space-48);
+  transform: translate(-50%, -50%);
 }
 
 
@@ -950,7 +1020,7 @@ onUnmounted(() => {
   position: absolute;
   top: var(--space-120);
   right: var(--space-40);
-  width: var(--space-560);
+  width: var(--map-sidebar-width);
   max-height: calc(var(--vh-100) - var(--space-160));
   z-index: var(--z-overlay);
   border-radius: var(--radius-xl);
@@ -1035,7 +1105,7 @@ onUnmounted(() => {
   color: var(--color-white);
   font-size: var(--text-small);
   padding: var(--space-8) var(--space-8);
-  min-width: 36px;
+  min-width: var(--badge-min-width);
   border-radius: var(--radius-pill);
   font-weight: var(--font-weight-medium);
   display: inline-flex;
@@ -1098,6 +1168,17 @@ onUnmounted(() => {
   height: var(--space-16);
   cursor: pointer;
   z-index: var(--z-top);
+  position: relative;
+}
+
+:deep(.complex-marker-wrapper)::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--space-48);
+  height: var(--space-48);
+  transform: translate(-50%, -50%);
 }
 
 :deep(.complex-marker) {
@@ -1106,7 +1187,7 @@ onUnmounted(() => {
   border-radius: var(--radius-round);
   background: var(--color-black);
   border: var(--border-width-thick, var(--space-2)) solid var(--color-white);
-  box-shadow: inset 0 0 0 0 rgba(255, 244, 204, 0), var(--shadow-sm);
+  box-shadow: inset 0 0 0 0 var(--color-glow-transparent), var(--shadow-sm);
   scale: 1;
   transition: 
     scale var(--anim-duration-medium) var(--anim-easing-smooth), 
@@ -1303,15 +1384,15 @@ onUnmounted(() => {
   z-index: calc(var(--z-top) + 2);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .map-page {
     display: block; /* revert flex */
   }
 
   .map-container {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: var(--space-0);
+    left: var(--space-0);
     width: 100%;
     height: 100%;
     flex-shrink: unset;
@@ -1323,13 +1404,13 @@ onUnmounted(() => {
     bottom: var(--space-20);
     left: var(--space-20);
     right: var(--space-20);
+    max-width: var(--map-sheet-max-width);
+    margin: var(--space-0) auto;
     width: auto;
-    max-height: 55vh;
+    max-height: var(--map-sheet-max-height);
     border-radius: var(--radius-xl);
     padding: var(--space-24);
-    margin-top: 0;
     z-index: var(--z-overlay);
-    /* Restore glass effect properties that were overridden */
     background: var(--color-accordion-bg);
     border: var(--border-width) solid var(--color-white-50);
   }
@@ -1348,8 +1429,31 @@ onUnmounted(() => {
     margin-left: var(--space-0);
     padding-right: var(--space-0);
     margin-right: var(--space-0);
+    padding-bottom: var(--space-24);
     -webkit-mask-image: linear-gradient(to bottom, black 0%, black calc(100% - var(--space-32)), transparent 100%);
     mask-image: linear-gradient(to bottom, black 0%, black calc(100% - var(--space-32)), transparent 100%);
+  }
+}
+
+@media (max-width: 480px) {
+  .map-sidebar {
+    bottom: var(--space-12);
+    left: var(--space-12);
+    right: var(--space-12);
+    padding: var(--space-20);
+  }
+
+  .sidebar-city-btn {
+    padding: var(--space-16) var(--space-20);
+  }
+
+  .complex-list-item {
+    padding: var(--space-12);
+  }
+
+  .complex-list-item__thumb {
+    width: var(--space-48);
+    height: var(--space-48);
   }
 }
 </style>

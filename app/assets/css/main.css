@@ -18,6 +18,7 @@
   /* Firefly / Marker Glow */
   --color-glow-base: #FFF4CC; /* Pale warm white (shifted from yellow) */
   --color-glow-dim: #5C5740; /* 30% lit version of the base color */
+  --color-glow-transparent: rgba(255, 244, 204, 0);
   --shadow-firefly-hover: 0 0 4px rgba(255, 244, 204, 0.9), 0 0 10px rgba(255, 244, 204, 0.6);
   --shadow-firefly-active: 0 0 4px rgba(255, 244, 204, 1), 0 0 12px rgba(255, 244, 204, 0.8), 0 0 20px rgba(255, 244, 204, 0.5);
   
@@ -172,7 +173,11 @@
   --debt-container-max-width: 1000px;
   --debt-col-apt-width: 150px;
   --debt-col-amount-width: 200px;
-  --map-mobile-height: 400px;
+  /* Interactive Map Page */
+  --badge-min-width: clamp(30px, calc(0.5vw + 28px), 36px);
+  --map-sheet-max-height: clamp(360px, 55vh, 520px);
+  --map-sheet-max-width: clamp(340px, 85vw, 520px);
+  --map-sidebar-width: clamp(320px, calc(10vw + 220px), 480px);
 
   /* Asymmetric Press Layout */
   --press-item-1-width: 60%;
