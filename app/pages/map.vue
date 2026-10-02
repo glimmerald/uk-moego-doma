@@ -48,7 +48,10 @@
                 :key="complex.id"
                 class="complex-list-item"
                 :data-id="complex.id"
-                :class="{ 'is-active': activeComplexId === complex.id }"
+                :class="{ 
+                  'is-active': activeComplexId === complex.id,
+                  'is-hovered': hoveredComplexId === complex.id
+                }"
                 @mouseenter="hoverComplex(complex.id)"
                 @mouseleave="unhoverComplex()"
                 @click="toggleComplex(complex.id)"
@@ -189,6 +192,7 @@ let pulseAnimationId = null
 const isDived = ref(false)
 const activeCity = ref(null)
 const activeComplexId = ref(null)
+const hoveredComplexId = ref(null)
 
 const hoveredCity = ref(null)
 const hoveredComplex = ref(null)
@@ -215,38 +219,49 @@ watch(() => route.hash, (newHash) => {
   }
 })
 
-// Функция активации ЖК (по ховеру)
-const hoverComplex = (complexId) => {
-  activeComplexId.value = complexId
+// Синхронизация визуальных классов маркеров на карте с состоянием активности и ховера
+const updateMarkerClasses = () => {
   complexMarkers.forEach(m => {
-    if (m.marker) {
-      if (m.complex.id === complexId) {
-        m.marker.getElement().classList.add('is-active')
-      } else {
-        m.marker.getElement().classList.remove('is-active')
-      }
+    if (!m.marker) return
+    const el = m.marker.getElement()
+    if (m.complex.id === activeComplexId.value) {
+      el.classList.add('is-active')
+      el.classList.remove('is-hovered')
+    } else if (m.complex.id === hoveredComplexId.value) {
+      el.classList.remove('is-active')
+      el.classList.add('is-hovered')
+    } else {
+      el.classList.remove('is-active')
+      el.classList.remove('is-hovered')
     }
   })
 }
 
-// Деактивация ЖК
+// Функция активации ховера ЖК
+const hoverComplex = (complexId) => {
+  hoveredComplexId.value = complexId
+  updateMarkerClasses()
+}
+
+// Деактивация ховера ЖК
 const unhoverComplex = () => {
-  activeComplexId.value = null
-  complexMarkers.forEach(m => {
-    if (m.marker) m.marker.getElement().classList.remove('is-active')
-  })
+  hoveredComplexId.value = null
+  updateMarkerClasses()
 }
 
 // Клик активирует карточку, разворачивает описание и центрирует камеру с учетом паддинга
 const toggleComplex = (complexId) => {
+  // Если карточка уже активна — закрываем ее и возвращаемся к масштабу города
   if (activeComplexId.value === complexId) {
     activeComplexId.value = null
-    unhoverComplex()
+    hoveredComplex.value = null
+    updateMarkerClasses()
     if (activeCity.value && map) {
       map.flyTo({
         center: activeCity.value.coordinates,
         zoom: 10.54,
         pitch: 0,
+        fov: 36.87,
         padding: getCityPadding(),
         duration: 1500,
         essential: true
@@ -255,76 +270,117 @@ const toggleComplex = (complexId) => {
     return
   }
 
-  hoverComplex(complexId)
-  const item = complexMarkers.find(m => m.complex.id === complexId)
-  if (item && map) {
+  // Если нажали на другой ЖК — раскрываем новую карточку и переносимся к ее точке
+  activeComplexId.value = complexId
+  hoveredComplex.value = null
+  updateMarkerClasses()
+
+  const complex = activeCity.value?.complexes.find(c => c.id === complexId)
+  if (complex && map) {
     map.flyTo({
-      center: item.complex.coordinates,
-      zoom: 14,
-      pitch: 45,
+      center: complex.coordinates,
+      zoom: 15.3,
+      pitch: 48,
+      fov: 54,
       padding: getCityPadding(),
       duration: 2000,
       essential: true
     })
   }
 
+  scrollCardIntoView(complexId, 'nearest')
+}
+
+// Плавный скролл списка карточек к нужному ЖК без скролла всего окна/страницы браузера
+const scrollCardIntoView = (complexId, align = 'center') => {
   nextTick(() => {
+    const listEl = document.querySelector('.sidebar-complex-list')
     const cardEl = document.querySelector(`.complex-list-item[data-id="${complexId}"]`)
-    cardEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    if (!listEl || !cardEl) return
+
+    const listRect = listEl.getBoundingClientRect()
+    const cardRect = cardEl.getBoundingClientRect()
+
+    if (align === 'center') {
+      const targetOffset = (cardRect.top - listRect.top) + listEl.scrollTop - (listRect.height / 2) + (cardRect.height / 2)
+      listEl.scrollTo({ top: Math.max(0, targetOffset), behavior: 'smooth' })
+    } else {
+      if (cardRect.top < listRect.top) {
+        listEl.scrollTo({ top: listEl.scrollTop + (cardRect.top - listRect.top) - 16, behavior: 'smooth' })
+      } else if (cardRect.bottom > listRect.bottom) {
+        listEl.scrollTo({ top: listEl.scrollTop + (cardRect.bottom - listRect.bottom) + 16, behavior: 'smooth' })
+      }
+    }
   })
+}
+
+// Выбор ЖК по клику на точку на карте:
+// закрывает ранее открытые карточки других ЖК, раскрывает карточку выбранного ЖК и переносит камеру к нему
+const selectComplexFromMap = (complexId) => {
+  activeComplexId.value = complexId
+  hoveredComplex.value = null
+  updateMarkerClasses()
+
+  const complex = activeCity.value?.complexes.find(c => c.id === complexId)
+  if (complex && map) {
+    map.flyTo({
+      center: complex.coordinates,
+      zoom: 15.3,
+      pitch: 48,
+      fov: 54,
+      padding: getCityPadding(),
+      duration: 2000,
+      essential: true
+    })
+  }
+
+  scrollCardIntoView(complexId, 'center')
 }
 
 const getPlanetPadding = () => {
   if (typeof window === 'undefined') return { right: 0 }
-  return window.innerWidth > 768 
-    ? { right: Math.min(Math.round(window.innerWidth * 0.32), 450), top: 60 } 
-    : { bottom: Math.round(window.innerHeight * 0.48), top: 70 }
+  return window.innerWidth > 1024 ? { right: 450 } : { bottom: window.innerHeight * 0.52 }
 }
 
 const getCityPadding = () => {
   if (typeof window === 'undefined') return { right: 0, top: 0 }
-  return window.innerWidth > 768 
-    ? { right: Math.min(Math.round(window.innerWidth * 0.32), 450), top: Math.min(Math.round(window.innerHeight * 0.15), 180) } 
-    : { bottom: Math.round(window.innerHeight * 0.52), top: 70 }
+  return window.innerWidth > 1024 ? { right: 450, top: 200 } : { bottom: window.innerHeight * 0.52, top: 60 }
 }
 
 const getPlanetCenter = () => {
-  if (typeof window === 'undefined') return [40, 48]
-  if (window.innerWidth > 1440) return [40, 48]
-  if (window.innerWidth > 768) return [34, 49]
-  return [31, 50]
+  if (typeof window === 'undefined') return [42, 48]
+  return window.innerWidth > 1024 ? [42, 48] : [32, 50]
 }
 
 const getPlanetZoom = () => {
-  if (typeof window === 'undefined') return 5.0
-  if (window.innerWidth > 1920) return 5.2
-  if (window.innerWidth > 1440) return 4.8
-  if (window.innerWidth > 1024) return 4.5
-  if (window.innerWidth > 768) return 4.0
-  if (window.innerWidth > 480) return 3.8
-  return 3.5
+  if (typeof window === 'undefined') return 5.2
+  return window.innerWidth > 1024 ? 5.2 : 3.6
 }
 
 const getPlanetPitch = () => {
   if (typeof window === 'undefined') return 20
-  return window.innerWidth > 768 ? 20 : 35
+  return window.innerWidth > 1024 ? 20 : 35
 }
+
+let diveTimer = null
 
 // Функция возврата на общую планету
 const returnToPlanet = () => {
   if (!map) return
+  clearTimeout(diveTimer)
   isDived.value = false
   activeCity.value = null
   activeComplexId.value = null
+  hoveredComplexId.value = null
+  hoveredComplex.value = null
   
   if (route.hash) {
     router.replace({ hash: '' })
   }
 
-  // Убираем точки ЖК
+  // Немедленно убираем точки ЖК при начале обратного полета
   complexMarkers.forEach(m => m.marker.remove())
   complexMarkers = []
-
 
   // Возвращаем камеру на Россию
   map.flyTo({
@@ -332,6 +388,7 @@ const returnToPlanet = () => {
     zoom: getPlanetZoom(),
     pitch: getPlanetPitch(), // Возвращаем наклон в зависимости от платформы
     bearing: 0,
+    fov: 36.87,
     padding: getPlanetPadding(),
     duration: 3000,
     essential: true,
@@ -340,14 +397,16 @@ const returnToPlanet = () => {
 
   // Через 1 секунду после начала обратного полета
   setTimeout(() => {
+    if (isDived.value) return
     // Прячем контур активного города
     cities.forEach(c => {
       if (map.getLayer(`${c.id}-fill`)) map.setPaintProperty(`${c.id}-fill`, 'fill-opacity', 0)
       if (map.getLayer(`${c.id}-border`)) map.setPaintProperty(`${c.id}-border`, 'line-opacity', 0)
     })
     
-    // Возвращаем глобусные точки
+    // Возвращаем глобусные точки и подписи
     if (map.getLayer('city-dot')) map.setPaintProperty('city-dot', 'circle-opacity', 1)
+    if (map.getLayer('city-labels')) map.setPaintProperty('city-labels', 'text-opacity', 1)
     
     // Возвращаем HTML-хитбоксы
     document.querySelectorAll('.city-marker-hitbox').forEach(el => {
@@ -364,23 +423,36 @@ const diveTo = (cityId) => {
   const city = cities.find(c => c.id === cityId)
   if (!city || !map) return
   
+  clearTimeout(diveTimer)
+
   // Если мы уже были в другом городе, нужно убрать его декорации и маркеры
   if (activeCity.value) {
     const prevId = activeCity.value.id
     if (map.getLayer(`${prevId}-fill`)) map.setPaintProperty(`${prevId}-fill`, 'fill-opacity', 0)
     if (map.getLayer(`${prevId}-border`)) map.setPaintProperty(`${prevId}-border`, 'line-opacity', 0)
     
-    // Убираем маркеры ЖК предыдущего города
     complexMarkers.forEach(m => m.marker.remove())
     complexMarkers = []
   }
 
   isDived.value = true
   activeCity.value = city
+  activeComplexId.value = null
+  hoveredComplexId.value = null
+  hoveredComplex.value = null
   
   if (route.hash !== `#${cityId}`) {
     router.replace({ hash: `#${cityId}` })
   }
+
+  // Сразу прячем глобусные элементы (точки, подписи, хитбоксы), чтобы они не летали по карте во время полета
+  if (map.getLayer('city-dot')) map.setPaintProperty('city-dot', 'circle-opacity', 0)
+  if (map.getLayer('city-pulse')) map.setPaintProperty('city-pulse', 'circle-opacity', 0)
+  if (map.getLayer('city-labels')) map.setPaintProperty('city-labels', 'text-opacity', 0)
+  document.querySelectorAll('.city-marker-hitbox').forEach(el => {
+    el.style.pointerEvents = 'none'
+    el.style.opacity = '0'
+  })
 
   // 1. Полет камеры
   map.flyTo({
@@ -388,13 +460,14 @@ const diveTo = (cityId) => {
     zoom: 10.54, // Увеличили еще на 15% (было 10.34)
     pitch: 0, // Смотрим перпендикулярно сверху вниз
     bearing: 0,
-    padding: getCityPadding(), // top: 200 смещает центр города ниже, чтобы он помещался в кадре (на десктопе)
+    fov: 36.87,
+    padding: getCityPadding(),
     duration: 3000,
     essential: true,
     easing: (t) => t * (2 - t)
   })
 
-  // 2. Подгружаем слой Краснодара (если его еще нет)
+  // 2. Подгружаем слой контура города (если его еще нет)
   if (!map.getSource(`${city.id}-data`)) {
     map.addSource(`${city.id}-data`, {
       type: 'geojson',
@@ -425,65 +498,75 @@ const diveTo = (cityId) => {
     })
   }
 
-  // 3. Через 1 секунду после начала полета начинаем смену декораций
+  // 3. Через 1 секунду после начала полета проявляем контур города
   setTimeout(() => {
-    // ВАЖНО: Мы больше НЕ скрываем Россию. Она остается фоном, 
-    // поэтому скачков цвета больше не будет!
-    
-    // Растворяем глобусные точки
-    if (map.getLayer('city-dot')) map.setPaintProperty('city-dot', 'circle-opacity', 0)
-    
-    // Прячем HTML-хитбоксы с надписями
-    document.querySelectorAll('.city-marker-hitbox').forEach(el => {
-      el.style.pointerEvents = 'none'
-      el.style.opacity = '0'
-      el.style.transition = 'opacity var(--anim-duration-slowest) var(--anim-easing-ease)'
-    })
-
-    // Показываем контур Краснодара поверх России
-    map.setPaintProperty(`${city.id}-fill`, 'fill-opacity', 1)
-    map.setPaintProperty(`${city.id}-border`, 'line-opacity', 1)
-
+    if (!isDived.value || activeCity.value?.id !== city.id) return
+    if (map.getLayer(`${city.id}-fill`)) map.setPaintProperty(`${city.id}-fill`, 'fill-opacity', 1)
+    if (map.getLayer(`${city.id}-border`)) map.setPaintProperty(`${city.id}-border`, 'line-opacity', 1)
   }, 1000)
 
-  // Показываем точки ЖК сразу, чтобы они не появлялись слишком поздно
-  city.complexes.forEach(complex => {
-    if (!complex.coordinates) return
-    
-    const wrapper = document.createElement('div')
-    wrapper.className = 'complex-marker-wrapper fade-in-marker'
-    
-    const el = document.createElement('div')
-    el.className = 'complex-marker'
-    
-    wrapper.appendChild(el)
-    
-    wrapper.addEventListener('mouseenter', (e) => {
-      hoveredComplex.value = complex
-      updateComplexTooltipPosition(e)
-      window.addEventListener('mousemove', updateComplexTooltipPosition)
-      hoverComplex(complex.id)
-    })
+  // 4. Показываем точки ЖК ТОЛЬКО когда камера уже подлетела к городу (через 2.2с),
+  // чтобы они не летали и не дергались по экрану во время полета с масштаба планеты!
+  diveTimer = setTimeout(() => {
+    if (!isDived.value || activeCity.value?.id !== city.id) return
 
-    wrapper.addEventListener('mouseleave', () => {
-      hoveredComplex.value = null
-      window.removeEventListener('mousemove', updateComplexTooltipPosition)
-      unhoverComplex()
-    })
-    
-    wrapper.addEventListener('click', () => {
-      toggleComplex(complex.id)
-    })
+    complexMarkers.forEach(m => m.marker.remove())
+    complexMarkers = []
 
-    const marker = new mapboxgl.Marker({ 
-      element: wrapper,
-      pitchAlignment: 'map'
-    })
-      .setLngLat(complex.coordinates)
-      .addTo(map)
+    city.complexes.forEach(complex => {
+      if (!complex.coordinates) return
       
-    complexMarkers.push({ marker, complex })
-  })
+      const wrapper = document.createElement('div')
+      wrapper.className = 'complex-marker-wrapper fade-in-marker'
+      
+      const el = document.createElement('div')
+      el.className = 'complex-marker'
+      
+      wrapper.appendChild(el)
+      
+      wrapper.addEventListener('mouseenter', (e) => {
+        hoveredComplex.value = complex
+        updateComplexTooltipPosition(e)
+        window.addEventListener('mousemove', updateComplexTooltipPosition)
+        hoverComplex(complex.id)
+      })
+
+      wrapper.addEventListener('mouseleave', () => {
+        hoveredComplex.value = null
+        window.removeEventListener('mousemove', updateComplexTooltipPosition)
+        unhoverComplex()
+      })
+      
+      wrapper.setAttribute('role', 'button')
+      wrapper.setAttribute('tabindex', '0')
+      wrapper.setAttribute('aria-label', complex.name)
+
+      wrapper.addEventListener('click', (e) => {
+        e.stopPropagation()
+        selectComplexFromMap(complex.id)
+      })
+
+      wrapper.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          e.stopPropagation()
+          selectComplexFromMap(complex.id)
+        }
+      })
+
+      const marker = new mapboxgl.Marker({ 
+        element: wrapper,
+        anchor: 'center',
+        pitchAlignment: 'map'
+      })
+        .setLngLat(complex.coordinates)
+        .addTo(map)
+        
+      complexMarkers.push({ marker, complex })
+    })
+
+    updateMarkerClasses()
+  }, 2200)
 }
 
 onMounted(() => {
@@ -515,6 +598,13 @@ onMounted(() => {
     // ЖЕСТКАЯ БЛОКИРОВКА ВСЕХ ВЗАИМОДЕЙСТВИЙ С КАРТОЙ
     interactive: false
   })
+
+  // В dev-режиме: клик по карте выводит координаты в консоль браузера для быстрой калибровки cities.json
+  if (import.meta.dev) {
+    map.on('click', (e) => {
+      console.log(`[Geo Calibration] [${e.lngLat.lng.toFixed(6)}, ${e.lngLat.lat.toFixed(6)}]`)
+    })
+  }
 
   // Фикс рассинхронизации холста и авто-калибровка камеры при повороте устройства/ресайзе
   window.addEventListener('resize', handleResize)
@@ -604,31 +694,45 @@ onMounted(() => {
       }
     })
 
+    // ФУНДАМЕНТЫ ЗДАНИЙ (2D-подложка контуров кварталов на земле)
+    map.addLayer({
+      id: '2d-buildings',
+      source: 'mapbox-streets-v8',
+      'source-layer': 'building',
+      filter: ['!=', ['get', 'underground'], 'true'],
+      type: 'fill',
+      minzoom: 11,
+      paint: {
+        'fill-color': '#e0e0e0',
+        'fill-opacity': 0.6
+      }
+    })
+
     // ЗДАНИЯ (3D)
     map.addLayer({
       id: '3d-buildings',
       source: 'mapbox-streets-v8',
       'source-layer': 'building',
-      filter: ['==', 'extrude', 'true'],
+      filter: ['!=', ['get', 'underground'], 'true'],
       type: 'fill-extrusion',
-      minzoom: 12,
+      minzoom: 11,
       paint: {
         'fill-extrusion-color': '#f2f2f2', // Чуть светлее земли (#eaeaea), чтобы здания слегка выделялись
         'fill-extrusion-height': [
           'interpolate',
           ['linear'],
           ['zoom'],
-          12, 0,
-          14, ['get', 'height']
+          11, 0,
+          13, ['coalesce', ['get', 'height'], 15]
         ],
         'fill-extrusion-base': [
           'interpolate',
           ['linear'],
           ['zoom'],
-          12, 0,
-          14, ['get', 'min_height']
+          11, 0,
+          13, ['coalesce', ['get', 'min_height'], 0]
         ],
-        'fill-extrusion-opacity': 0.8
+        'fill-extrusion-opacity': 0.85
       }
     })
 
@@ -789,44 +893,12 @@ onMounted(() => {
       markers.push({ marker, city })
     })
 
-    // Динамический масштаб и позиционирование маркеров
+    // Динамический масштаб маркеров от зума
     const updateMapState = () => {
       const z = map.getZoom()
-      
       // На зуме 4 масштаб 100%, на зуме 1.5 масштаб 40%
       const scale = Math.max(0.4, Math.min(1, (z - 1) / 3))
-      document.getElementById('map').style.setProperty('--marker-scale', scale)
-      
-      // Плавно сводим искусственные координаты к реальным при приближении от зума 5 к зуму 9
-      const coordFactor = Math.max(0, Math.min(1, (z - 5) / 4))
-      
-      const newFeatures = cities.map((c, i) => {
-        const start = c.globeCoordinates || c.coordinates
-        const end = c.coordinates
-        const currentLng = start[0] + (end[0] - start[0]) * coordFactor
-        const currentLat = start[1] + (end[1] - start[1]) * coordFactor
-        const currentCoords = [currentLng, currentLat]
-        
-        // Обновляем HTML маркеры
-        if (markers[i] && markers[i].marker) {
-          markers[i].marker.setLngLat(currentCoords)
-        }
-        
-        return {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: currentCoords },
-          properties: { id: c.id, name: c.name }
-        }
-      })
-      
-      // Обновляем WebGL слой
-      const source = map.getSource('cities-data')
-      if (source) {
-        source.setData({
-          type: 'FeatureCollection',
-          features: newFeatures
-        })
-      }
+      document.getElementById('map')?.style.setProperty('--marker-scale', scale)
     }
     
     map.on('zoom', updateMapState)
@@ -860,32 +932,8 @@ onMounted(() => {
 })
 
 
-let resizeTimer = null
 const handleResize = () => {
-  if (!map) return
-  map.resize()
-  clearTimeout(resizeTimer)
-  resizeTimer = setTimeout(() => {
-    if (!map) return
-    if (!isDived.value) {
-      map.easeTo({
-        center: getPlanetCenter(),
-        zoom: getPlanetZoom(),
-        pitch: getPlanetPitch(),
-        padding: getPlanetPadding(),
-        duration: 400
-      })
-    } else if (activeCity.value) {
-      const targetCoords = activeComplexId.value
-        ? (complexMarkers.find(m => m.complex.id === activeComplexId.value)?.complex.coordinates || activeCity.value.coordinates)
-        : activeCity.value.coordinates
-      map.easeTo({
-        center: targetCoords,
-        padding: getCityPadding(),
-        duration: 400
-      })
-    }
-  }, 250)
+  if (map) map.resize()
 }
 
 const updateComplexTooltipPosition = (event) => {
@@ -900,7 +948,7 @@ const updateTooltipPosition = (event) => {
 
 onUnmounted(() => {
   if (pulseAnimationId) cancelAnimationFrame(pulseAnimationId)
-  if (resizeTimer) clearTimeout(resizeTimer)
+  clearTimeout(diveTimer)
   window.removeEventListener('resize', handleResize)
   markers.forEach(m => m.marker.remove())
   complexMarkers.forEach(m => m.marker.remove())
@@ -932,7 +980,6 @@ onUnmounted(() => {
 
 /* Стили HTML-маркера (теперь только хитбокс для ховера и текст) */
 :deep(.city-marker-hitbox) {
-  position: relative;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1168,7 +1215,7 @@ onUnmounted(() => {
   height: var(--space-16);
   cursor: pointer;
   z-index: var(--z-top);
-  position: relative;
+  pointer-events: auto;
 }
 
 :deep(.complex-marker-wrapper)::before {
@@ -1299,13 +1346,18 @@ onUnmounted(() => {
   flex-shrink: 0;
 }
 
-.complex-list-item:hover {
+.complex-list-item:hover,
+.complex-list-item.is-hovered {
   border-color: var(--color-gray-300);
 }
 
 .complex-list-item.is-active {
   border-color: var(--color-black);
   box-shadow: var(--shadow-md);
+}
+
+.complex-list-item.is-active:hover {
+  border-color: var(--color-black);
 }
 
 .complex-list-item__header {
@@ -1373,7 +1425,8 @@ onUnmounted(() => {
   z-index: calc(var(--z-top) + 1);
 }
 
-:deep(.complex-marker-wrapper.is-active .complex-marker) {
+:deep(.complex-marker-wrapper.is-active .complex-marker),
+:deep(.complex-marker-wrapper.is-active:hover .complex-marker) {
   scale: 1.15;
   background: var(--color-glow-base);
   border-color: var(--color-glow-base);
