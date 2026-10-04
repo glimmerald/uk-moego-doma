@@ -28,7 +28,12 @@
 
     <!-- Оверлей затемнения -->
     <Transition name="fade">
-      <div class="app-menu__overlay" v-if="isMenuOpen" @click="closeMenu"></div>
+      <div 
+        class="app-menu__overlay" 
+        v-if="isMenuOpen" 
+        @click="closeMenu"
+        @touchmove.prevent
+      ></div>
     </Transition>
 
     <!-- Выезжающая панель меню -->
@@ -135,13 +140,44 @@ const handleNavClick = (link) => {
   }
 }
 
+const handleKeyDown = (e) => {
+  if (e.key === 'Escape' && isMenuOpen.value) {
+    closeMenu()
+  }
+}
+
 watch(isMenuOpen, (isOpen) => {
   if (import.meta.client) {
     if (isOpen) {
+      document.documentElement.classList.add('is-scroll-locked')
+      document.body.classList.add('is-scroll-locked')
+      document.documentElement.style.overflow = 'hidden'
       document.body.style.overflow = 'hidden'
+      window.addEventListener('keydown', handleKeyDown)
     } else {
+      document.documentElement.classList.remove('is-scroll-locked')
+      document.body.classList.remove('is-scroll-locked')
+      document.documentElement.style.overflow = ''
       document.body.style.overflow = ''
+      window.removeEventListener('keydown', handleKeyDown)
     }
+  }
+})
+
+// При переходе на другую страницу автоматически закрываем меню и разблокируем скролл
+watch(() => route.fullPath, () => {
+  if (isMenuOpen.value) {
+    closeMenu()
+  }
+})
+
+onUnmounted(() => {
+  if (import.meta.client) {
+    document.documentElement.classList.remove('is-scroll-locked')
+    document.body.classList.remove('is-scroll-locked')
+    document.documentElement.style.overflow = ''
+    document.body.style.overflow = ''
+    window.removeEventListener('keydown', handleKeyDown)
   }
 })
 </script>
@@ -287,6 +323,8 @@ watch(isMenuOpen, (isOpen) => {
   background-color: var(--color-overlay);
   backdrop-filter: blur(var(--space-4));
   z-index: var(--z-overlay);
+  touch-action: none;
+  overscroll-behavior: contain;
 }
 
 /* Выезжающая панель */
@@ -305,6 +343,8 @@ watch(isMenuOpen, (isOpen) => {
   gap: var(--space-40);
   box-shadow: var(--shadow-menu);
   overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .app-menu__section {

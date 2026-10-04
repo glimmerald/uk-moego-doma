@@ -22,6 +22,7 @@
               v-for="city in cities" 
               :key="city.id" 
               class="sidebar-city-btn"
+              @mouseenter="prewarmCity(city)"
               @click="diveTo(city.id)"
             >
               {{ city.name }}
@@ -57,7 +58,13 @@
                 @click="toggleComplex(complex.id)"
               >
                 <div class="complex-list-item__header">
-                  <img v-if="complex.image" :src="complex.image" class="complex-list-item__thumb" />
+                  <img 
+                    v-if="complex.image" 
+                    :src="complex.image" 
+                    class="complex-list-item__thumb" 
+                    loading="lazy" 
+                    decoding="async" 
+                  />
                   <div class="complex-list-item__info">
                     <h3 class="complex-list-item__title">{{ complex.name }}</h3>
                     <p class="complex-list-item__address">{{ complex.address }}</p>
@@ -86,7 +93,13 @@
         :style="{ left: tooltipX + 'px', top: tooltipY + 'px' }"
       >
         <div class="complex-card">
-          <img v-if="hoveredComplex.image" :src="hoveredComplex.image" class="complex-card__image" />
+          <img 
+            v-if="hoveredComplex.image" 
+            :src="hoveredComplex.image" 
+            class="complex-card__image" 
+            loading="lazy" 
+            decoding="async" 
+          />
           <div class="complex-card__info">
             <h3 class="complex-card__title">{{ hoveredComplex.name }}</h3>
             <p class="complex-card__address">{{ hoveredComplex.address }}</p>
@@ -189,6 +202,37 @@ const onSidebarEnter = (el, done) => {
 const mapContainer = ref(null)
 let map = null
 let pulseAnimationId = null
+let pulseFrame = 0
+
+// Управление циклом пульсации WebGL точек (останавливается во время полетов и в городе)
+const startPulse = () => {
+  if (pulseAnimationId || isDived.value || !map) return
+  const loop = () => {
+    if (!map || isDived.value) {
+      pulseAnimationId = null
+      return
+    }
+    pulseFrame = (pulseFrame + 1) % 240
+    const progress = pulseFrame / 240
+    const radius = 5 + progress * 12.5
+    const opacity = 0.8 * (1 - progress)
+
+    if (map.getLayer('city-pulse')) {
+      map.setPaintProperty('city-pulse', 'circle-radius', radius)
+      map.setPaintProperty('city-pulse', 'circle-opacity', opacity)
+    }
+    pulseAnimationId = requestAnimationFrame(loop)
+  }
+  pulseAnimationId = requestAnimationFrame(loop)
+}
+
+const stopPulse = () => {
+  if (pulseAnimationId) {
+    cancelAnimationFrame(pulseAnimationId)
+    pulseAnimationId = null
+  }
+}
+
 const isDived = ref(false)
 const activeCity = ref(null)
 const activeComplexId = ref(null)
@@ -207,6 +251,23 @@ const router = useRouter()
 
 // Данные городов с реальными координатами [lng, lat]
 import cities from '~/data/cities.json'
+
+// Предварительный прогрев сетевых ресурсов для города при наведении курсора
+const prewarmedCities = new Set()
+const prewarmCity = (city) => {
+  if (!city || prewarmedCities.has(city.id)) return
+  prewarmedCities.add(city.id)
+
+  if (city.complexes && Array.isArray(city.complexes)) {
+    city.complexes.forEach(c => {
+      if (c.image) {
+        const img = new Image()
+        img.decoding = 'async'
+        img.src = c.image
+      }
+    })
+  }
+}
 
 watch(() => route.hash, (newHash) => {
   if (newHash) {
@@ -382,27 +443,28 @@ const returnToPlanet = () => {
   complexMarkers.forEach(m => m.marker.remove())
   complexMarkers = []
 
-  // Возвращаем камеру на Россию
+  // Прячем контуры всех городов
+  cities.forEach(c => {
+    if (map.getLayer(`${c.id}-fill`)) map.setPaintProperty(`${c.id}-fill`, 'fill-opacity', 0)
+    if (map.getLayer(`${c.id}-border`)) map.setPaintProperty(`${c.id}-border`, 'line-opacity', 0)
+  })
+
+  // Возвращаем камеру на Россию по баллистической траектории
   map.flyTo({
     center: getPlanetCenter(),
     zoom: getPlanetZoom(),
-    pitch: getPlanetPitch(), // Возвращаем наклон в зависимости от платформы
+    pitch: getPlanetPitch(),
     bearing: 0,
     fov: 36.87,
     padding: getPlanetPadding(),
-    duration: 3000,
-    essential: true,
-    easing: (t) => t * (2 - t)
+    curve: 1.42,
+    speed: 1.2,
+    essential: true
   })
 
   // Через 1 секунду после начала обратного полета
   setTimeout(() => {
     if (isDived.value) return
-    // Прячем контур активного города
-    cities.forEach(c => {
-      if (map.getLayer(`${c.id}-fill`)) map.setPaintProperty(`${c.id}-fill`, 'fill-opacity', 0)
-      if (map.getLayer(`${c.id}-border`)) map.setPaintProperty(`${c.id}-border`, 'line-opacity', 0)
-    })
     
     // Возвращаем глобусные точки и подписи
     if (map.getLayer('city-dot')) map.setPaintProperty('city-dot', 'circle-opacity', 1)
@@ -413,6 +475,9 @@ const returnToPlanet = () => {
       el.style.pointerEvents = 'auto'
       el.style.opacity = '1'
     })
+
+    // Возобновляем пульс на планете
+    startPulse()
   }, 1000)
 }
 
@@ -424,6 +489,7 @@ const diveTo = (cityId) => {
   if (!city || !map) return
   
   clearTimeout(diveTimer)
+  stopPulse()
 
   // Если мы уже были в другом городе, нужно убрать его декорации и маркеры
   if (activeCity.value) {
@@ -454,58 +520,27 @@ const diveTo = (cityId) => {
     el.style.opacity = '0'
   })
 
-  // 1. Полет камеры
+  // 1. Полет камеры: естественная баллистическая кривая Van Wijk (без загрузки тайлов всей страны)
   map.flyTo({
     center: city.coordinates,
-    zoom: 10.54, // Увеличили еще на 15% (было 10.34)
-    pitch: 0, // Смотрим перпендикулярно сверху вниз
+    zoom: 10.54,
+    pitch: 0,
     bearing: 0,
     fov: 36.87,
     padding: getCityPadding(),
-    duration: 3000,
-    essential: true,
-    easing: (t) => t * (2 - t)
+    curve: 1.42,
+    speed: 1.2,
+    essential: true
   })
 
-  // 2. Подгружаем слой контура города (если его еще нет)
-  if (!map.getSource(`${city.id}-data`)) {
-    map.addSource(`${city.id}-data`, {
-      type: 'geojson',
-      data:  `/${city.id}.geojson`
-    })
-    
-    map.addLayer({
-      id: `${city.id}-fill`,
-      type: 'fill',
-      source: `${city.id}-data`,
-      paint: {
-        'fill-color': 'rgba(0, 0, 0, 0.04)', // Город чуть темнее страны, чтобы выделялся
-        'fill-opacity': 0, // Изначально прозрачный
-        'fill-opacity-transition': { duration: 1500 } // Плавное появление
-      }
-    })
-    
-    map.addLayer({
-      id: `${city.id}-border`,
-      type: 'line',
-      source: `${city.id}-data`,
-      paint: {
-        'line-color': 'rgba(0, 0, 0, 0.3)', // Тонкая графитовая граница
-        'line-width': 1.5,
-        'line-opacity': 0,
-        'line-opacity-transition': { duration: 1500 }
-      }
-    })
-  }
-
-  // 3. Через 1 секунду после начала полета проявляем контур города
+  // 2. Через 800мс плавно проявляем контур города (слои уже зарегистрированы в map.on('load'))
   setTimeout(() => {
     if (!isDived.value || activeCity.value?.id !== city.id) return
     if (map.getLayer(`${city.id}-fill`)) map.setPaintProperty(`${city.id}-fill`, 'fill-opacity', 1)
     if (map.getLayer(`${city.id}-border`)) map.setPaintProperty(`${city.id}-border`, 'line-opacity', 1)
-  }, 1000)
+  }, 800)
 
-  // 4. Показываем точки ЖК ТОЛЬКО когда камера уже подлетела к городу (через 2.2с),
+  // 3. Показываем точки ЖК ТОЛЬКО когда камера уже подлетела к городу (через 1.8с),
   // чтобы они не летали и не дергались по экрану во время полета с масштаба планеты!
   diveTimer = setTimeout(() => {
     if (!isDived.value || activeCity.value?.id !== city.id) return
@@ -596,7 +631,8 @@ onMounted(() => {
     pitch: 0,
     
     // ЖЕСТКАЯ БЛОКИРОВКА ВСЕХ ВЗАИМОДЕЙСТВИЙ С КАРТОЙ
-    interactive: false
+    interactive: false,
+    maxTileCacheSize: 100
   })
 
   // В dev-режиме: клик по карте выводит координаты в консоль браузера для быстрой калибровки cities.json
@@ -754,6 +790,40 @@ onMounted(() => {
         ]
       }
     })
+
+    // ПРЕДЗАГРУЗКА КОНТУРОВ ВСЕХ ГОРОДОВ
+    // Регистрируем GeoJSON и слои сразу с нулевой прозрачностью,
+    // чтобы при клике на город не было сетевых запросов и перекомпиляции WebGL-шейдеров
+    cities.forEach(c => {
+      map.addSource(`${c.id}-data`, {
+        type: 'geojson',
+        data: `/${c.id}.geojson`
+      })
+
+      map.addLayer({
+        id: `${c.id}-fill`,
+        type: 'fill',
+        source: `${c.id}-data`,
+        paint: {
+          'fill-color': 'rgba(0, 0, 0, 0.04)',
+          'fill-opacity': 0,
+          'fill-opacity-transition': { duration: 1000 }
+        }
+      })
+
+      map.addLayer({
+        id: `${c.id}-border`,
+        type: 'line',
+        source: `${c.id}-data`,
+        paint: {
+          'line-color': 'rgba(0, 0, 0, 0.3)',
+          'line-width': 1.5,
+          'line-opacity': 0,
+          'line-opacity-transition': { duration: 1000 }
+        }
+      })
+    })
+
     const citiesGeoJSON = {
       type: 'FeatureCollection',
       features: cities.map(c => ({
@@ -832,25 +902,8 @@ onMounted(() => {
       }
     })
 
-    // Анимация пульса в WebGL
-    let pulseFrame = 0
-    const animatePulse = () => {
-      if (!map) return // Stop if map is destroyed
-      pulseFrame = (pulseFrame + 1) % 240
-      const progress = pulseFrame / 240
-      const radius = 5 + progress * 12.5 // Увеличиваем радиус (в 2 раза меньше)
-      
-      // Если мы внутри города, пульс не показываем
-      const baseOpacity = isDived.value ? 0 : 0.8
-      const opacity = baseOpacity * (1 - progress) // Затухание
-
-      if (map.getLayer('city-pulse')) {
-        map.setPaintProperty('city-pulse', 'circle-radius', radius)
-        map.setPaintProperty('city-pulse', 'circle-opacity', opacity)
-      }
-      pulseAnimationId = requestAnimationFrame(animatePulse)
-    }
-    animatePulse()
+    // Запуск пульсации на общем виде
+    startPulse()
 
     // Добавляем маркеры городов (ТОЛЬКО ДЛЯ ХОВЕРА И КЛИКА, БЕЗ ТЕКСТА)
     cities.forEach(city => {
@@ -863,6 +916,7 @@ onMounted(() => {
 
       el.addEventListener('mouseenter', (e) => {
         hoveredCity.value = city
+        prewarmCity(city)
         updateTooltipPosition(e)
         window.addEventListener('mousemove', updateTooltipPosition)
         // Подсвечиваем WebGL точку
@@ -893,17 +947,6 @@ onMounted(() => {
       markers.push({ marker, city })
     })
 
-    // Динамический масштаб маркеров от зума
-    const updateMapState = () => {
-      const z = map.getZoom()
-      // На зуме 4 масштаб 100%, на зуме 1.5 масштаб 40%
-      const scale = Math.max(0.4, Math.min(1, (z - 1) / 3))
-      document.getElementById('map')?.style.setProperty('--marker-scale', scale)
-    }
-    
-    map.on('zoom', updateMapState)
-    updateMapState() // Вычисляем координаты под стартовый зум
-
     // Анимация входа или загрузка по хэшу
     setTimeout(() => {
       let foundCity = false
@@ -916,15 +959,17 @@ onMounted(() => {
       }
       
       if (!foundCity) {
+        startPulse()
         map.flyTo({
           center: getPlanetCenter(),
           zoom: getPlanetZoom(),
           pitch: getPlanetPitch(),
           bearing: 0,
+          fov: 36.87,
           padding: getPlanetPadding(),
-          duration: 3000,
-          essential: true,
-          easing: (t) => t * (2 - t)
+          curve: 1.42,
+          speed: 1.2,
+          essential: true
         })
       }
     }, 500)
@@ -947,7 +992,7 @@ const updateTooltipPosition = (event) => {
 }
 
 onUnmounted(() => {
-  if (pulseAnimationId) cancelAnimationFrame(pulseAnimationId)
+  stopPulse()
   clearTimeout(diveTimer)
   window.removeEventListener('resize', handleResize)
   markers.forEach(m => m.marker.remove())
@@ -1464,7 +1509,6 @@ onUnmounted(() => {
     border-radius: var(--radius-xl);
     padding: var(--space-24);
     z-index: var(--z-overlay);
-    background: var(--color-accordion-bg);
     border: var(--border-width) solid var(--color-white-50);
   }
 
@@ -1478,10 +1522,11 @@ onUnmounted(() => {
   }
 
   .sidebar-complex-list {
-    padding-left: var(--space-0);
-    margin-left: var(--space-0);
-    padding-right: var(--space-0);
-    margin-right: var(--space-0);
+    padding-left: var(--space-24);
+    margin-left: calc(var(--space-24) * -1);
+    padding-right: var(--space-24);
+    margin-right: calc(var(--space-24) * -1);
+    padding-top: var(--space-24);
     padding-bottom: var(--space-24);
     -webkit-mask-image: linear-gradient(to bottom, black 0%, black calc(100% - var(--space-32)), transparent 100%);
     mask-image: linear-gradient(to bottom, black 0%, black calc(100% - var(--space-32)), transparent 100%);
@@ -1494,6 +1539,15 @@ onUnmounted(() => {
     left: var(--space-12);
     right: var(--space-12);
     padding: var(--space-20);
+  }
+
+  .sidebar-complex-list {
+    padding-left: var(--space-20);
+    margin-left: calc(var(--space-20) * -1);
+    padding-right: var(--space-20);
+    margin-right: calc(var(--space-20) * -1);
+    padding-top: var(--space-20);
+    padding-bottom: var(--space-20);
   }
 
   .sidebar-city-btn {

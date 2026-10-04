@@ -1530,7 +1530,9 @@ onUnmounted(() => {
 }
 
 .dispatch__photo {
-  width: 100%;
+  height: var(--dispatch-photo-max-height);
+  width: auto;
+  max-width: 100%;
   aspect-ratio: var(--aspect-ratio-4-5);
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -1548,11 +1550,13 @@ onUnmounted(() => {
   transform: translateX(0);
 }
 
-/* Асимметрия: сдвигаем четные фотки чуть влево для журнального вида */
+/* Асимметрия: сдвигаем четные фотки чуть вправо для журнального вида */
 .dispatch__photo--offset {
-  width: var(--dispatch-photo-offset-width);
-  margin-left: var(--dispatch-photo-offset-margin);
+  height: var(--dispatch-photo-max-height);
+  width: auto;
+  max-width: 100%;
   aspect-ratio: var(--aspect-ratio-3-4);
+  margin-left: var(--dispatch-photo-offset-margin-desktop);
 }
 
 .dispatch__photo img {
@@ -1584,10 +1588,13 @@ onUnmounted(() => {
 
   /* Исправляем залезание фотографий за пределы экрана на мобилках и калибруем высоту на планшетах */
   .dispatch__photo {
+    height: auto;
+    width: 100%;
     max-height: var(--dispatch-photo-max-height-tablet);
     transform: translateX(calc(var(--space-120) * -1));
   }
   .dispatch__photo--offset {
+    height: auto;
     width: var(--percent-85);
     margin-left: var(--percent-15);
     max-height: var(--dispatch-photo-max-height-tablet);

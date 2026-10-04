@@ -192,8 +192,9 @@
   --press-spotlight-size: 250px;
 
   /* Dispatch Layout */
-  --dispatch-photo-offset-width: clamp(80%, 85vw, 90%);
-  --dispatch-photo-offset-margin: clamp(10%, 15vw, 20%);
+  --dispatch-photo-max-height: clamp(480px, 65vh, 680px);
+  --dispatch-photo-max-height-tablet: clamp(380px, 50vh, 520px);
+  --dispatch-photo-offset-margin-desktop: clamp(40px, calc(3vw + 20px), 120px);
 
   /* Proportions */
   --aspect-ratio-16-9: 16/9;
@@ -228,7 +229,6 @@
   --percent-50: 50%;
   --percent-75: 75%;
   --percent-85: 85%;
-  --dispatch-photo-max-height-tablet: clamp(380px, 50vh, 520px);
   --vh-70: 70vh;
   --vh-100: 100vh;
   --vw-85: 85vw;
@@ -261,6 +261,12 @@
 
 html, body {
   overflow-x: clip;
+}
+
+html.is-scroll-locked,
+body.is-scroll-locked {
+  overflow: hidden !important;
+  overscroll-behavior: none;
 }
 
 body {
