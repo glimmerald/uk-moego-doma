@@ -245,7 +245,7 @@
             >
             <!-- Фотография-подложка, проявляемая "фонариком" -->
             <div class="press__image-reveal">
-              <img :src="press.image" alt="" class="press__image"
+              <img :src="press.image" alt="" class="press__image" loading="lazy" decoding="async"
                 :style="press.imagePosition ? { objectPosition: press.imagePosition } : {}" />
             </div>
 
@@ -1902,14 +1902,16 @@ onUnmounted(() => {
 /* Само слово прячем снизу */
 .press__word {
   display: inline-block;
-  transform: translateY(var(--translate-full));
+  transform: translate3d(0, var(--translate-full), 0);
   opacity: 0;
-  transition: transform var(--anim-duration-slower) var(--anim-easing-smooth), opacity var(--anim-duration-slower) ease;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transition: transform var(--anim-duration-fast) ease-out, opacity var(--anim-duration-fast) ease-out;
 }
 
 /* Когда родитель получает .is-revealed, слова поднимаются */
 .press__item.is-revealed .press__word {
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
   opacity: 1;
 }
 

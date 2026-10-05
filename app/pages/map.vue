@@ -136,9 +136,10 @@ import gsap from 'gsap'
 
 // --- GSAP Hooks for Sidebar Smooth Height Transition ---
 const onSidebarBeforeLeave = (el) => {
+  if (typeof window !== 'undefined' && window.innerWidth <= 768) return
   const parent = el.parentElement
   if (!parent) return
-  // Freeze parent height to prevent snapping to 0 when element unmounts
+  // Freeze parent height to prevent snapping to 0 when element unmounts (Desktop only)
   parent.style.height = `${parent.offsetHeight}px`
   parent.style.overflow = 'hidden'
 }
@@ -146,7 +147,7 @@ const onSidebarBeforeLeave = (el) => {
 const onSidebarLeave = (el, done) => {
   gsap.to(el, {
     opacity: 0,
-    y: -10,
+    y: -8,
     duration: 0.2,
     ease: 'power2.in',
     onComplete: done
@@ -155,13 +156,21 @@ const onSidebarLeave = (el, done) => {
 
 const onSidebarBeforeEnter = (el) => {
   el.style.opacity = 0
-  el.style.transform = 'translateY(10px)'
+  el.style.transform = 'translateY(8px)'
 }
 
 const onSidebarEnter = (el, done) => {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768
   const parent = el.parentElement
-  if (!parent) {
-    done()
+  if (!parent || isMobile) {
+    // На мобильных устройствах избегаем layout-пересчетов высоты во время полета камеры WebGL
+    gsap.to(el, {
+      opacity: 1,
+      y: 0,
+      duration: 0.25,
+      ease: 'power2.out',
+      onComplete: done
+    })
     return
   }
   
@@ -180,7 +189,7 @@ const onSidebarEnter = (el, done) => {
   // 5. Animate parent height
   gsap.to(parent, {
     height: targetHeight,
-    duration: 0.4,
+    duration: 0.35,
     ease: 'power2.out',
     onComplete: () => {
       parent.style.height = '' // Clear explicit height after animation
@@ -192,7 +201,7 @@ const onSidebarEnter = (el, done) => {
   gsap.to(el, {
     opacity: 1,
     y: 0,
-    duration: 0.4,
+    duration: 0.35,
     ease: 'power2.out',
     onComplete: done
   })
@@ -319,8 +328,8 @@ const toggleComplex = (complexId) => {
     updateMarkerClasses()
     if (activeCity.value && map) {
       map.flyTo({
-        center: activeCity.value.coordinates,
-        zoom: 10.54,
+        center: getCityCenter(activeCity.value),
+        zoom: getCityZoom(activeCity.value),
         pitch: 0,
         fov: 36.87,
         padding: getCityPadding(),
@@ -400,35 +409,104 @@ const selectComplexFromMap = (complexId) => {
 
 const getPlanetPadding = () => {
   if (typeof window === 'undefined') return { right: 0 }
-  return window.innerWidth > 1024 ? { right: 450 } : { bottom: window.innerHeight * 0.52 }
+  if (window.innerWidth > 768) {
+    const sidebarWidth = Math.min(Math.max(320, window.innerWidth * 0.10 + 220), 480)
+    return { right: Math.round(sidebarWidth + 40) }
+  }
+  return { bottom: Math.round(window.innerHeight * 0.52) }
 }
 
 const getCityPadding = () => {
   if (typeof window === 'undefined') return { right: 0, top: 0 }
-  return window.innerWidth > 1024 ? { right: 450, top: 200 } : { bottom: window.innerHeight * 0.52, top: 60 }
+  if (window.innerWidth > 768) {
+    const sidebarWidth = Math.min(Math.max(320, window.innerWidth * 0.10 + 220), 480)
+    const topOffset = Math.min(Math.round(window.innerHeight * 0.15), 180)
+    return { right: Math.round(sidebarWidth + 40), top: topOffset }
+  }
+  return { bottom: Math.round(window.innerHeight * 0.52), top: 60 }
+}
+
+const getCityCenter = (city) => {
+  if (!city) return [38.9753, 45.0355]
+  if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+    if (city.id === 'krasnodar') {
+      return [38.962, 45.061]
+    }
+    if (city.id === 'yablonovsky') {
+      return [38.947, 44.988]
+    }
+    if (city.id === 'guryevsk') {
+      return [20.619, 54.776]
+    }
+  }
+  return city.coordinates
+}
+
+const getCityZoom = (city) => {
+  if (typeof window === 'undefined') return 10.54
+  const isMobile = window.innerWidth <= 768
+  if (isMobile) {
+    if (city?.id === 'krasnodar') {
+      const w = window.innerWidth
+      if (w <= 400) return 9.17
+      if (w <= 480) return 9.25
+      return 9.4
+    }
+    if (city?.id === 'yablonovsky') {
+      return 11.0
+    }
+    if (city?.id === 'guryevsk') {
+      return 11.0
+    }
+    return 10.0
+  }
+  return 10.54
 }
 
 const getPlanetCenter = () => {
-  if (typeof window === 'undefined') return [42, 48]
-  return window.innerWidth > 1024 ? [42, 48] : [32, 50]
+  if (typeof window === 'undefined') return [33.5, 49.5]
+  const w = window.innerWidth
+  if (w >= 1600) return [36, 49.5]
+  if (w >= 1200) return [33.5, 49.5]
+  if (w > 768) return [31.5, 49.8]
+  return [31, 50]
 }
 
 const getPlanetZoom = () => {
-  if (typeof window === 'undefined') return 5.2
-  return window.innerWidth > 1024 ? 5.2 : 3.6
+  if (typeof window === 'undefined') return 4.5
+  const w = window.innerWidth
+  if (w >= 1920) return 4.9
+  if (w >= 1440) return 4.5
+  if (w >= 1200) return 4.2
+  if (w >= 960) return 3.85
+  if (w > 768) return 3.7
+  if (w > 480) return 3.6
+  return 3.4
 }
 
 const getPlanetPitch = () => {
   if (typeof window === 'undefined') return 20
-  return window.innerWidth > 1024 ? 20 : 35
+  return window.innerWidth > 768 ? 20 : 35
 }
 
 let diveTimer = null
+let diveArrivalHandler = null
+
+const cleanDiveArrival = () => {
+  if (diveTimer) {
+    clearTimeout(diveTimer)
+    diveTimer = null
+  }
+  if (diveArrivalHandler && map) {
+    map.off('moveend', diveArrivalHandler)
+    diveArrivalHandler = null
+  }
+}
 
 // Функция возврата на общую планету
 const returnToPlanet = () => {
   if (!map) return
-  clearTimeout(diveTimer)
+  cleanDiveArrival()
   isDived.value = false
   activeCity.value = null
   activeComplexId.value = null
@@ -458,7 +536,7 @@ const returnToPlanet = () => {
     fov: 36.87,
     padding: getPlanetPadding(),
     curve: 1.42,
-    speed: 1.2,
+    speed: 1.1,
     essential: true
   })
 
@@ -488,7 +566,7 @@ const diveTo = (cityId) => {
   const city = cities.find(c => c.id === cityId)
   if (!city || !map) return
   
-  clearTimeout(diveTimer)
+  cleanDiveArrival()
   stopPulse()
 
   // Если мы уже были в другом городе, нужно убрать его декорации и маркеры
@@ -522,29 +600,30 @@ const diveTo = (cityId) => {
 
   // 1. Полет камеры: естественная баллистическая кривая Van Wijk (без загрузки тайлов всей страны)
   map.flyTo({
-    center: city.coordinates,
-    zoom: 10.54,
+    center: getCityCenter(city),
+    zoom: getCityZoom(city),
     pitch: 0,
     bearing: 0,
     fov: 36.87,
     padding: getCityPadding(),
     curve: 1.42,
-    speed: 1.2,
+    speed: 1.1,
     essential: true
   })
 
-  // 2. Через 800мс плавно проявляем контур города (слои уже зарегистрированы в map.on('load'))
-  setTimeout(() => {
-    if (!isDived.value || activeCity.value?.id !== city.id) return
+  // 2. Обработчик прибытия камеры: появление контура и маркеров строго после приземления (исключает статтер)
+  let arrived = false
+  diveArrivalHandler = () => {
+    if (arrived || !isDived.value || activeCity.value?.id !== city.id) return
+    arrived = true
+    cleanDiveArrival()
+
+    // Плавно проявляем контур города
     if (map.getLayer(`${city.id}-fill`)) map.setPaintProperty(`${city.id}-fill`, 'fill-opacity', 1)
     if (map.getLayer(`${city.id}-border`)) map.setPaintProperty(`${city.id}-border`, 'line-opacity', 1)
-  }, 800)
 
-  // 3. Показываем точки ЖК ТОЛЬКО когда камера уже подлетела к городу (через 1.8с),
-  // чтобы они не летали и не дергались по экрану во время полета с масштаба планеты!
-  diveTimer = setTimeout(() => {
-    if (!isDived.value || activeCity.value?.id !== city.id) return
-
+    // Показываем точки ЖК ТОЛЬКО когда камера уже приземлилась в городе,
+    // чтобы они не летали и не вызывали статтер во время движения камеры
     complexMarkers.forEach(m => m.marker.remove())
     complexMarkers = []
 
@@ -601,7 +680,13 @@ const diveTo = (cityId) => {
     })
 
     updateMarkerClasses()
-  }, 2200)
+  }
+
+  // Привязываем к нативному событию завершения полета
+  map.once('moveend', diveArrivalHandler)
+
+  // Страховочный таймер на случай непредвиденного прерывания события moveend
+  diveTimer = setTimeout(diveArrivalHandler, 2600)
 }
 
 onMounted(() => {
@@ -977,8 +1062,33 @@ onMounted(() => {
 })
 
 
+let resizeTimer = null
 const handleResize = () => {
-  if (map) map.resize()
+  if (!map) return
+  map.resize()
+  clearTimeout(resizeTimer)
+  resizeTimer = setTimeout(() => {
+    if (!map) return
+    if (!isDived.value) {
+      map.easeTo({
+        center: getPlanetCenter(),
+        zoom: getPlanetZoom(),
+        pitch: getPlanetPitch(),
+        padding: getPlanetPadding(),
+        duration: 300
+      })
+    } else if (activeCity.value) {
+      const targetCoords = activeComplexId.value
+        ? (complexMarkers.find(m => m.complex.id === activeComplexId.value)?.complex.coordinates || getCityCenter(activeCity.value))
+        : getCityCenter(activeCity.value)
+      map.easeTo({
+        center: targetCoords,
+        zoom: activeComplexId.value ? 15.3 : getCityZoom(activeCity.value),
+        padding: getCityPadding(),
+        duration: 300
+      })
+    }
+  }, 200)
 }
 
 const updateComplexTooltipPosition = (event) => {
@@ -993,7 +1103,8 @@ const updateTooltipPosition = (event) => {
 
 onUnmounted(() => {
   stopPulse()
-  clearTimeout(diveTimer)
+  cleanDiveArrival()
+  if (resizeTimer) clearTimeout(resizeTimer)
   window.removeEventListener('resize', handleResize)
   markers.forEach(m => m.marker.remove())
   complexMarkers.forEach(m => m.marker.remove())
