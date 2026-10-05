@@ -1,3 +1,5 @@
+@import './editorial.css';
+
 :root {
   /* Colors */
   --color-black: #111111;
@@ -120,6 +122,7 @@
   
   /* Borders and Shadows */
   --border-width: 1px;
+  --border-width-thick: 2px;
   --radius-xs: 6px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -133,6 +136,7 @@
   --shadow-sm: 0 10px 20px rgba(0,0,0,0.05);
   --shadow-card: 0 10px 40px rgba(0,0,0,0.1);
   --shadow-menu: -10px 0 30px rgba(0,0,0,0.05);
+  --shadow-text-subtle: 0 1px 4px rgba(0, 0, 0, 0.6);
   
   /* Animations */
   --anim-duration-fast: 0.3s;
@@ -178,6 +182,11 @@
   --map-sheet-max-height: clamp(360px, 55vh, 520px);
   --map-sheet-max-width: clamp(340px, 85vw, 520px);
   --map-sidebar-width: clamp(320px, calc(10vw + 220px), 480px);
+  --map-sheet-inset: clamp(12px, calc(1.5vw + 6px), 20px);
+  --map-sheet-padding: clamp(16px, calc(1vw + 12px), 24px);
+  --complex-thumb-size: clamp(48px, calc(1.5vw + 42px), 60px);
+  --complex-item-padding: clamp(12px, calc(0.5vw + 10px), 16px);
+  --sidebar-city-btn-padding: clamp(16px, calc(1vw + 12px), 24px) clamp(20px, calc(1.5vw + 14px), 32px);
 
   /* Asymmetric Press Layout */
   --press-item-1-width: 60%;
@@ -250,6 +259,66 @@
   --slider-height: 600px;
   --slider-max-width: 800px;
   --perspective-slider: 1200px;
+
+  /* Documents Page Tokens */
+  --documents-search-width: clamp(280px, calc(10vw + 240px), 380px);
+  --documents-input-height: clamp(48px, calc(0.9vw + 44px), 56px);
+  --documents-label-min-width: 140px;
+  --documents-header-max-width: 800px;
+  --color-white-20: rgba(255, 255, 255, 0.2);
+  --opacity-subtle: 0.7;
+
+  /* Opacity tokens */
+  --opacity-15: 0.15;
+  --opacity-50: 0.5;
+  --opacity-60: 0.6;
+  --opacity-70: 0.7;
+  --opacity-80: 0.8;
+  --opacity-90: 0.9;
+  --opacity-95: 0.95;
+
+  /* Optical alignment */
+  --offset-optical-title: -0.04em;
+
+  /* Fluid layout tokens */
+  --hero-scroll-bottom: clamp(20px, calc(1.5vw + 14px), 40px);
+  --hero-scroll-gap: clamp(8px, calc(0.6vw + 6px), 16px);
+  --hero-scroll-line-height: clamp(32px, calc(1.5vw + 26px), 60px);
+  --projects-gap: clamp(32px, calc(3vw + 20px), 80px);
+  --accordion-padding-right: clamp(40px, calc(3vw + 28px), 80px);
+  --dispatch-gap: clamp(60px, calc(4.5vw + 30px), 120px);
+  --news-date-font-size: clamp(13px, calc(0.35vw + 11px), 18px);
+  --press-quote-font-size: clamp(16px, calc(0.8vw + 13px), 24px);
+  --press-quote-margin-bottom: clamp(24px, calc(1vw + 20px), 40px);
+  --debt-tabs-gap: clamp(16px, calc(1.5vw + 10px), 48px);
+  --debt-tabs-margin-bottom: clamp(32px, calc(1.5vw + 26px), 60px);
+  --debt-tab-padding-bottom: clamp(8px, calc(0.5vw + 6px), 16px);
+
+  /* Editorial System Tokens */
+  --space-3: 3px;
+  --reading-measure: clamp(320px, 90vw, 760px);
+  --reading-measure-wide: clamp(320px, 92vw, 1080px);
+  --editorial-progress-height: var(--space-3);
+  --editorial-kpi-val-size: clamp(36px, calc(2vw + 28px), 64px);
+  --editorial-quote-size: clamp(20px, calc(0.8vw + 16px), 28px);
+  --editorial-lead-size: clamp(18px, calc(0.4vw + 16px), 24px);
+  --editorial-h2-size: clamp(24px, calc(1.1vw + 20px), 36px);
+  --editorial-h3-size: clamp(20px, calc(0.8vw + 17px), 28px);
+  --editorial-meta-size: clamp(12px, calc(0.2vw + 11px), 14px);
+  --editorial-card-thumb-height: clamp(200px, calc(18vw + 130px), 280px);
+  --editorial-featured-thumb-height: clamp(320px, calc(28vw + 210px), 520px);
+  --editorial-hero-aspect-ratio: 16 / 9;
+  --editorial-hero-max-height: clamp(380px, calc(100vw * 9 / 16), 680px);
+  --editorial-callout-border-width: 1px;
+  --editorial-callout-accent-width: 3px;
+  --editorial-badge-radius: 40px;
+  --color-telegram: #229ED9;
+  --color-callout-warning-bg: rgba(230, 81, 0, 0.03);
+  --color-tag-bg: rgba(17, 17, 17, 0.85);
+  --color-badge-bg: rgba(0, 0, 0, 0.06);
+  --anim-duration-instant: 0.08s;
+  --scale-featured-hover: 1.03;
+  --scale-card-hover: 1.04;
 }
 
 /* Reset */

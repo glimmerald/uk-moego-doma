@@ -1,0 +1,373 @@
+{
+  "cities": [
+    { "id": "krasnodar", "name": "Краснодар" },
+    { "id": "yablonovsky", "name": "пгт. Яблоновский" },
+    { "id": "guryevsk", "name": "г. Гурьевск" }
+  ],
+  "generalCategories": [
+    { "id": "all", "name": "Все документы" },
+    { "id": "charter", "name": "Уставные документы" },
+    { "id": "license", "name": "Лицензии" },
+    { "id": "standards", "name": "Стандарты сервиса" },
+    { "id": "regulations", "name": "Регламенты и безопасность" }
+  ],
+  "general": [
+    {
+      "id": "gen-1",
+      "title": "Устав ООО «Управляющая Компания Моего Дома» (новая редакция)",
+      "category": "charter",
+      "categoryName": "Уставные документы",
+      "date": "24.03.2021",
+      "fileType": "PDF",
+      "fileSize": "2.4 МБ",
+      "url": "/documents/sample-document.pdf"
+    },
+    {
+      "id": "gen-2",
+      "title": "Лицензия на осуществление деятельности по управлению МКД № 023-000842",
+      "category": "license",
+      "categoryName": "Лицензии",
+      "date": "15.06.2021",
+      "fileType": "PDF",
+      "fileSize": "1.1 МБ",
+      "url": "/documents/sample-document.pdf"
+    },
+    {
+      "id": "gen-3",
+      "title": "Свидетельство о государственной регистрации и постановке на налоговый учет (ИНН / ОГРН)",
+      "category": "charter",
+      "categoryName": "Уставные документы",
+      "date": "26.03.2021",
+      "fileType": "PDF",
+      "fileSize": "820 КБ",
+      "url": "/documents/sample-document.pdf"
+    },
+    {
+      "id": "gen-4",
+      "title": "Единый стандарт качества эксплуатации и сервисного обслуживания жилых комплексов",
+      "category": "standards",
+      "categoryName": "Стандарты сервиса",
+      "date": "10.01.2024",
+      "fileType": "PDF",
+      "fileSize": "3.6 МБ",
+      "url": "/documents/sample-document.pdf"
+    },
+    {
+      "id": "gen-5",
+      "title": "Регламент реагирования круглосуточной аварийно-диспетчерской службы (АДС 24/7)",
+      "category": "regulations",
+      "categoryName": "Регламенты и безопасность",
+      "date": "01.02.2024",
+      "fileType": "PDF",
+      "fileSize": "1.5 МБ",
+      "url": "/documents/sample-document.pdf"
+    },
+    {
+      "id": "gen-6",
+      "title": "Политика ООО «УК Моего Дома» в отношении обработки и защиты персональных данных",
+      "category": "regulations",
+      "categoryName": "Регламенты и безопасность",
+      "date": "18.01.2023",
+      "fileType": "PDF",
+      "fileSize": "940 КБ",
+      "url": "/documents/sample-document.pdf"
+    }
+  ],
+  "complexCategories": [
+    { "id": "all", "name": "Все категории" },
+    { "id": "tariffs", "name": "Тарифы и нормативы" },
+    { "id": "reports", "name": "Отчеты об управлении" },
+    { "id": "protocols", "name": "Протоколы ОСС" },
+    { "id": "technical", "name": "Техническая документация" }
+  ],
+  "complexes": [
+    {
+      "id": "rakurs",
+      "name": "ЖК «Ракурс»",
+      "cityId": "krasnodar",
+      "address": "г. Краснодар, ул. 1-я Дорожная, 44/1",
+      "documents": [
+        {
+          "id": "rak-1",
+          "title": "Тариф на содержание и текущий ремонт общего имущества МКД на 2024–2025 гг.",
+          "category": "tariffs",
+          "categoryName": "Тарифы и нормативы",
+          "date": "20.12.2023",
+          "fileType": "PDF",
+          "fileSize": "1.2 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "rak-2",
+          "title": "Годовой отчет об исполнении договора управления и фактических расходах за 2023 год",
+          "category": "reports",
+          "categoryName": "Отчеты об управлении",
+          "date": "15.03.2024",
+          "fileType": "PDF",
+          "fileSize": "4.1 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "rak-3",
+          "title": "Протокол внеочередного общего собрания собственников помещений № 2/2024",
+          "category": "protocols",
+          "categoryName": "Протоколы ОСС",
+          "date": "18.05.2024",
+          "fileType": "PDF",
+          "fileSize": "2.8 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "rak-4",
+          "title": "Паспорт готовности жилого комплекса к отопительному периоду 2024–2025 гг.",
+          "category": "technical",
+          "categoryName": "Техническая документация",
+          "date": "10.09.2024",
+          "fileType": "PDF",
+          "fileSize": "1.6 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "rak-5",
+          "title": "План текущего ремонта и благоустройства придомовой территории на 2024 год",
+          "category": "reports",
+          "categoryName": "Отчеты об управлении",
+          "date": "12.01.2024",
+          "fileType": "PDF",
+          "fileSize": "1.9 МБ",
+          "url": "/documents/sample-document.pdf"
+        }
+      ]
+    },
+    {
+      "id": "prityazhenie",
+      "name": "ЖК «Притяжение»",
+      "cityId": "krasnodar",
+      "address": "г. Краснодар, ул. Московская, 148",
+      "documents": [
+        {
+          "id": "prit-1",
+          "title": "Тарифная сетка на техническое обслуживание инженерных систем и клининг на 2024 г.",
+          "category": "tariffs",
+          "categoryName": "Тарифы и нормативы",
+          "date": "15.01.2024",
+          "fileType": "PDF",
+          "fileSize": "1.4 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "prit-2",
+          "title": "Годовой отчет управляющей организации о выполнении обязательств за 2023 год",
+          "category": "reports",
+          "categoryName": "Отчеты об управлении",
+          "date": "20.03.2024",
+          "fileType": "PDF",
+          "fileSize": "3.8 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "prit-3",
+          "title": "Протокол ОСС об утверждении правил пользования подземным паркингом и кладовыми",
+          "category": "protocols",
+          "categoryName": "Протоколы ОСС",
+          "date": "11.04.2024",
+          "fileType": "PDF",
+          "fileSize": "2.2 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "prit-4",
+          "title": "Акт весеннего осмотра строительных конструкций и технологического оборудования",
+          "category": "technical",
+          "categoryName": "Техническая документация",
+          "date": "25.04.2024",
+          "fileType": "PDF",
+          "fileSize": "1.7 МБ",
+          "url": "/documents/sample-document.pdf"
+        }
+      ]
+    },
+    {
+      "id": "trilogia",
+      "name": "ЖК «Трилогия»",
+      "cityId": "krasnodar",
+      "address": "г. Краснодар, ул. им. Невкипелого, 24/2",
+      "documents": [
+        {
+          "id": "tril-1",
+          "title": "Размер платы за содержание жилого помещения и текущий ремонт на 2024 год",
+          "category": "tariffs",
+          "categoryName": "Тарифы и нормативы",
+          "date": "10.01.2024",
+          "fileType": "PDF",
+          "fileSize": "1.1 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "tril-2",
+          "title": "Отчет об исполнении сметы доходов и расходов по управлению домами за 2023 год",
+          "category": "reports",
+          "categoryName": "Отчеты об управлении",
+          "date": "14.03.2024",
+          "fileType": "PDF",
+          "fileSize": "3.2 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "tril-3",
+          "title": "Протокол общего собрания собственников помещений № 1/2024",
+          "category": "protocols",
+          "categoryName": "Протоколы ОСС",
+          "date": "05.02.2024",
+          "fileType": "PDF",
+          "fileSize": "2.5 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "tril-4",
+          "title": "Энергетический паспорт многоквартирного жилого дома с приложениями",
+          "category": "technical",
+          "categoryName": "Техническая документация",
+          "date": "18.08.2023",
+          "fileType": "PDF",
+          "fileSize": "2.9 МБ",
+          "url": "/documents/sample-document.pdf"
+        }
+      ]
+    },
+    {
+      "id": "svoboda",
+      "name": "ЖК «Свобода»",
+      "cityId": "krasnodar",
+      "address": "г. Краснодар, ул. Домбайская, 55",
+      "documents": [
+        {
+          "id": "svob-1",
+          "title": "Утвержденные ставки платы за содержание жилого помещения на 2024 год",
+          "category": "tariffs",
+          "categoryName": "Тарифы и нормативы",
+          "date": "12.01.2024",
+          "fileType": "PDF",
+          "fileSize": "1.3 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "svob-2",
+          "title": "Финансовый отчет об управлении МКД и оказании эксплуатационных услуг за 2023 год",
+          "category": "reports",
+          "categoryName": "Отчеты об управлении",
+          "date": "22.03.2024",
+          "fileType": "PDF",
+          "fileSize": "3.5 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "svob-3",
+          "title": "Протокол ОСС о согласовании концепции дополнительного озеленения двора",
+          "category": "protocols",
+          "categoryName": "Протоколы ОСС",
+          "date": "30.06.2024",
+          "fileType": "PDF",
+          "fileSize": "2.1 МБ",
+          "url": "/documents/sample-document.pdf"
+        }
+      ]
+    },
+    {
+      "id": "dom-na-lugovoi",
+      "name": "ЖК «Дом на Луговой»",
+      "cityId": "yablonovsky",
+      "address": "пгт. Яблоновский, ул. Луговая, 7/6",
+      "documents": [
+        {
+          "id": "lug-1",
+          "title": "Тариф на техническое обслуживание и вывоз ТКО на 2024 год",
+          "category": "tariffs",
+          "categoryName": "Тарифы и нормативы",
+          "date": "08.01.2024",
+          "fileType": "PDF",
+          "fileSize": "1.0 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "lug-2",
+          "title": "Отчет управляющей организации об исполнении условий договора за 2023 год",
+          "category": "reports",
+          "categoryName": "Отчеты об управлении",
+          "date": "19.03.2024",
+          "fileType": "PDF",
+          "fileSize": "2.7 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "lug-3",
+          "title": "Протокол общего собрания собственников об избрании членов совета дома",
+          "category": "protocols",
+          "categoryName": "Протоколы ОСС",
+          "date": "14.11.2023",
+          "fileType": "PDF",
+          "fileSize": "1.8 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "lug-4",
+          "title": "Паспорт узла коммерческого учета тепловой энергии и горячего водоснабжения",
+          "category": "technical",
+          "categoryName": "Техническая документация",
+          "date": "05.10.2023",
+          "fileType": "PDF",
+          "fileSize": "1.5 МБ",
+          "url": "/documents/sample-document.pdf"
+        }
+      ]
+    },
+    {
+      "id": "vklyuchi",
+      "name": "ЖК «Включи»",
+      "cityId": "guryevsk",
+      "address": "г. Гурьевск, ул. Героя России Катериничева, 2",
+      "documents": [
+        {
+          "id": "vkl-1",
+          "title": "Ставка платы за содержание и текущий ремонт МКД на 2024–2025 гг.",
+          "category": "tariffs",
+          "categoryName": "Тарифы и нормативы",
+          "date": "25.01.2024",
+          "fileType": "PDF",
+          "fileSize": "1.2 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "vkl-2",
+          "title": "Отчет об управлении МКД и перечень выполненных регламентных работ за 2023 год",
+          "category": "reports",
+          "categoryName": "Отчеты об управлении",
+          "date": "17.03.2024",
+          "fileType": "PDF",
+          "fileSize": "3.1 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "vkl-3",
+          "title": "Протокол ОСС об утверждении регламента доступа и въезда на закрытую территорию",
+          "category": "protocols",
+          "categoryName": "Протоколы ОСС",
+          "date": "28.05.2024",
+          "fileType": "PDF",
+          "fileSize": "2.0 МБ",
+          "url": "/documents/sample-document.pdf"
+        },
+        {
+          "id": "vkl-4",
+          "title": "Технический паспорт многоквартирного дома и поэтажные планы",
+          "category": "technical",
+          "categoryName": "Техническая документация",
+          "date": "12.12.2023",
+          "fileType": "PDF",
+          "fileSize": "4.8 МБ",
+          "url": "/documents/sample-document.pdf"
+        }
+      ]
+    }
+  ]
+}

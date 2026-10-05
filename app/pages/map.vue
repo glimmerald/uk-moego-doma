@@ -21,7 +21,9 @@
             <button 
               v-for="city in cities" 
               :key="city.id" 
+              type="button"
               class="sidebar-city-btn"
+              :aria-label="'Выбрать город ' + city.name + ', объектов: ' + city.complexes.length"
               @mouseenter="prewarmCity(city)"
               @click="diveTo(city.id)"
             >
@@ -33,7 +35,7 @@
 
         <!-- Состояние 2: Город -->
         <div v-else class="sidebar-content sidebar-content--city" key="city">
-          <button class="sidebar-back-btn" @click="returnToPlanet()">
+          <button type="button" class="sidebar-back-btn" aria-label="Вернуться к списку городов" @click="returnToPlanet()">
             &larr; Вернуться к списку городов
           </button>
           <h1 class="sidebar-title">{{ activeCity?.name }}</h1>
@@ -53,14 +55,21 @@
                   'is-active': activeComplexId === complex.id,
                   'is-hovered': hoveredComplexId === complex.id
                 }"
+                role="button"
+                tabindex="0"
+                :aria-expanded="activeComplexId === complex.id"
+                :aria-label="complex.name + ', ' + complex.address"
                 @mouseenter="hoverComplex(complex.id)"
                 @mouseleave="unhoverComplex()"
                 @click="toggleComplex(complex.id)"
+                @keydown.enter.prevent="toggleComplex(complex.id)"
+                @keydown.space.prevent="toggleComplex(complex.id)"
               >
                 <div class="complex-list-item__header">
                   <img 
                     v-if="complex.image" 
                     :src="complex.image" 
+                    :alt="complex.name"
                     class="complex-list-item__thumb" 
                     loading="lazy" 
                     decoding="async" 
@@ -96,6 +105,7 @@
           <img 
             v-if="hoveredComplex.image" 
             :src="hoveredComplex.image" 
+            :alt="hoveredComplex.name"
             class="complex-card__image" 
             loading="lazy" 
             decoding="async" 
@@ -108,20 +118,20 @@
       </div>
     </Transition>
 
-    <!-- Тултип -->
+    <!-- Тултип города -->
     <Transition name="fade">
       <div 
         v-if="hoveredCity"
         class="map-tooltip glass-effect"
         :style="{ top: tooltipY + 'px', left: tooltipX + 'px' }"
       >
-        <div class="map-tooltip__title">{{ hoveredCity.name }}</div>
-        <div class="map-tooltip__subtitle">Количество объектов: {{ hoveredCity.complexes.length }}</div>
-        <div class="map-tooltip__complexes">
-          <div v-for="(complex, i) in hoveredCity.complexes" :key="i" class="map-tooltip__complex">
+        <div class="map-tooltip__header">{{ hoveredCity.name }}</div>
+        <div class="map-tooltip__count">Количество объектов: {{ hoveredCity.complexes.length }}</div>
+        <ul class="map-tooltip__list">
+          <li v-for="(complex, i) in hoveredCity.complexes" :key="i">
             {{ complex.name }}
-          </div>
-        </div>
+          </li>
+        </ul>
       </div>
     </Transition>
   </div>
@@ -491,11 +501,17 @@ const getPlanetPitch = () => {
 
 let diveTimer = null
 let diveArrivalHandler = null
+let returnToPlanetTimer = null
+let initialFlyTimer = null
 
 const cleanDiveArrival = () => {
   if (diveTimer) {
     clearTimeout(diveTimer)
     diveTimer = null
+  }
+  if (returnToPlanetTimer) {
+    clearTimeout(returnToPlanetTimer)
+    returnToPlanetTimer = null
   }
   if (diveArrivalHandler && map) {
     map.off('moveend', diveArrivalHandler)
@@ -541,8 +557,8 @@ const returnToPlanet = () => {
   })
 
   // Через 1 секунду после начала обратного полета
-  setTimeout(() => {
-    if (isDived.value) return
+  returnToPlanetTimer = setTimeout(() => {
+    if (!map || isDived.value) return
     
     // Возвращаем глобусные точки и подписи
     if (map.getLayer('city-dot')) map.setPaintProperty('city-dot', 'circle-opacity', 1)
@@ -743,7 +759,7 @@ onMounted(() => {
     // Источник: GeoJSON только с регионами РФ
     map.addSource('russia-regions-data', {
       type: 'geojson',
-      data: 'https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/russia.geojson'
+      data: '/russia.geojson'
     })
 
     // Идеальная заливка России, собранная из самих регионов (гарантирует 100% совпадение границ)
@@ -1033,7 +1049,8 @@ onMounted(() => {
     })
 
     // Анимация входа или загрузка по хэшу
-    setTimeout(() => {
+    initialFlyTimer = setTimeout(() => {
+      if (!map) return
       let foundCity = false
       if (route.hash) {
         const cityId = route.hash.replace('#', '')
@@ -1104,6 +1121,8 @@ const updateTooltipPosition = (event) => {
 onUnmounted(() => {
   stopPulse()
   cleanDiveArrival()
+  if (initialFlyTimer) clearTimeout(initialFlyTimer)
+  if (returnToPlanetTimer) clearTimeout(returnToPlanetTimer)
   if (resizeTimer) clearTimeout(resizeTimer)
   window.removeEventListener('resize', handleResize)
   markers.forEach(m => m.marker.remove())
@@ -1193,7 +1212,7 @@ onUnmounted(() => {
 
 .map-tooltip__list li {
   font-size: var(--text-body);
-  color: var(--color-gray-800);
+  color: var(--color-gray-700);
   position: relative;
   padding-left: var(--space-16);
 }
@@ -1240,7 +1259,7 @@ onUnmounted(() => {
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  max-height: calc(var(--vh-100) - var(--space-160) - var(--space-96)); /* Вычитаем паддинги (48 * 2) */
+  max-height: calc(var(--vh-100) - var(--space-160) - var(--space-48) * 2); /* Вычитаем паддинги (48 * 2) */
 }
 
 .sidebar-title {
@@ -1287,7 +1306,7 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: var(--space-24) var(--space-32);
+  padding: var(--sidebar-city-btn-padding);
   background: var(--color-white-50);
   border: var(--border-width) solid var(--color-white-80);
   border-radius: var(--radius-md);
@@ -1301,6 +1320,11 @@ onUnmounted(() => {
 .sidebar-city-btn:hover {
   background: var(--color-accordion-bg);
   box-shadow: var(--shadow-sm);
+}
+
+.sidebar-city-btn:focus-visible {
+  outline: var(--border-width) solid var(--color-black);
+  outline-offset: var(--space-2);
 }
 
 .city-badge {
@@ -1332,6 +1356,11 @@ onUnmounted(() => {
 
 .sidebar-back-btn:hover {
   color: var(--color-black);
+}
+
+.sidebar-back-btn:focus-visible {
+  outline: var(--border-width) solid var(--color-black);
+  outline-offset: var(--space-2);
 }
 
 .complex-directory {
@@ -1374,6 +1403,12 @@ onUnmounted(() => {
   pointer-events: auto;
 }
 
+:deep(.complex-marker-wrapper:focus-visible) {
+  outline: var(--border-width) solid var(--color-black);
+  outline-offset: var(--space-2);
+  border-radius: var(--radius-round);
+}
+
 :deep(.complex-marker-wrapper)::before {
   content: '';
   position: absolute;
@@ -1389,7 +1424,7 @@ onUnmounted(() => {
   height: 100%;
   border-radius: var(--radius-round);
   background: var(--color-black);
-  border: var(--border-width-thick, var(--space-2)) solid var(--color-white);
+  border: var(--border-width-thick) solid var(--color-white);
   box-shadow: inset 0 0 0 0 var(--color-glow-transparent), var(--shadow-sm);
   scale: 1;
   transition: 
@@ -1494,7 +1529,7 @@ onUnmounted(() => {
   background: var(--color-white);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: var(--space-16);
+  padding: var(--complex-item-padding);
   cursor: pointer;
   transition: border-color var(--anim-duration-fast) var(--anim-easing-ease), box-shadow var(--anim-duration-fast) var(--anim-easing-ease);
   box-shadow: var(--shadow-sm);
@@ -1505,6 +1540,11 @@ onUnmounted(() => {
 .complex-list-item:hover,
 .complex-list-item.is-hovered {
   border-color: var(--color-gray-300);
+}
+
+.complex-list-item:focus-visible {
+  outline: var(--border-width) solid var(--color-black);
+  outline-offset: var(--space-2);
 }
 
 .complex-list-item.is-active {
@@ -1523,8 +1563,8 @@ onUnmounted(() => {
 }
 
 .complex-list-item__thumb {
-  width: var(--space-60);
-  height: var(--space-60);
+  width: var(--complex-thumb-size);
+  height: var(--complex-thumb-size);
   border-radius: var(--radius-sm);
   object-fit: cover;
   flex-shrink: 0;
@@ -1610,15 +1650,15 @@ onUnmounted(() => {
   .map-sidebar {
     position: absolute;
     top: auto;
-    bottom: var(--space-20);
-    left: var(--space-20);
-    right: var(--space-20);
+    bottom: var(--map-sheet-inset);
+    left: var(--map-sheet-inset);
+    right: var(--map-sheet-inset);
     max-width: var(--map-sheet-max-width);
     margin: var(--space-0) auto;
     width: auto;
     max-height: var(--map-sheet-max-height);
     border-radius: var(--radius-xl);
-    padding: var(--space-24);
+    padding: var(--map-sheet-padding);
     z-index: var(--z-overlay);
     border: var(--border-width) solid var(--color-white-50);
   }
@@ -1633,45 +1673,14 @@ onUnmounted(() => {
   }
 
   .sidebar-complex-list {
-    padding-left: var(--space-24);
-    margin-left: calc(var(--space-24) * -1);
-    padding-right: var(--space-24);
-    margin-right: calc(var(--space-24) * -1);
-    padding-top: var(--space-24);
-    padding-bottom: var(--space-24);
+    padding-left: var(--map-sheet-padding);
+    margin-left: calc(var(--map-sheet-padding) * -1);
+    padding-right: var(--map-sheet-padding);
+    margin-right: calc(var(--map-sheet-padding) * -1);
+    padding-top: var(--map-sheet-padding);
+    padding-bottom: var(--map-sheet-padding);
     -webkit-mask-image: linear-gradient(to bottom, black 0%, black calc(100% - var(--space-32)), transparent 100%);
     mask-image: linear-gradient(to bottom, black 0%, black calc(100% - var(--space-32)), transparent 100%);
-  }
-}
-
-@media (max-width: 480px) {
-  .map-sidebar {
-    bottom: var(--space-12);
-    left: var(--space-12);
-    right: var(--space-12);
-    padding: var(--space-20);
-  }
-
-  .sidebar-complex-list {
-    padding-left: var(--space-20);
-    margin-left: calc(var(--space-20) * -1);
-    padding-right: var(--space-20);
-    margin-right: calc(var(--space-20) * -1);
-    padding-top: var(--space-20);
-    padding-bottom: var(--space-20);
-  }
-
-  .sidebar-city-btn {
-    padding: var(--space-16) var(--space-20);
-  }
-
-  .complex-list-item {
-    padding: var(--space-12);
-  }
-
-  .complex-list-item__thumb {
-    width: var(--space-48);
-    height: var(--space-48);
   }
 }
 </style>

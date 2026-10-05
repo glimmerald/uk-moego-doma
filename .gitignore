@@ -12,3 +12,6 @@ GEMINI.md
 
 !app/public/optimized/
 !app/public/optimized/**
+.npm/
+.nuxtrc
+app/dist

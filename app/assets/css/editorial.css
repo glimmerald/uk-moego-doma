@@ -1,0 +1,248 @@
+/* ==========================================================================
+   Editorial Design System (Журнальная верстка интернет-издания)
+   Строгое следование дизайн-коду Awwwards и правилам GEMINI.md:
+   - Все размеры и цвета через var(--...)
+   - Никаких магических чисел
+   - Fluid typography & spacing
+   ========================================================================== */
+
+/* Контейнер лонгрида (оптимальная журнальная мера чтения) */
+.editorial-article {
+  width: 100%;
+  max-width: var(--reading-measure);
+  margin-inline: auto;
+  position: relative;
+}
+
+/* Расширенная полоса для инфографики и медиа */
+.editorial-article--wide {
+  max-width: var(--reading-measure-wide);
+}
+
+/* Вводный лид-абзац статьи */
+.editorial-lead {
+  font-family: var(--font-family);
+  font-size: var(--editorial-lead-size);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-black);
+  margin-bottom: var(--space-32);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+/* Журнальные подзаголовки внутри статьи */
+.editorial-h2 {
+  font-family: var(--font-family-serif);
+  font-size: var(--editorial-h2-size);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-heading);
+  color: var(--color-black);
+  margin-top: var(--space-48);
+  margin-bottom: var(--space-16);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.editorial-h3 {
+  font-family: var(--font-family);
+  font-size: var(--editorial-h3-size);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-heading);
+  color: var(--color-dark);
+  margin-top: var(--space-32);
+  margin-bottom: var(--space-12);
+}
+
+/* Основной текст параграфов */
+.editorial-p {
+  font-family: var(--font-family);
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-loose);
+  color: var(--color-gray-900);
+  margin-bottom: var(--space-24);
+}
+
+/* Выносная журнальная цитата (Pull-Quote) */
+.editorial-quote {
+  margin-block: var(--space-40);
+  padding-left: var(--space-24);
+  border-left: var(--editorial-callout-accent-width) solid var(--color-dark);
+  position: relative;
+}
+
+.editorial-quote__text {
+  font-family: var(--font-family-serif);
+  font-size: var(--editorial-quote-size);
+  font-style: italic;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-black);
+  margin-bottom: var(--space-12);
+}
+
+.editorial-quote__author {
+  font-family: var(--font-family);
+  font-size: var(--editorial-meta-size);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-uppercase);
+  text-transform: uppercase;
+  color: var(--color-gray-500);
+}
+
+/* Сетка ключевых показателей / KPI */
+.editorial-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(140px, calc(15vw + 80px), 220px), 1fr));
+  gap: var(--space-16);
+  margin-block: var(--space-36);
+}
+
+.editorial-kpi-card {
+  background-color: var(--color-bg-alt);
+  border: var(--editorial-callout-border-width) solid var(--color-border);
+  padding: var(--space-24);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  transition: transform var(--anim-duration-fast) var(--anim-easing-smooth), border-color var(--anim-duration-fast) ease;
+}
+
+.editorial-kpi-card:hover {
+  border-color: var(--color-gray-400);
+  transform: translateY(calc(var(--space-2) * -1));
+}
+
+.editorial-kpi-card__val {
+  font-family: var(--font-family-serif);
+  font-size: var(--editorial-kpi-val-size);
+  font-variant-numeric: lining-nums;
+  -moz-font-feature-settings: "lnum" 1;
+  -webkit-font-feature-settings: "lnum" 1;
+  font-feature-settings: "lnum" 1;
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-none);
+  color: var(--color-black);
+  margin-bottom: var(--space-10);
+}
+
+.editorial-kpi-card__label {
+  font-family: var(--font-family);
+  font-size: var(--text-body-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-dark);
+}
+
+.editorial-kpi-card__sub {
+  font-family: var(--font-family);
+  font-size: var(--text-caption);
+  color: var(--color-gray-500);
+  margin-top: var(--space-4);
+}
+
+/* Сервисные плашки и врезки (Callout) */
+.editorial-callout {
+  background-color: var(--color-bg-alt);
+  border: var(--editorial-callout-border-width) solid var(--color-border);
+  border-left: var(--editorial-callout-accent-width) solid var(--color-dark);
+  padding: var(--space-24);
+  margin-block: var(--space-32);
+}
+
+.editorial-callout--warning {
+  border-left-color: var(--color-primary);
+  background-color: var(--color-callout-warning-bg);
+}
+
+.editorial-callout--official {
+  border-left-color: var(--color-gray-700);
+}
+
+.editorial-callout__badge {
+  display: inline-block;
+  font-family: var(--font-family);
+  font-size: var(--text-tiny);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-uppercase);
+  text-transform: uppercase;
+  color: var(--color-gray-600);
+  margin-bottom: var(--space-8);
+}
+
+.editorial-callout--warning .editorial-callout__badge {
+  color: var(--color-primary);
+}
+
+.editorial-callout__title {
+  font-family: var(--font-family);
+  font-size: var(--text-h6);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-heading);
+  color: var(--color-black);
+  margin-bottom: var(--space-8);
+}
+
+.editorial-callout__text {
+  font-family: var(--font-family);
+  font-size: var(--text-body-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-gray-700);
+}
+
+/* Журнальные маркированные списки */
+.editorial-list {
+  list-style: none;
+  padding-left: var(--space-0);
+  margin-bottom: var(--space-32);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.editorial-list__item {
+  position: relative;
+  padding-left: var(--space-24);
+  font-family: var(--font-family);
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-gray-900);
+}
+
+.editorial-list__item::before {
+  content: '—';
+  position: absolute;
+  left: var(--space-0);
+  top: var(--space-0);
+  color: var(--color-gray-400);
+  font-weight: var(--font-weight-regular);
+}
+
+/* Подписи к иллюстрациям и медиа */
+.editorial-caption {
+  font-family: var(--font-family);
+  font-size: var(--text-caption);
+  color: var(--color-gray-500);
+  line-height: var(--line-height-base);
+  margin-top: var(--space-10);
+  text-align: left;
+}
+
+/* Прогресс-бар чтения статьи (Reading progress bar) */
+.reading-progress-track {
+  position: fixed;
+  top: var(--space-0);
+  left: var(--space-0);
+  width: var(--vw-100);
+  height: var(--editorial-progress-height);
+  background: transparent;
+  z-index: var(--z-header-content);
+  pointer-events: none;
+}
+
+.reading-progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: var(--color-primary);
+  transition: width var(--anim-duration-instant) var(--anim-easing-linear);
+}

@@ -107,7 +107,8 @@ const handleNavClick = (link) => {
     const hash = link.replace('/', '')
     const el = document.querySelector(hash)
     if (el) {
-      const headerOffset = 80
+      const headerEl = document.querySelector('.app-header')
+      const headerOffset = headerEl ? headerEl.offsetHeight : 80
       const elementPosition = el.getBoundingClientRect().top
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset
       window.scrollTo({
@@ -119,7 +120,8 @@ const handleNavClick = (link) => {
     const hash = '#' + link.split('#')[1]
     const el = document.querySelector(hash)
     if (el) {
-      const headerOffset = 80
+      const headerEl = document.querySelector('.app-header')
+      const headerOffset = headerEl ? headerEl.offsetHeight : 80
       const elementPosition = el.getBoundingClientRect().top
       const offsetPosition = elementPosition + window.pageYOffset - headerOffset
       window.scrollTo({ top: offsetPosition, behavior: 'smooth' })

@@ -59,38 +59,20 @@
       </div>
     </section>
 
-    <!-- Третья секция (Имиджевая)
-    <section class="section-image" id="about">
-      <div class="image-section__container">
-        <div class="image-section__header">
-          <h2 class="image-section__title">Философия комфорта</h2>
-          <p class="image-section__text">
-            Наш подход основан на абсолютном внимании к деталям. Мы верим, что качество жизни
-            определяется мелочами, поэтому каждая зона в наших домах продумана до сантиметра.
-          </p>
-        </div>
-
-        <div class="image-section__slider-wrapper">
-          <CarouselCoverflow :slides="sliderImages" />
-        </div>
-      </div>
-    </section>
-    -->
-
-    <!-- Четвертая секция (Преимущества - Аккордеон) -->
+    <!-- Третья секция (Преимущества - Аккордеон) -->
     <section class="section-advantages" id="advantages">
       <div class="advantages__container">
         <div class="advantages__header">
           <h2 class="advantages__section-title">В цифрах</h2>
           <div class="advantages__controls">
-            <button class="slider-btn" @click="scrollAccordion(-1)">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <button class="slider-btn" type="button" aria-label="Предыдущий слайд" @click="scrollAccordion(-1)">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>
             </button>
-            <button class="slider-btn" @click="scrollAccordion(1)">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <button class="slider-btn" type="button" aria-label="Следующий слайд" @click="scrollAccordion(1)">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>
@@ -101,9 +83,16 @@
         <div class="accordion-wrapper">
           <div class="accordion" ref="accordionRef" @pointerleave="deactivateItem" @scroll="handleAccordionScroll" @touchstart="onTouchStart" @touchend="onTouchEnd" @touchcancel="onTouchEnd">
             <div class="accordion__item" :class="{ 'is-active': activeAccordionIndex === index }"
-              v-for="(adv, index) in advantagesList" :key="index" @pointermove="activateItem(index, $event)">
+              v-for="(adv, index) in advantagesList" :key="index"
+              tabindex="0"
+              role="region"
+              :aria-label="adv.title"
+              @pointermove="activateItem(index, $event)"
+              @focus="activateItem(index, $event)"
+              @keydown.enter="activateItem(index, $event)"
+              @keydown.space.prevent="activateItem(index, $event)">
               <div class="accordion__bg">
-                <img :src="adv.image" alt="" loading="lazy" />
+                <img :src="adv.image" alt="" aria-hidden="true" loading="lazy" />
                 <div class="accordion__bg-overlay"></div>
               </div>
 
@@ -170,7 +159,7 @@
           <div class="news__image-container">
             <div v-for="(news, index) in newsList" :key="'img-' + index" class="news__image"
               :class="{ 'is-active': activeNewsIndex === index }">
-              <img :src="news.image" alt="Новость" loading="lazy">
+              <img :src="news.image" :alt="news.title" loading="lazy">
             </div>
           </div>
 
@@ -178,8 +167,14 @@
           <div class="news__list">
             <div class="news-list__item" v-for="(news, index) in newsList" :key="'item-' + index"
               :class="{ 'is-active': activeNewsIndex === index }" 
+              tabindex="0"
+              role="button"
+              :aria-expanded="activeNewsIndex === index"
               @mouseenter="onNewsHover(index)"
-              @click="onNewsClick(index)">
+              @focus="onNewsHover(index)"
+              @click="onNewsClick(index)"
+              @keydown.enter.prevent="onNewsClick(index)"
+              @keydown.space.prevent="onNewsClick(index)">
               
               <div class="news-list__header">
                 <div class="news-list__date">{{ news.date }}</div>
@@ -190,13 +185,13 @@
               <div class="news-list__mobile-body">
                 <div class="news-list__mobile-inner">
                   <div class="news-list__mobile-image">
-                    <img :src="news.image" alt="Новость" loading="lazy">
+                    <img :src="news.image" :alt="news.title" loading="lazy">
                   </div>
                   <div class="news-list__mobile-excerpt">
                     <p>{{ news.excerpt }}</p>
-                    <NuxtLink to="#" class="btn-arrow">
+                    <NuxtLink :to="`/news/${news.slug}`" class="btn-arrow" :aria-label="'Читать новость целиком: ' + news.title">
                       <span class="btn-arrow__text">Читать целиком</span>
-                      <span class="btn-arrow__icon">
+                      <span class="btn-arrow__icon" aria-hidden="true">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                           <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
@@ -214,9 +209,9 @@
             <div v-for="(news, index) in newsList" :key="'text-' + index" class="news__excerpt"
               :class="{ 'is-active': activeNewsIndex === index }">
               <p>{{ news.excerpt }}</p>
-              <NuxtLink to="#" class="btn-arrow">
+              <NuxtLink :to="`/news/${news.slug}`" class="btn-arrow" :aria-label="'Читать новость целиком: ' + news.title">
                 <span class="btn-arrow__text">Читать целиком</span>
-                <span class="btn-arrow__icon">
+                <span class="btn-arrow__icon" aria-hidden="true">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5"
                       stroke-linecap="round" stroke-linejoin="round" />
@@ -228,7 +223,7 @@
 
           <!-- Колонка 2, Строка 2: Кнопка "Все новости" -->
           <div class="news-list__footer">
-            <NuxtLink to="#" class="news-list__view-all">Смотреть все новости (15)</NuxtLink>
+            <NuxtLink to="/news" class="news-list__view-all" aria-label="Смотреть все новости компании">Смотреть все новости ({{ totalNewsCount }})</NuxtLink>
           </div>
         </div>
       </div>
@@ -245,7 +240,7 @@
             >
             <!-- Фотография-подложка, проявляемая "фонариком" -->
             <div class="press__image-reveal">
-              <img :src="press.image" alt="" class="press__image" loading="lazy" decoding="async"
+              <img :src="press.image" alt="" aria-hidden="true" class="press__image" loading="lazy" decoding="async"
                 :style="press.imagePosition ? { objectPosition: press.imagePosition } : {}" />
             </div>
 
@@ -258,9 +253,9 @@
 
             <div class="press__footer">
               <div class="press__source glass-effect">{{ press.source }}</div>
-              <NuxtLink :to="press.link" class="press__link glass-effect">
+              <NuxtLink :to="press.link" class="press__link glass-effect" :aria-label="'Читать статью в источнике: ' + press.source">
                 <span>Читать статью</span>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="1.5"
                     stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
@@ -279,11 +274,14 @@
           Мы ценим прозрачность. Ниже представлена финансовая информация по объектам управления.
         </p>
 
-        <div class="debt__tabs">
+        <div class="debt__tabs" role="tablist" aria-label="Города">
           <button
             class="debt__tab"
             v-for="city in debtRegistry"
             :key="city.id"
+            type="button"
+            role="tab"
+            :aria-selected="activeCityId === city.id"
             :class="{ 'is-active': activeCityId === city.id }"
             @click="activeCityId = city.id"
           >
@@ -294,24 +292,40 @@
         <div class="debt__list" v-if="activeCity">
           
           <!-- Выпадающий список ЖК -->
-          <div class="debt__complex-dropdown">
-            <div class="debt__dropdown-header" @click="isComplexDropdownOpen = !isComplexDropdownOpen">
+          <div class="debt__complex-dropdown" :class="{ 'is-open': isComplexDropdownOpen }">
+            <button
+              type="button"
+              class="debt__dropdown-header"
+              :aria-expanded="isComplexDropdownOpen"
+              aria-haspopup="listbox"
+              aria-controls="debt-complex-options"
+              @click="isComplexDropdownOpen = !isComplexDropdownOpen"
+              @keydown.enter.prevent="isComplexDropdownOpen = !isComplexDropdownOpen"
+              @keydown.space.prevent="isComplexDropdownOpen = !isComplexDropdownOpen"
+              @keydown.escape="isComplexDropdownOpen = false"
+            >
               <span class="debt__dropdown-title">
                 {{ activeComplex ? activeComplex.name : 'Выберите жилой комплекс...' }}
               </span>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="debt__dropdown-icon" :class="{ 'is-rotated': isComplexDropdownOpen }">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="debt__dropdown-icon" :class="{ 'is-rotated': isComplexDropdownOpen }" aria-hidden="true">
                 <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
-            </div>
+            </button>
             
             <Transition name="fade">
-              <div class="debt__dropdown-options" v-if="isComplexDropdownOpen">
-                <div class="debt__dropdown-option" 
-                     v-for="complex in activeCity.complexes" :key="complex.id"
-                     @click="selectComplex(complex)">
+              <div class="debt__dropdown-options" id="debt-complex-options" role="listbox" aria-label="Жилые комплексы" v-if="isComplexDropdownOpen">
+                <button
+                  type="button"
+                  class="debt__dropdown-option" 
+                  v-for="complex in activeCity.complexes" :key="complex.id"
+                  role="option"
+                  :aria-selected="activeComplex && activeComplex.id === complex.id"
+                  @click="selectComplex(complex)"
+                  @keydown.enter.prevent="selectComplex(complex)"
+                  @keydown.space.prevent="selectComplex(complex)">
                   <span class="debt__option-name">{{ complex.name }}</span>
                   <span class="debt__option-address" v-if="complex.address">{{ complex.address }}</span>
-                </div>
+                </button>
               </div>
             </Transition>
           </div>
@@ -324,34 +338,42 @@
           >
             <div class="debt__complex-content" v-if="activeComplex" :key="activeComplex.id">
               <div class="debt__building-list">
-                            <div class="debt__building" v-for="building in activeComplex.buildings" :key="building.id"
-                              :class="{ 'is-open': building.isOpen }">
-                              <div class="debt__building-header" @click="toggleBuilding(building)">
-                                <h4 class="debt__building-name">{{ building.name }}</h4>
-                                <div class="debt__building-icon">
-                                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-plus" />
-                                  </svg>
-                                </div>
-                              </div>
+                <div class="debt__building" v-for="building in activeComplex.buildings" :key="building.id"
+                  :class="{ 'is-open': building.isOpen }">
+                  <button
+                    type="button"
+                    class="debt__building-header"
+                    :aria-expanded="building.isOpen"
+                    @click="toggleBuilding(building)"
+                    @keydown.enter.prevent="toggleBuilding(building)"
+                    @keydown.space.prevent="toggleBuilding(building)"
+                  >
+                    <h4 class="debt__building-name">{{ building.name }}</h4>
+                    <div class="debt__building-icon" aria-hidden="true">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-plus" />
+                      </svg>
+                    </div>
+                  </button>
 
-                              <!-- Тело аккордеона Корпуса -->
-                              <div class="debt__building-body-wrapper">
-                                <div class="debt__building-body">
-                                  <div class="debt__building-body-content">
+                  <!-- Тело аккордеона Корпуса -->
+                  <div class="debt__building-body-wrapper">
+                    <div class="debt__building-body">
+                      <div class="debt__building-body-content">
 
-                                    <!-- Поиск внутри конкретного корпуса -->
-                                    <div class="debt__search-wrapper">
-                                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                        class="debt__search-icon">
-                                        <path
-                                          d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
-                                          stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                          stroke-linejoin="round" />
-                                      </svg>
-                                      <input type="number" inputmode="numeric" v-model="building.searchQuery"
-                                        placeholder="Поиск по номеру квартиры..." class="debt__search-input" />
-                                    </div>
+                        <!-- Поиск внутри конкретного корпуса -->
+                        <div class="debt__search-wrapper">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            class="debt__search-icon" aria-hidden="true">
+                            <path
+                              d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+                              stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                              stroke-linejoin="round" />
+                          </svg>
+                          <input type="number" inputmode="numeric" v-model="building.searchQuery"
+                            aria-label="Поиск по номеру квартиры"
+                            placeholder="Поиск по номеру квартиры..." class="debt__search-input" />
+                        </div>
 
                                     <!-- Банковский реестр (Таблица) -->
                                     <div class="debt__table">
@@ -413,9 +435,10 @@ const activateItem = (index, event) => {
 
   activeAccordionIndex.value = index
 
-  if (!accordionRef.value) return
+  if (!accordionRef.value || !event) return
 
   const el = event.currentTarget
+  if (!el || typeof el.getBoundingClientRect !== 'function') return
   const rect = el.getBoundingClientRect()
   const containerRect = accordionRef.value.getBoundingClientRect()
 
@@ -425,9 +448,10 @@ const activateItem = (index, event) => {
     return
   }
 
-  const elLeft = rect.left - containerRect.left
-  const expandedWidth = 640
-  const paddingRight = 40
+    const elLeft = rect.left - containerRect.left
+    const cs = window.getComputedStyle(accordionRef.value)
+    const expandedWidth = parseFloat(cs.getPropertyValue('--accordion-item-active-width')) || rect.width
+    const paddingRight = parseFloat(cs.getPropertyValue('--space-40')) || 0
 
   let delta = 0
 
@@ -543,15 +567,6 @@ const scrollAccordion = (direction) => {
   }
 }
 
-const sliderImages = [
-  '/optimized/Фасад/DSC05127.webp',
-  '/optimized/Фасад/DSC04986.webp',
-  '/optimized/Фасад/DSC05052.webp',
-  '/optimized/Фасад/DSC04826.webp',
-  '/optimized/Фасад/DSC04824.webp',
-  '/optimized/Фасад/DSC04402.webp'
-]
-
 const advantagesList = [
   {
     number: '> 15',
@@ -624,38 +639,17 @@ const handleNewsResize = () => {
   }
 }
 
-const newsList = [
-  {
-    date: '14 / 09',
-    title: 'Старт продаж в новом клубном доме на набережной',
-    excerpt: 'Уникальные видовые квартиры с террасами и собственным выходом к воде. Узнайте первыми о специальных условиях на старте.',
-    image: '/optimized/Фасад/DSC05045.webp'
-  },
-  {
-    date: '28 / 08',
-    title: 'Завершение монолитных работ в ЖК «Авангард»',
-    excerpt: 'Мы идем с опережением графика на 2 месяца. Строители приступили к остеклению фасадов и монтажу инженерных систем.',
-    image: '/optimized/Фасад/DSC04984.webp'
-  },
-  {
-    date: '12 / 08',
-    title: 'Новые стандарты благоустройства внутренних дворов',
-    excerpt: 'Ландшафтный дизайн от мировых бюро, всесезонные растения и зонирование для всех возрастов.',
-    image: '/optimized/Фасад/DSC05455.webp'
-  },
-  {
-    date: '03 / 08',
-    title: 'Наш проект получил премию Urban Awards 2024',
-    excerpt: 'Жюри высоко оценило архитектурный облик и концепцию инфраструктуры нашего флагманского проекта.',
-    image: '/optimized/Фасад/DSC04993.webp'
-  },
-  {
-    date: '18 / 07',
-    title: 'Открытие премиального фитнес-клуба для резидентов',
-    excerpt: 'Бассейн 25 метров, SPA-зона и новейшее оборудование. Доступ только для жителей комплекса по индивидуальной ключ-карте.',
-    image: '/optimized/Фасад/DSC05046.webp'
-  }
-]
+import { getAllNews } from '~/data/news'
+
+const allNewsData = getAllNews()
+const totalNewsCount = allNewsData.length
+const newsList = allNewsData.slice(0, 5).map(item => ({
+  date: item.displayDateShort,
+  title: item.title,
+  excerpt: item.excerpt,
+  image: item.coverImage,
+  slug: item.slug
+}))
 
 import press1 from '@/assets/images/press/press-1.jpg'
 import press2 from '@/assets/images/press/press-2.jpg'
@@ -758,21 +752,14 @@ watch(activeCityId, () => {
 })
 
 
-const toggleCity = (city) => {
-  city.isOpen = !city.isOpen
-}
-
-const toggleComplex = (complex) => {
-  complex.isOpen = !complex.isOpen
-}
-
 const toggleBuilding = (building) => {
   building.isOpen = !building.isOpen
 }
 
 const getFilteredDebtors = (building) => {
-  if (!building.searchQuery) return building.debtors
-  return building.debtors.filter(d => d.apt.includes(building.searchQuery))
+  const query = String(building.searchQuery || '').trim().toLowerCase()
+  if (!query) return building.debtors
+  return building.debtors.filter(d => String(d.apt).includes(query))
 }
 
 // Эффект "фонарика" (spotlight reveal) при наведении на блок
@@ -792,36 +779,29 @@ const onPressMouseMove = (e) => {
 }
 
 
+let syncVideos = null
+let onMainPlay = null
+
 onMounted(() => {
   // Hero Video Ambient Sync
   if (mainVideoRef.value && ambientVideoRef.value) {
-    const syncVideos = () => {
+    syncVideos = () => {
       if (mainVideoRef.value && ambientVideoRef.value) {
         if (Math.abs(mainVideoRef.value.currentTime - ambientVideoRef.value.currentTime) > 0.15) {
           ambientVideoRef.value.currentTime = mainVideoRef.value.currentTime
         }
       }
     }
+    onMainPlay = () => {
+      ambientVideoRef.value?.play()
+    }
     mainVideoRef.value.addEventListener('timeupdate', syncVideos)
     mainVideoRef.value.addEventListener('seeking', syncVideos)
-    mainVideoRef.value.addEventListener('play', () => {
-      ambientVideoRef.value?.play()
-    })
+    mainVideoRef.value.addEventListener('play', onMainPlay)
   }
 
   nextTick(() => {
-    // 1. Hero Animation
-    const heroTl = gsap.timeline();
-    heroTl.fromTo('.hero__title-line', 
-      { y: 50, opacity: 0 }, 
-      { y: 0, opacity: 1, duration: 1, stagger: 0.2, ease: 'power3.out' }
-    ).fromTo('.hero__subtitle', 
-      { y: 20, opacity: 0 }, 
-      { y: 0, opacity: 0.9, duration: 1, ease: 'power2.out' }, 
-      "-=0.5"
-    );
-
-    // 2. Dispatch Section Parallax
+    // 1. Dispatch Section Parallax
     gsap.utils.toArray('.dispatch__photo').forEach(photo => {
       const img = photo.querySelector('img');
       if (!img) return;
@@ -841,7 +821,7 @@ onMounted(() => {
       );
     });
 
-    // 3. Press Section Parallax (О нас пишут) - Только Десктоп
+    // 2. Press Section Parallax (О нас пишут) - Только Десктоп
     let mm = gsap.matchMedia();
     mm.add("(min-width: 1025px)", () => {
       gsap.utils.toArray('.press__item').forEach((item, index) => {
@@ -862,7 +842,7 @@ onMounted(() => {
       });
     });
 
-    // 4. Reveal items (News, Press, Dispatch photos)
+    // 3. Reveal items (News, Press, Dispatch photos)
     const revealElements = gsap.utils.toArray('.dispatch__photo, .press__item, .news-list__item, .advantages__item');
     revealElements.forEach(el => {
       ScrollTrigger.create({
@@ -878,6 +858,15 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  if (mainVideoRef.value) {
+    if (syncVideos) {
+      mainVideoRef.value.removeEventListener('timeupdate', syncVideos);
+      mainVideoRef.value.removeEventListener('seeking', syncVideos);
+    }
+    if (onMainPlay) {
+      mainVideoRef.value.removeEventListener('play', onMainPlay);
+    }
+  }
   window.removeEventListener('resize', handleNewsResize);
   ScrollTrigger.getAll().forEach(t => t.kill());
 })
@@ -950,61 +939,29 @@ onUnmounted(() => {
   pointer-events: auto;
 }
 
-.hero__content {
-  position: relative;
-  z-index: var(--z-top);
-  text-align: center;
-  padding: 0 var(--space-40);
-  margin-top: var(--space-80);
-  /* offset for header */
-}
-
-.hero__title {
-  font-size: var(--text-hero);
-  font-weight: var(--font-weight-light);
-  line-height: var(--line-height-hero);
-  text-transform: uppercase;
-  letter-spacing: var(--letter-spacing-wide);
-  margin-bottom: var(--space-32);
-  display: flex;
-  flex-direction: column;
-}
-
-.hero__title-line {
-  display: block;
-}
-
-.hero__subtitle {
-  font-size: var(--text-body-lg);
-  font-weight: var(--font-weight-light);
-  letter-spacing: var(--letter-spacing-widest);
-  opacity: 0.9;
-  max-width: var(--max-width-text);
-  margin: 0 auto;
-}
-
 .hero__scroll-indicator {
   position: absolute;
-  bottom: var(--space-40);
+  bottom: var(--hero-scroll-bottom);
   left: var(--percent-50);
   transform: translateX(var(--translate-half-neg));
   z-index: var(--z-top);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-16);
-  opacity: 0.8;
+  gap: var(--hero-scroll-gap);
+  opacity: var(--opacity-80);
 }
 
 .hero__scroll-text {
   font-size: var(--text-micro);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-uppercase);
+  text-shadow: var(--shadow-text-subtle);
 }
 
 .hero__scroll-line {
   width: var(--border-width);
-  height: var(--space-60);
+  height: var(--hero-scroll-line-height);
   background-color: var(--color-line-semi-transparent);
   position: relative;
   overflow: hidden;
@@ -1062,17 +1019,6 @@ onUnmounted(() => {
   }
 }
 
-@media (max-width: 480px) {
-  .hero__scroll-indicator {
-    bottom: var(--space-20);
-    gap: var(--space-8);
-  }
-
-  .hero__scroll-line {
-    height: var(--space-32);
-  }
-}
-
 .section-projects {
   padding: var(--space-140) 0;
   background-color: var(--color-bg);
@@ -1085,7 +1031,7 @@ onUnmounted(() => {
   padding: 0 var(--space-40);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-80);
+  gap: var(--projects-gap);
 }
 
 .projects__title {
@@ -1095,7 +1041,7 @@ onUnmounted(() => {
   margin-bottom: var(--space-40);
   text-transform: uppercase;
   letter-spacing: var(--letter-spacing-wide);
-  margin-left: -0.04em; /* Оптическое выравнивание шрифта (убираем пустой отступ слева от буквы Н) */
+  margin-left: var(--offset-optical-title); /* Оптическое выравнивание шрифта (убираем пустой отступ слева от буквы Н) */
 }
 
 .projects__description {
@@ -1120,7 +1066,7 @@ onUnmounted(() => {
 }
 
 .btn-arrow:hover {
-  opacity: 0.7;
+  opacity: var(--opacity-70);
 }
 
 .btn-arrow__icon {
@@ -1135,8 +1081,8 @@ onUnmounted(() => {
 }
 
 .btn-arrow__icon svg {
-  width: 50%;
-  height: 50%;
+  width: var(--percent-50);
+  height: var(--percent-50);
 }
 
 .btn-arrow:hover .btn-arrow__icon {
@@ -1150,7 +1096,6 @@ onUnmounted(() => {
   .projects__container {
     display: flex;
     flex-direction: column;
-    gap: var(--space-32);
   }
 
   .projects__left {
@@ -1172,65 +1117,6 @@ onUnmounted(() => {
 
   .projects__left .btn-arrow {
     order: 3;
-    margin-top: var(--space-12);
-  }
-}
-
-@media (max-width: 768px) {
-  .section-projects {
-    padding: var(--space-80) 0;
-  }
-}
-
-/* Секция Имиджевая */
-.section-image {
-  padding: var(--space-140) 0;
-  background-color: var(--color-bg-alt);
-}
-
-.image-section__container {
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-  padding: 0 var(--space-40);
-}
-
-.image-section__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: var(--space-64);
-  gap: var(--space-40);
-}
-
-.image-section__title {
-  font-size: var(--text-h2);
-  font-weight: var(--font-weight-light);
-  line-height: var(--line-height-hero);
-  text-transform: uppercase;
-  flex: 1;
-}
-
-.image-section__text {
-  flex: 1;
-  font-size: var(--text-body);
-  line-height: var(--line-height-loose);
-  color: var(--color-text);
-  max-width: var(--max-width-text);
-}
-
-.image-section__slider-wrapper {
-  width: 100%;
-  margin-top: var(--space-40);
-}
-
-@media (max-width: 1024px) {
-  .image-section__header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .image-section__title {
-    font-size: var(--space-40);
   }
 }
 
@@ -1251,6 +1137,8 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-24);
   margin-bottom: var(--space-64);
 }
 
@@ -1280,6 +1168,11 @@ onUnmounted(() => {
   transition: background-color var(--anim-duration-fast) ease, color var(--anim-duration-fast) ease;
 }
 
+.slider-btn:focus-visible {
+  outline: var(--border-width) solid var(--color-text);
+  outline-offset: var(--space-4);
+}
+
 @media (hover: hover) {
   .slider-btn:hover {
     background-color: var(--color-text);
@@ -1303,7 +1196,7 @@ onUnmounted(() => {
   padding-bottom: var(--space-24);
   /* Чтобы не обрезалась тень или hover */
   padding-left: var(--space-40);
-  padding-right: var(--space-40);
+  padding-right: var(--accordion-padding-right);
   /* Отступ в конце скролла */
   scrollbar-width: none;
   /* Скрываем скроллбар в Firefox */
@@ -1329,6 +1222,11 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
+.accordion__item:focus-visible {
+  outline: var(--border-width) solid var(--color-white);
+  outline-offset: var(--space-4);
+}
+
 .accordion__item.is-active {
   width: var(--accordion-item-active-width);
   /* Раскрытая ширина */
@@ -1349,7 +1247,7 @@ onUnmounted(() => {
   object-fit: cover;
   transition: transform var(--anim-duration-slow) ease, opacity var(--anim-duration-slow) ease;
   transform: scale(1.1);
-  opacity: 0.15;
+  opacity: var(--opacity-15);
 }
 
 .accordion__item.is-active .accordion__bg img {
@@ -1391,7 +1289,7 @@ onUnmounted(() => {
 }
 
 .accordion__item.is-active .accordion__number {
-  transform: translateY(-var(--space-10));
+  transform: translateY(calc(var(--space-10) * -1));
 }
 
 .accordion__text-wrapper {
@@ -1428,8 +1326,6 @@ onUnmounted(() => {
 @media (max-width: 1024px) {
   .accordion {
     scroll-snap-type: x mandatory;
-    /* Увеличиваем правый отступ, чтобы последняя (узкая) карточка могла физически доскроллиться до центра экрана */
-    padding-right: calc(var(--space-40) * 2);
   }
 
   .accordion__item {
@@ -1518,7 +1414,7 @@ onUnmounted(() => {
 
 .dispatch__phone:hover {
   border-color: var(--color-white);
-  opacity: 0.9;
+  opacity: var(--opacity-90);
 }
 
 .dispatch__right {
@@ -1526,7 +1422,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   padding: var(--space-140) var(--space-40) var(--space-140) 0;
-  gap: var(--space-120);
+  gap: var(--dispatch-gap);
 }
 
 .dispatch__photo {
@@ -1560,8 +1456,8 @@ onUnmounted(() => {
 }
 
 .dispatch__photo img {
-  width: var(--percent-100, 100%);
-  height: var(--percent-100, 100%);
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   display: block;
   transform: scale(var(--scale-parallax));
@@ -1583,7 +1479,6 @@ onUnmounted(() => {
   .dispatch__right {
     width: 100%;
     padding: 0 var(--space-40) var(--space-100) var(--space-40);
-    gap: var(--space-60);
   }
 
   /* Исправляем залезание фотографий за пределы экрана на мобилках и калибруем высоту на планшетах */
@@ -1714,7 +1609,7 @@ onUnmounted(() => {
   padding: var(--space-32) 0;
   border-top: var(--border-width) solid var(--color-border);
   border-bottom: var(--border-width) solid var(--color-border);
-  margin-top: -var(--border-width);
+  margin-top: calc(var(--border-width) * -1);
   /* Схлопываем двойные границы */
   cursor: pointer;
   transition: border-color var(--anim-duration-normal) ease;
@@ -1731,12 +1626,39 @@ onUnmounted(() => {
   display: none; /* Скрыто на десктопе */
 }
 
+.news-list__mobile-inner {
+  overflow: hidden;
+  padding-top: 0;
+  transition: padding-top var(--anim-duration-slow) ease;
+}
+
+.news-list__mobile-image {
+  width: 100%;
+  height: var(--news-image-height);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-24);
+}
+
+.news-list__mobile-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.news-list__mobile-excerpt p {
+  font-size: var(--text-body);
+  line-height: var(--line-height-loose);
+  color: var(--color-gray-600);
+  margin-bottom: var(--space-24);
+}
+
 .news-list__item:first-child {
   margin-top: 0;
 }
 
 .news-list__date {
-  font-size: var(--text-h5);
+  font-size: var(--news-date-font-size);
   font-weight: var(--font-weight-light);
   color: var(--color-gray-300);
   width: var(--space-140);
@@ -1753,19 +1675,23 @@ onUnmounted(() => {
 }
 
 .news-list__item:hover,
-.news-list__item.is-active {
+.news-list__item.is-active,
+.news-list__item:focus-visible {
   border-color: var(--color-text);
   z-index: var(--z-above);
   /* Чтобы активные границы были поверх соседних */
+  outline: none;
 }
 
 .news-list__item:hover .news-list__date,
-.news-list__item.is-active .news-list__date {
+.news-list__item.is-active .news-list__date,
+.news-list__item:focus-visible .news-list__date {
   color: var(--color-text);
 }
 
 .news-list__item:hover .news-list__title,
-.news-list__item.is-active .news-list__title {
+.news-list__item.is-active .news-list__title,
+.news-list__item:focus-visible .news-list__title {
   color: var(--color-text);
   transform: translateX(var(--space-16));
 }
@@ -1791,7 +1717,7 @@ onUnmounted(() => {
 }
 
 .news-list__view-all:hover {
-  opacity: 0.6;
+  opacity: var(--opacity-60);
 }
 
 /* Секция 7: Мы в СМИ (Парящий ритм) */
@@ -1848,7 +1774,7 @@ onUnmounted(() => {
 .press__item:nth-child(3) {
   width: var(--press-item-3-width);
   align-self: flex-start;
-  margin-left: var(--dispatch-photo-offset-margin);
+  margin-left: var(--press-item-3-margin);
 }
 
 .press__item:nth-child(4) {
@@ -1865,18 +1791,17 @@ onUnmounted(() => {
 
 /* Огромная фоновая кавычка (как в первой идее) */
 .press__item::before {
-  z-index: 1;
   content: '“';
   position: absolute;
-  top: -var(--space-80);
-  left: -var(--space-60);
+  top: calc(var(--space-80) * -1);
+  left: calc(var(--space-60) * -1);
   font-size: var(--press-quote-bg-size);
   line-height: var(--line-height-none);
   font-family: var(--font-family-serif);
   /* Классическая кавычка с засечками */
   color: var(--color-border);
-  opacity: 0.5;
-  z-index: 0;
+  opacity: var(--opacity-50);
+  z-index: var(--z-behind);
   pointer-events: none;
   transition: opacity var(--anim-duration-medium) ease;
 }
@@ -1884,10 +1809,10 @@ onUnmounted(() => {
 .press__quote {
   position: relative;
   z-index: var(--z-base);
-  font-size: calc(var(--text-h4) / 1.75);
+  font-size: var(--press-quote-font-size);
   font-weight: var(--font-weight-light);
   line-height: var(--line-height-base);
-  margin-bottom: var(--space-40);
+  margin-bottom: var(--press-quote-margin-bottom);
 }
 
 /* Маска для каждого слова */
@@ -1921,6 +1846,8 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-16);
   padding-top: var(--space-24);
   border-top: var(--border-width) solid var(--color-border);
 }
@@ -1962,7 +1889,7 @@ onUnmounted(() => {
   bottom: calc(var(--space-64) * -1);
   left: calc(var(--space-80) * -1);
   right: calc(var(--space-80) * -1);
-  z-index: 0;
+  z-index: var(--z-behind);
   border-radius: var(--radius-lg);
   opacity: 0;
   overflow: hidden;
@@ -1985,12 +1912,12 @@ onUnmounted(() => {
 }
 
 .press__item:hover .press__image-reveal {
-  opacity: 0.95;
+  opacity: var(--opacity-95);
 }
 
 /* Приглушаем фоновую кавычку при наведении, но оставляем легкий силуэт */
 .press__item:hover::before {
-  opacity: 0.15;
+  opacity: var(--opacity-15);
   transition: opacity var(--anim-duration-medium) ease;
 }
 
@@ -2022,8 +1949,8 @@ onUnmounted(() => {
 
 .debt__tabs {
   display: flex;
-  gap: var(--space-40);
-  margin-bottom: var(--space-60);
+  gap: var(--debt-tabs-gap);
+  margin-bottom: var(--debt-tabs-margin-bottom);
   border-bottom: var(--border-width) solid var(--color-debt-border);
 }
 
@@ -2031,7 +1958,7 @@ onUnmounted(() => {
   font-size: var(--text-h5);
   font-weight: var(--font-weight-regular);
   color: var(--color-gray-400);
-  padding-bottom: var(--space-16);
+  padding-bottom: var(--debt-tab-padding-bottom);
   position: relative;
   transition: color var(--anim-duration-medium) ease;
 }
@@ -2039,6 +1966,11 @@ onUnmounted(() => {
 .debt__tab:hover,
 .debt__tab.is-active {
   color: var(--color-black);
+}
+
+.debt__tab:focus-visible {
+  outline: var(--border-width) solid var(--color-black);
+  outline-offset: var(--space-4);
 }
 
 .debt__tab::after {
@@ -2066,10 +1998,12 @@ onUnmounted(() => {
 .debt__complex-dropdown {
   position: relative;
   margin-bottom: var(--space-40);
-  z-index: 10;
+  z-index: var(--z-top);
 }
 
 .debt__dropdown-header {
+  width: 100%;
+  text-align: left;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2080,7 +2014,12 @@ onUnmounted(() => {
 }
 
 .debt__dropdown-header:hover {
-  opacity: 0.7;
+  opacity: var(--opacity-70);
+}
+
+.debt__dropdown-header:focus-visible {
+  outline: var(--border-width) solid var(--color-black);
+  outline-offset: var(--space-4);
 }
 
 .debt__dropdown-title {
@@ -2112,6 +2051,8 @@ onUnmounted(() => {
 }
 
 .debt__dropdown-option {
+  width: 100%;
+  text-align: left;
   padding: var(--space-24) var(--space-40);
   cursor: pointer;
   border-bottom: var(--border-width) solid var(--color-debt-border);
@@ -2125,8 +2066,10 @@ onUnmounted(() => {
   border-bottom: none;
 }
 
-.debt__dropdown-option:hover {
+.debt__dropdown-option:hover,
+.debt__dropdown-option:focus-visible {
   background-color: var(--color-debt-hover);
+  outline: none;
 }
 
 .debt__option-name {
@@ -2158,6 +2101,8 @@ onUnmounted(() => {
 }
 
 .debt__building-header {
+  width: 100%;
+  text-align: left;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -2169,6 +2114,11 @@ onUnmounted(() => {
 
 .debt__building-header:hover {
   color: var(--color-black);
+}
+
+.debt__building-header:focus-visible {
+  outline: var(--border-width) solid var(--color-black);
+  outline-offset: var(--space-4);
 }
 
 .debt__building-name {
@@ -2373,12 +2323,6 @@ onUnmounted(() => {
     transition: grid-template-rows var(--anim-duration-slow) ease, opacity var(--anim-duration-slow) ease;
   }
 
-  .news-list__mobile-inner {
-    overflow: hidden;
-    padding-top: 0;
-    transition: padding-top var(--anim-duration-slow) ease;
-  }
-
   .news-list__item.is-active .news-list__mobile-body {
     grid-template-rows: 1fr;
     opacity: 1;
@@ -2398,7 +2342,6 @@ onUnmounted(() => {
   .news-list__date {
     width: 100%;
     text-align: right;
-    font-size: var(--text-body-sm); /* Делаем дату чуть компактнее */
   }
 
   .news-list__title {
@@ -2407,36 +2350,12 @@ onUnmounted(() => {
 
   /* Отключаем десктопный ховер-сдвиг заголовка, так как он не нужен на мобилке */
   .news-list__item:hover .news-list__title,
+  .news-list__item:focus-visible .news-list__title,
   .news-list__item.is-active .news-list__title {
     transform: none;
   }
 
-  .news-list__mobile-image {
-    width: 100%;
-    height: var(--news-image-height);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    margin-bottom: var(--space-24);
-  }
-
-  .news-list__mobile-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .news-list__mobile-excerpt p {
-    font-size: var(--text-body);
-    line-height: var(--line-height-loose);
-    color: var(--color-gray-600);
-    margin-bottom: var(--space-24);
-  }
-
   /* Press section mobile cards */
-  .press__list {
-    gap: var(--space-160);
-  }
-
   .press__item:nth-child(n) {
     width: 100%;
     margin-left: 0;
@@ -2455,7 +2374,7 @@ onUnmounted(() => {
     bottom: 0;
     left: 0;
     right: 0;
-    height: var(--news-image-height); /* Или другая высота, например 250px */
+    height: var(--news-image-height);
     opacity: 1 !important; /* Всегда видим на мобилке */
     mask-image: none !important;
     -webkit-mask-image: none !important;
@@ -2465,13 +2384,6 @@ onUnmounted(() => {
 
   .press__image {
     object-position: center center !important; /* Отменяем индивидуальный сдвиг первого фото */
-  }
-
-  .press__quote {
-    position: relative;
-    z-index: 1;
-    font-size: var(--text-subtitle);
-    margin-bottom: var(--space-24);
   }
 
   /* На мобилке кнопки без стекла, просто текст */
@@ -2487,13 +2399,10 @@ onUnmounted(() => {
   .debt__tabs {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-16);
     border-bottom: none;
-    margin-bottom: var(--space-40);
   }
 
   .debt__tab {
-    padding-bottom: var(--space-8);
     width: 100%;
     text-align: left;
     border-bottom: var(--border-width) solid var(--color-debt-border);
@@ -2501,39 +2410,6 @@ onUnmounted(() => {
 
   .debt__tab::after {
     bottom: calc(var(--border-width) * -1);
-  }
-
-  .debt__dropdown-options-wrapper {
-    position: relative;
-    top: 0;
-    box-shadow: none;
-    border: var(--border-width) solid transparent;
-    border-top: none;
-    
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows var(--anim-duration-slow) ease, border-color var(--anim-duration-slow) ease, opacity var(--anim-duration-slow) ease;
-  }
-
-  .debt__complex-dropdown.is-open .debt__dropdown-options-wrapper {
-    grid-template-rows: 1fr;
-    border-color: var(--color-debt-border);
-  }
-
-  .debt__header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-16);
-  }
-
-  .debt__icon {
-    position: absolute;
-    right: 0;
-    top: var(--space-40);
-  }
-
-  .debt__complex {
-    position: relative;
   }
 }
 

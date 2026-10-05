@@ -2,6 +2,7 @@
   "global": [
     { "title": "Карта ЖК", "link": "/map" },
     { "title": "Документы", "link": "/documents" },
+    { "title": "Новости", "link": "/news" },
     { "title": "О компании", "link": "/about" },
     { "title": "Контакты", "link": "/contacts" }
   ],
@@ -30,6 +31,15 @@
         { "title": "Краснодар", "link": "/map#krasnodar" },
         { "title": "Республика Адыгея", "link": "/map#yablonovsky" },
         { "title": "Калининград", "link": "/map#guryevsk" }
+      ]
+    },
+    "news": {
+      "title": "Новости компании",
+      "items": [
+        { "title": "Все публикации", "link": "/news" },
+        { "title": "Отчетность и сервис", "link": "/news?category=reports" },
+        { "title": "События и жизнь ЖК", "link": "/news?category=events" },
+        { "title": "Регламенты", "link": "/news?category=regulations" }
       ]
     }
   }

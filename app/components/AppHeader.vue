@@ -110,7 +110,8 @@ const handleNavClick = (link) => {
     setTimeout(() => {
       const el = document.querySelector(hash)
       if (el) {
-        const headerOffset = 80
+        const headerEl = document.querySelector('.app-header')
+        const headerOffset = headerEl ? headerEl.offsetHeight : 80
         const elementPosition = el.getBoundingClientRect().top
         const offsetPosition = elementPosition + window.pageYOffset - headerOffset
         
@@ -129,7 +130,8 @@ const handleNavClick = (link) => {
     setTimeout(() => {
       const el = document.querySelector(hash)
       if (el) {
-        const headerOffset = 80
+        const headerEl = document.querySelector('.app-header')
+        const headerOffset = headerEl ? headerEl.offsetHeight : 80
         const elementPosition = el.getBoundingClientRect().top
         const offsetPosition = elementPosition + window.pageYOffset - headerOffset
         window.scrollTo({ top: offsetPosition, behavior: 'smooth' })
@@ -411,7 +413,7 @@ onUnmounted(() => {
 
 .slide-enter-from,
 .slide-leave-to {
-  transform: translateX(100%);
+  transform: translateX(var(--translate-full));
 }
 
 @media (max-width: 768px) {
