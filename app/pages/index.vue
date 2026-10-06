@@ -170,8 +170,6 @@
               tabindex="0"
               role="button"
               :aria-expanded="activeNewsIndex === index"
-              @mouseenter="onNewsHover(index)"
-              @focus="onNewsHover(index)"
               @click="onNewsClick(index)"
               @keydown.enter.prevent="onNewsClick(index)"
               @keydown.space.prevent="onNewsClick(index)">
@@ -619,11 +617,6 @@ const advantagesList = [
 ]
 
 const activeNewsIndex = ref(0)
-const onNewsHover = (index) => {
-  if (typeof window !== 'undefined' && window.innerWidth > 1024) {
-    activeNewsIndex.value = index
-  }
-}
 const onNewsClick = (index) => {
   if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
     // На мобильных устройствах работает как аккордеон (открыть/закрыть)
@@ -1564,26 +1557,24 @@ onUnmounted(() => {
 
 .news__content {
   position: relative;
-  height: var(--space-120);
+  display: grid;
   padding-top: var(--space-24);
   /* Отступ от картинки до текста */
 }
 
 .news__excerpt {
-  position: absolute;
-  top: var(--space-24);
-  /* Совпадает с padding-top */
-  left: 0;
-  width: 100%;
+  grid-area: 1 / 1;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--anim-duration-normal) ease, transform var(--anim-duration-normal) ease;
+  visibility: hidden;
+  transition: opacity var(--anim-duration-normal) ease, transform var(--anim-duration-normal) ease, visibility var(--anim-duration-normal) ease;
   transform: translateY(var(--space-10));
 }
 
 .news__excerpt.is-active {
   opacity: 1;
   pointer-events: auto;
+  visibility: visible;
   transform: translateY(0);
   transition-delay: calc(var(--anim-duration-marquee) / 2);
 }
@@ -1674,26 +1665,46 @@ onUnmounted(() => {
   transition: transform var(--anim-duration-normal) var(--anim-easing-smooth), color var(--anim-duration-normal) ease;
 }
 
-.news-list__item:hover,
-.news-list__item.is-active,
-.news-list__item:focus-visible {
+/* Деликатный ховер на десктопе: только мягкое усиление контраста без сдвига */
+@media (hover: hover) {
+  .news-list__item:hover:not(.is-active) .news-list__title {
+    color: var(--color-gray-900);
+  }
+
+  .news-list__item:hover:not(.is-active) .news-list__date {
+    color: var(--color-gray-500);
+  }
+}
+
+/* Активное состояние (новость выбрана и открыта слева) */
+.news-list__item.is-active {
   border-color: var(--color-text);
   z-index: var(--z-above);
   /* Чтобы активные границы были поверх соседних */
-  outline: none;
 }
 
-.news-list__item:hover .news-list__date,
-.news-list__item.is-active .news-list__date,
-.news-list__item:focus-visible .news-list__date {
+.news-list__item.is-active .news-list__date {
   color: var(--color-text);
 }
 
-.news-list__item:hover .news-list__title,
-.news-list__item.is-active .news-list__title,
-.news-list__item:focus-visible .news-list__title {
+.news-list__item.is-active .news-list__title {
   color: var(--color-text);
   transform: translateX(var(--space-16));
+}
+
+/* Доступность с клавиатуры (фокус) */
+.news-list__item:focus-visible {
+  outline: var(--border-width) solid var(--color-text);
+  outline-offset: calc(var(--space-4) * -1);
+  z-index: var(--z-above);
+}
+
+.news-list__item:focus-visible:not(.is-active) .news-list__title {
+  color: var(--color-gray-900);
+}
+
+.news-list__item:focus-visible:not(.is-active) .news-list__date {
+  color: var(--color-gray-500);
 }
 
 .news-list__footer {
@@ -1701,10 +1712,11 @@ onUnmounted(() => {
   align-items: center;
   /* Центрируем по вертикали */
   justify-content: flex-start;
-  height: var(--space-120);
+  height: 100%;
   /* Высота равна левому блоку */
+  padding: var(--space-24) 0;
   border-bottom: var(--border-width) solid var(--color-border);
-  /* Нижняя граница, о которой просили */
+  /* Нижняя граница, выравнивающаяся с левой колонкой */
 }
 
 .news-list__view-all {
@@ -2353,6 +2365,11 @@ onUnmounted(() => {
   .news-list__item:focus-visible .news-list__title,
   .news-list__item.is-active .news-list__title {
     transform: none;
+  }
+
+  .news-list__footer {
+    height: auto;
+    padding: var(--space-32) 0;
   }
 
   /* Press section mobile cards */

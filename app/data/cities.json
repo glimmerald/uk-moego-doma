@@ -132,30 +132,6 @@
         "image": "/optimized/Дома ССК/ЖК Поколение/SOL00245.webp"
       },
       {
-        "id": "fontany",
-        "name": "ЖК «Фонтаны»",
-        "address": "ул. 40-летия Победы, 178",
-        "coordinates": [
-          39.032676,
-          45.055352
-        ],
-        "status": "Сдан",
-        "description": "Авторский проект с ландшафтным дизайном.",
-        "image": "/optimized/Дома ССК/Photos/SOL04790 копия 3.webp"
-      },
-      {
-        "id": "perspektiva",
-        "name": "ЖК «Перспектива»",
-        "address": "ул. 40-летия Победы, 97",
-        "coordinates": [
-          39.028386,
-          45.056549
-        ],
-        "status": "Сдан",
-        "description": "Масштабная застройка рядом с парком Галицкого.",
-        "image": "/optimized/Дома ССК/Photos/SOL05113 копия.webp"
-      },
-      {
         "id": "dom-na-moskovskoy",
         "name": "ЖК «Дом на Московской»",
         "address": "ул. Московская, 133",
@@ -180,20 +156,8 @@
         "image": "/optimized/Дома ССК/Photos/SOL05113 копия.webp"
       },
       {
-        "id": "stihiya",
-        "name": "ЖК «Стихия»",
-        "address": "ул. Петра Метальникова, 85",
-        "coordinates": [
-          38.998536,
-          45.099415
-        ],
-        "status": "Строится",
-        "description": "Четыре стихии воплощенные в архитектуре.",
-        "image": "/optimized/Дома ССК/Photos/1.webp"
-      },
-      {
-        "id": "luchshiy-2",
-        "name": "ЖК «Лучший 2»",
+        "id": "luchshiy",
+        "name": "ЖК «Лучший»",
         "address": "ул. Ростовское Шоссе, 30/7",
         "coordinates": [
           38.995851,
@@ -252,52 +216,28 @@
         "image": "/optimized/Дома ССК/ЖК Барселона/SOL00090.webp"
       },
       {
-        "id": "parusnaya",
-        "name": "ЖК «Парусная»",
-        "address": "ул. Парусная",
+        "id": "piruet",
+        "name": "ЖК «Пируэт»",
+        "address": "ул. им. 40-летия Победы",
         "coordinates": [
-          39.064342,
-          45.003709
+          39.028591,
+          45.058056
         ],
         "status": "Сдан",
         "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "/optimized/Дома ССК/Photos/1.webp"
+        "image": "/optimized/Дома ССК/ЖК Пируэт/SOL00082.webp"
       },
       {
-        "id": "stolica",
-        "name": "ЖК «Столица»",
-        "address": "ул. Московская",
+        "id": "segodnya",
+        "name": "ЖК «Сегодня»",
+        "address": "ул. Ветеранов",
         "coordinates": [
-          39.000699,
-          45.072502
+          38.945876,
+          45.097565
         ],
         "status": "Сдан",
-        "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "/optimized/Дома ССК/Photos/envato-labs-image-edit (8)-2.webp"
-      },
-      {
-        "id": "luchshiy-3",
-        "name": "ЖК «Лучший 3»",
-        "address": "ул. Ростовское Шоссе",
-        "coordinates": [
-          38.995488,
-          45.101019
-        ],
-        "status": "Сдан",
-        "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "/optimized/Дома ССК/Photos/DSC09946 копия.webp"
-      },
-      {
-        "id": "main-city",
-        "name": "ЖК «Main City»",
-        "address": "ул. Красная",
-        "coordinates": [
-          38.97419,
-          45.035429
-        ],
-        "status": "Сдан",
-        "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "/optimized/Дома ССК/Photos/DSC09946 копия.webp"
+        "description": "Современный жилой комплекс комфорт-класса с безопасными закрытыми дворами и развитой инфраструктурой.",
+        "image": "/optimized/Дома ССК/ЖК Сегодня/main.webp"
       }
     ],
     "globeCoordinates": [

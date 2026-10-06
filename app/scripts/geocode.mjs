@@ -37,6 +37,12 @@ async function geocodeAddress(query, proximity) {
   return null;
 }
 
+const KNOWN_EXACT_ADDRESSES = {
+  piruet: 'ул. 40 лет Победы, 97/1',
+  barselona: 'ул. 40 лет Победы, 97',
+  segodnya: 'ул. Ветеранов, 85'
+};
+
 async function run() {
   console.log('--- Starting Mapbox Geocoding for all complexes ---');
   let updatedCount = 0;
@@ -46,7 +52,8 @@ async function run() {
     console.log(`\nCity: ${city.name} (${city.id})`);
     for (const complex of city.complexes) {
       totalCount++;
-      const fullAddress = `${city.name}, ${complex.address}`;
+      const searchAddress = KNOWN_EXACT_ADDRESSES[complex.id] || complex.address;
+      const fullAddress = `${city.name}, ${searchAddress}`;
       try {
         const result = await geocodeAddress(fullAddress, city.coordinates);
         if (result && result.center) {

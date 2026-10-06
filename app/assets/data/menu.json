@@ -1,45 +1,101 @@
 {
   "global": [
-    { "title": "Карта ЖК", "link": "/map" },
-    { "title": "Документы", "link": "/documents" },
-    { "title": "Новости", "link": "/news" },
-    { "title": "О компании", "link": "/about" },
-    { "title": "Контакты", "link": "/contacts" }
+    {
+      "title": "Карта ЖК",
+      "link": "/map"
+    },
+    {
+      "title": "Документы",
+      "link": "/documents"
+    },
+    {
+      "title": "Новости",
+      "link": "/news"
+    },
+    {
+      "title": "Контакты",
+      "link": "/contacts"
+    }
   ],
   "local": {
     "index": {
       "title": "Главная",
       "items": [
-        { "title": "Наши ЖК", "link": "/#projects" },
-        { "title": "Преимущества", "link": "/#advantages" },
-        { "title": "Круглосуточный сервис", "link": "/#dispatch" },
-        { "title": "Новости", "link": "/#news" },
-        { "title": "О нас пишут", "link": "/#press" },
-        { "title": "Реестр задолженностей", "link": "/#debt" }
+        {
+          "title": "Наши ЖК",
+          "link": "/#projects"
+        },
+        {
+          "title": "Преимущества",
+          "link": "/#advantages"
+        },
+        {
+          "title": "Круглосуточный сервис",
+          "link": "/#dispatch"
+        },
+        {
+          "title": "Новости",
+          "link": "/#news"
+        },
+        {
+          "title": "О нас пишут",
+          "link": "/#press"
+        },
+        {
+          "title": "Реестр задолженностей",
+          "link": "/#debt"
+        }
       ]
     },
     "documents": {
       "title": "Документы",
       "items": [
-        { "title": "Общие документы компании", "link": "/documents#general" },
-        { "title": "Документы по объектам (ЖК)", "link": "/documents#complexes" }
+        {
+          "title": "Общие документы компании",
+          "link": "/documents#general"
+        },
+        {
+          "title": "Документы по объектам (ЖК)",
+          "link": "/documents#complexes"
+        }
       ]
     },
     "map": {
       "title": "Карта объектов",
       "items": [
-        { "title": "Краснодар", "link": "/map#krasnodar" },
-        { "title": "Республика Адыгея", "link": "/map#yablonovsky" },
-        { "title": "Калининград", "link": "/map#guryevsk" }
+        {
+          "title": "Краснодар",
+          "link": "/map#krasnodar"
+        },
+        {
+          "title": "Республика Адыгея",
+          "link": "/map#yablonovsky"
+        },
+        {
+          "title": "Калининград",
+          "link": "/map#guryevsk"
+        }
       ]
     },
     "news": {
       "title": "Новости компании",
       "items": [
-        { "title": "Все публикации", "link": "/news" },
-        { "title": "Отчетность и сервис", "link": "/news?category=reports" },
-        { "title": "События и жизнь ЖК", "link": "/news?category=events" },
-        { "title": "Регламенты", "link": "/news?category=regulations" }
+        {
+          "title": "Все публикации",
+          "link": "/news"
+        },
+        {
+          "title": "Отчетность и сервис",
+          "link": "/news?category=reports"
+        },
+        {
+          "title": "События и жизнь ЖК",
+          "link": "/news?category=events"
+        },
+        {
+          "title": "Регламенты",
+          "link": "/news?category=regulations"
+        }
       ]
     }
   }
