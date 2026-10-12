@@ -3,13 +3,19 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   srcDir: '.',
   devtools: { enabled: true },
+  modules: ['@nuxtjs/robots', '@nuxtjs/sitemap'],
+  site: {
+    url: 'https://ukmoegodoma.ru', // Замените на реальный домен при релизе
+    name: 'УК МОЕГО ДОМА'
+  },
   css: ['~/assets/css/main.css'],
   app: {
     head: {
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@200..800&display=swap' }
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@200..800&display=swap' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }
       ]
     }
   },

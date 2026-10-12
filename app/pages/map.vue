@@ -13,7 +13,10 @@
       >
         <!-- Состояние 1: Планета -->
         <div v-if="!isDived" class="sidebar-content" key="planet">
-          <h1 class="sidebar-title">Наши ЖК</h1>
+          <h1 class="sidebar-title">
+            <span class="sr-only">Жилые комплексы под управлением УК МОЕГО ДОМА </span>
+            <span aria-hidden="true">Наши ЖК</span>
+          </h1>
           <p class="sidebar-desc">
             Подробная информация о жилых комплексах, находящихся под нашим управлением. Выберите город на карте или в списке ниже, чтобы изучить объекты.
           </p>
@@ -140,6 +143,13 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from '#app'
+
+useSeoMeta({
+  title: 'Наши жилые комплексы',
+  description: 'Интерактивная карта жилых комплексов, находящихся под управлением УК МОЕГО ДОМА. Информация о домах в Краснодаре, Яблоновском и Гурьевске.',
+  ogTitle: 'Жилые комплексы | УК МОЕГО ДОМА',
+  ogDescription: 'Интерактивная карта жилых комплексов, находящихся под управлением УК МОЕГО ДОМА.'
+})
 import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import gsap from 'gsap'

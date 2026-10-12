@@ -1,5 +1,9 @@
 <template>
   <div class="page-index">
+    <h1 class="sr-only">Управляющая компания «МОЕГО ДОМА» — премиальное управление жилой недвижимостью</h1>
+    
+    <IntroLoader v-if="showIntro" @complete="onIntroComplete" />
+    
     <!-- Hero Section -->
     <section class="hero">
       <div class="hero__video-wrapper">
@@ -418,6 +422,70 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import contactsData from '@/assets/data/contacts.json'
+import IntroLoader from '@/components/IntroLoader.vue'
+
+useSeoMeta({
+  title: 'Управляющая компания «МОЕГО ДОМА» — премиальное управление жилой недвижимостью',
+  description: 'Профессиональное управление недвижимостью класса комфорт и премиум. Круглосуточная диспетчерская служба, консьерж-сервис и прозрачность.',
+  ogTitle: 'Управляющая компания «МОЕГО ДОМА»',
+  ogDescription: 'Профессиональное управление недвижимостью класса комфорт и премиум.',
+  ogImage: '/hero-video.mp4' // Or a snapshot image if available, maybe '/optimized/Фасад/DSC04411.webp'
+})
+
+const showIntro = ref(false)
+
+const animateHeroUI = () => {
+  if (typeof window === 'undefined') return
+  const indicator = document.querySelector('.hero__scroll-indicator')
+  if (indicator) {
+    // Импортируем gsap динамически или используем глобальный, если он уже есть (он есть ниже, но тут мы его импортируем для надежности)
+    import('gsap').then(({ default: gsap }) => {
+      gsap.fromTo(indicator, 
+        { opacity: 0, y: 30 }, 
+        { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out', delay: 0.3 }
+      )
+    })
+  }
+}
+
+const onIntroComplete = () => {
+  showIntro.value = false
+  if (typeof window !== 'undefined') {
+    // Сохраняем текущее время (в миллисекундах) в localStorage
+    localStorage.setItem('intro_played_timestamp', new Date().getTime().toString())
+    document.documentElement.classList.remove('is-scroll-locked')
+  }
+  animateHeroUI()
+}
+
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    const lastPlayed = localStorage.getItem('intro_played_timestamp')
+    const now = new Date().getTime()
+    const oneDayInMs = 24 * 60 * 60 * 1000 // 24 часа
+    
+    let shouldPlay = true
+    
+    // Если анимация уже проигрывалась, проверяем, прошло ли 24 часа
+    if (lastPlayed) {
+      if (now - parseInt(lastPlayed, 10) < oneDayInMs) {
+        shouldPlay = false
+      }
+    }
+    
+    if (shouldPlay) {
+      showIntro.value = true
+      document.documentElement.classList.add('is-scroll-locked')
+      // Скрываем индикатор скролла до завершения интро
+      import('gsap').then(({ default: gsap }) => {
+        const indicator = document.querySelector('.hero__scroll-indicator')
+        if (indicator) gsap.set(indicator, { opacity: 0 })
+      })
+    } else {
+      animateHeroUI()
+    }
+  }
+})
 
 // Hero Video Elements (Main & Ambient Backlight)
 const mainVideoRef = ref(null)

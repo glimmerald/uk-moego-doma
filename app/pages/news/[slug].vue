@@ -213,15 +213,13 @@ if (!article) {
 }
 
 // SEO метаданные
-useHead({
-  title: `${article.title} — УК МОЕГО ДОМА`,
-  meta: [
-    { name: 'description', content: article.excerpt },
-    { property: 'og:title', content: article.title },
-    { property: 'og:description', content: article.excerpt },
-    { property: 'og:image', content: article.coverImage },
-    { property: 'og:type', content: 'article' }
-  ]
+useSeoMeta({
+  title: article.title,
+  description: article.excerpt,
+  ogTitle: article.title,
+  ogDescription: article.excerpt,
+  ogImage: article.coverImage,
+  ogType: 'article'
 })
 
 // Статьи по теме

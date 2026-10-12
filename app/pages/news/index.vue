@@ -18,7 +18,10 @@
       <header class="news-page__header">
         <div class="news-page__title-group">
           <span class="news-page__kicker">Журнал и пресс-центр</span>
-          <h1 class="news-page__title">Новости компании</h1>
+          <h1 class="news-page__title">
+            <span class="sr-only">Новости управляющей компании «МОЕГО ДОМА»</span>
+            <span aria-hidden="true">Новости компании</span>
+          </h1>
           <p class="news-page__subtitle">
             Официальные сообщения, статистика аварийно-диспетчерской службы, регламенты эксплуатации и события из жизни наших жилых комплексов.
           </p>
@@ -143,16 +146,12 @@ import { useRoute, useRouter } from 'vue-router'
 import { newsCategories, getAllNews } from '~/data/news'
 
 // SEO Мета-теги
-useHead({
-  title: 'Пресс-центр и новости — УК МОЕГО ДОМА',
-  meta: [
-    {
-      name: 'description',
-      content: 'Новости, отчетность аварийно-диспетчерской службы, регламенты сезонных работ и события жилых комплексов Управляющей Компании.'
-    },
-    { property: 'og:title', content: 'Пресс-центр и новости — УК МОЕГО ДОМА' },
-    { property: 'og:type', content: 'website' }
-  ]
+useSeoMeta({
+  title: 'Пресс-центр и новости',
+  description: 'Новости, отчетность аварийно-диспетчерской службы, регламенты сезонных работ и события жилых комплексов Управляющей Компании МОЕГО ДОМА.',
+  ogTitle: 'Пресс-центр и новости | УК МОЕГО ДОМА',
+  ogDescription: 'Новости, отчетность аварийно-диспетчерской службы, регламенты сезонных работ и события жилых комплексов Управляющей Компании МОЕГО ДОМА.',
+  ogType: 'website'
 })
 
 const route = useRoute()
