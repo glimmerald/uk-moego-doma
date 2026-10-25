@@ -116,6 +116,42 @@
             </li>
           </ul>
 
+          <!-- Внутренняя одиночная фотография лонгрида -->
+          <figure v-else-if="block.type === 'image' && block.image" class="editorial-figure">
+            <div class="editorial-figure__media">
+              <img
+                :src="block.image.src"
+                :alt="block.image.alt || ''"
+                class="editorial-figure__img"
+                loading="lazy"
+              />
+            </div>
+            <figcaption v-if="block.image.caption" class="editorial-caption">
+              {{ block.image.caption }}
+            </figcaption>
+          </figure>
+
+          <!-- Внутренняя галерея / диптих из нескольких фотографий -->
+          <div v-else-if="block.type === 'gallery' && block.images" class="editorial-figure-grid">
+            <figure
+              v-for="(img, gIdx) in block.images"
+              :key="gIdx"
+              class="editorial-figure"
+            >
+              <div class="editorial-figure__media">
+                <img
+                  :src="img.src"
+                  :alt="img.alt || ''"
+                  class="editorial-figure__img"
+                  loading="lazy"
+                />
+              </div>
+              <figcaption v-if="img.caption" class="editorial-caption">
+                {{ img.caption }}
+              </figcaption>
+            </figure>
+          </div>
+
         </template>
       </div>
 

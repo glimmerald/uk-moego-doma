@@ -312,6 +312,9 @@
   --editorial-callout-border-width: 1px;
   --editorial-callout-accent-width: 3px;
   --editorial-badge-radius: 40px;
+  --editorial-figure-aspect-ratio: 16 / 10;
+  --editorial-figure-max-height: clamp(260px, calc(30vw + 120px), 480px);
+  --editorial-principle-num-size: clamp(28px, calc(1.5vw + 20px), 44px);
   --color-telegram: #229ED9;
   --color-callout-warning-bg: rgba(230, 81, 0, 0.03);
   --color-tag-bg: rgba(17, 17, 17, 0.85);

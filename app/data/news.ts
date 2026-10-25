@@ -25,14 +25,22 @@ export interface NewsCallout {
   items?: string[];
 }
 
+export interface NewsImageItem {
+  src: string;
+  alt: string;
+  caption?: string;
+}
+
 export interface NewsBlock {
-  type: 'lead' | 'paragraph' | 'heading' | 'quote' | 'kpis' | 'callout' | 'list';
+  type: 'lead' | 'paragraph' | 'heading' | 'quote' | 'kpis' | 'callout' | 'list' | 'image' | 'gallery';
   text?: string;
   author?: string;
   title?: string;
   items?: string[];
   kpis?: NewsKpi[];
   callout?: NewsCallout;
+  image?: NewsImageItem;
+  images?: NewsImageItem[];
 }
 
 export interface NewsArticle {

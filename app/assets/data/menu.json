@@ -1,6 +1,10 @@
 {
   "global": [
     {
+      "title": "О компании",
+      "link": "/about"
+    },
+    {
       "title": "Карта ЖК",
       "link": "/map"
     },
@@ -18,6 +22,19 @@
     }
   ],
   "local": {
+    "about": {
+      "title": "О компании",
+      "items": [
+        {
+          "title": "Миссия и принципы",
+          "link": "/about#principles"
+        },
+        {
+          "title": "Структура подразделений",
+          "link": "/about#departments"
+        }
+      ]
+    },
     "index": {
       "title": "Главная",
       "items": [
