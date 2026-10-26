@@ -91,7 +91,11 @@
         </section>
 
         <!-- Внутренний медиаблок: фотографии меньшего формата (диптих) -->
-        <section class="about-gallery" aria-label="Фотографии объектов и сервиса">
+        <section
+          v-if="aboutData.inlineGallery && aboutData.inlineGallery.images?.length"
+          class="about-gallery"
+          aria-label="Фотографии объектов и сервиса"
+        >
           <div v-if="aboutData.inlineGallery.heading" class="about-gallery__header">
             <h3 class="editorial-h3">{{ aboutData.inlineGallery.heading }}</h3>
             <p v-if="aboutData.inlineGallery.description" class="about-gallery__desc">

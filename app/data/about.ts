@@ -59,7 +59,7 @@ export interface AboutPageData {
       author: string;
     };
   };
-  inlineGallery: {
+  inlineGallery?: {
     heading?: string;
     description?: string;
     images: AboutImageItem[];
@@ -129,6 +129,7 @@ export const aboutData: AboutPageData = {
       author: 'Команда Управляющей Компании'
     }
   },
+  /*
   // Фотографии меньшего формата внутри контента (диптих/галерея)
   inlineGallery: {
     heading: 'Внимание к деталям на каждом объекте',
@@ -146,6 +147,7 @@ export const aboutData: AboutPageData = {
       }
     ]
   },
+  */
   // Блок 2: Организационная структура (12 отделов)
   structure: {
     heading: 'Организационная структура и подразделения',
