@@ -41,6 +41,8 @@
             :alt="aboutData.coverImage.alt"
             class="article-cover__img"
             loading="eager"
+            fetchpriority="high"
+            decoding="async"
           />
         </div>
         <figcaption v-if="aboutData.coverImage.caption" class="editorial-caption">
@@ -221,16 +223,20 @@ useSeoMeta({
 
 // Индикатор скролла и прогресса чтения
 const readingProgress = ref(0)
+let scrollRaf = 0
 const updateProgress = () => {
-  if (typeof window === 'undefined') return
-  const scrollTop = window.scrollY
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight
-  if (docHeight <= 0) {
-    readingProgress.value = 0
-    return
-  }
-  const pct = Math.min(100, Math.max(0, (scrollTop / docHeight) * 100))
-  readingProgress.value = Math.round(pct)
+  if (typeof window === 'undefined' || scrollRaf) return
+  scrollRaf = requestAnimationFrame(() => {
+    scrollRaf = 0
+    const scrollTop = window.scrollY
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight
+    if (docHeight <= 0) {
+      readingProgress.value = 0
+      return
+    }
+    const pct = Math.min(100, Math.max(0, (scrollTop / docHeight) * 100))
+    readingProgress.value = Math.round(pct)
+  })
 }
 
 // Поделиться ссылкой
@@ -261,6 +267,7 @@ onMounted(() => {
 onUnmounted(() => {
   if (typeof window !== 'undefined') {
     window.removeEventListener('scroll', updateProgress)
+    if (scrollRaf) cancelAnimationFrame(scrollRaf)
   }
 })
 </script>

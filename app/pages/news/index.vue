@@ -58,6 +58,8 @@
               :alt="featuredArticle.title"
               class="news-featured__img"
               loading="eager"
+              fetchpriority="high"
+              decoding="async"
             />
             <span class="news-featured__tag">В фокусе</span>
           </div>
@@ -101,6 +103,7 @@
                   :alt="article.title"
                   class="news-card__img"
                   loading="lazy"
+                  decoding="async"
                 />
               </div>
 
@@ -497,6 +500,7 @@ const displayedArticles = computed(() => {
   background-color: var(--color-bg);
   border: var(--border-width) solid var(--color-border);
   transition: border-color var(--anim-duration-fast) var(--anim-easing-smooth), transform var(--anim-duration-fast) var(--anim-easing-smooth);
+  contain: layout style paint;
 }
 
 .news-card:hover {

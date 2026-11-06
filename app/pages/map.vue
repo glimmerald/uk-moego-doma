@@ -70,9 +70,11 @@
               >
                 <div class="complex-list-item__header">
                   <img 
-                    v-if="complex.image" 
-                    :src="complex.image" 
+                    v-if="complex.thumb || complex.image" 
+                    :src="complex.thumb || complex.image" 
                     :alt="complex.name"
+                    width="60"
+                    height="60"
                     class="complex-list-item__thumb" 
                     loading="lazy" 
                     decoding="async" 
@@ -101,14 +103,17 @@
     <Transition name="fade">
       <div 
         v-if="hoveredComplex && isDived" 
+        ref="complexTooltipRef"
         class="map-tooltip glass-effect"
-        :style="{ left: tooltipX + 'px', top: tooltipY + 'px' }"
+        :style="{ '--tooltip-x': tooltipX + 'px', '--tooltip-y': tooltipY + 'px' }"
       >
         <div class="complex-card">
           <img 
-            v-if="hoveredComplex.image" 
-            :src="hoveredComplex.image" 
+            v-if="hoveredComplex.cardImage || hoveredComplex.image" 
+            :src="hoveredComplex.cardImage || hoveredComplex.image" 
             :alt="hoveredComplex.name"
+            width="400"
+            height="200"
             class="complex-card__image" 
             loading="lazy" 
             decoding="async" 
@@ -125,8 +130,9 @@
     <Transition name="fade">
       <div 
         v-if="hoveredCity"
+        ref="cityTooltipRef"
         class="map-tooltip glass-effect"
-        :style="{ top: tooltipY + 'px', left: tooltipX + 'px' }"
+        :style="{ '--tooltip-x': tooltipX + 'px', '--tooltip-y': tooltipY + 'px' }"
       >
         <div class="map-tooltip__header">{{ hoveredCity.name }}</div>
         <div class="map-tooltip__count">Количество объектов: {{ hoveredCity.complexes.length }}</div>
@@ -229,37 +235,23 @@ const onSidebarEnter = (el, done) => {
 // -----------------------------------------------------
 
 const mapContainer = ref(null)
+const complexTooltipRef = ref(null)
+const cityTooltipRef = ref(null)
 let map = null
-let pulseAnimationId = null
-let pulseFrame = 0
 
-// Управление циклом пульсации WebGL точек (останавливается во время полетов и в городе)
+// Управление аппаратной CSS-пульсацией точек городов (0% нагрузки на WebGL и backdrop-filter в покое)
 const startPulse = () => {
-  if (pulseAnimationId || isDived.value || !map) return
-  const loop = () => {
-    if (!map || isDived.value) {
-      pulseAnimationId = null
-      return
-    }
-    pulseFrame = (pulseFrame + 1) % 240
-    const progress = pulseFrame / 240
-    const radius = 5 + progress * 12.5
-    const opacity = 0.8 * (1 - progress)
-
-    if (map.getLayer('city-pulse')) {
-      map.setPaintProperty('city-pulse', 'circle-radius', radius)
-      map.setPaintProperty('city-pulse', 'circle-opacity', opacity)
-    }
-    pulseAnimationId = requestAnimationFrame(loop)
-  }
-  pulseAnimationId = requestAnimationFrame(loop)
+  if (isDived.value || typeof document === 'undefined') return
+  document.querySelectorAll('.city-pulse-ring').forEach(el => {
+    el.classList.remove('is-paused')
+  })
 }
 
 const stopPulse = () => {
-  if (pulseAnimationId) {
-    cancelAnimationFrame(pulseAnimationId)
-    pulseAnimationId = null
-  }
+  if (typeof document === 'undefined') return
+  document.querySelectorAll('.city-pulse-ring').forEach(el => {
+    el.classList.add('is-paused')
+  })
 }
 
 const isDived = ref(false)
@@ -271,6 +263,9 @@ const hoveredCity = ref(null)
 const hoveredComplex = ref(null)
 const tooltipX = ref(0)
 const tooltipY = ref(0)
+let tooltipRafId = null
+let pendingTooltipX = 0
+let pendingTooltipY = 0
 
 let complexMarkers = []
 let markers = []
@@ -289,10 +284,11 @@ const prewarmCity = (city) => {
 
   if (city.complexes && Array.isArray(city.complexes)) {
     city.complexes.forEach(c => {
-      if (c.image) {
+      const thumbUrl = c.thumb || c.image
+      if (thumbUrl) {
         const img = new Image()
         img.decoding = 'async'
-        img.src = c.image
+        img.src = thumbUrl
       }
     })
   }
@@ -617,7 +613,6 @@ const diveTo = (cityId) => {
 
   // Сразу прячем глобусные элементы (точки, подписи, хитбоксы), чтобы они не летали по карте во время полета
   if (map.getLayer('city-dot')) map.setPaintProperty('city-dot', 'circle-opacity', 0)
-  if (map.getLayer('city-pulse')) map.setPaintProperty('city-pulse', 'circle-opacity', 0)
   if (map.getLayer('city-labels')) map.setPaintProperty('city-labels', 'text-opacity', 0)
   document.querySelectorAll('.city-marker-hitbox').forEach(el => {
     el.style.pointerEvents = 'none'
@@ -666,8 +661,9 @@ const diveTo = (cityId) => {
       
       wrapper.addEventListener('mouseenter', (e) => {
         hoveredComplex.value = complex
-        updateComplexTooltipPosition(e)
-        window.addEventListener('mousemove', updateComplexTooltipPosition)
+        tooltipX.value = e.clientX + 15
+        tooltipY.value = e.clientY + 15
+        window.addEventListener('mousemove', updateComplexTooltipPosition, { passive: true })
         hoverComplex(complex.id)
       })
 
@@ -766,10 +762,12 @@ onMounted(() => {
   })
 
   map.on('load', () => {
-    // Источник: GeoJSON только с регионами РФ
+    // Источник: GeoJSON только с регионами РФ (генерируем тайлы только до 9 зума для экономии CPU/RAM)
     map.addSource('russia-regions-data', {
       type: 'geojson',
-      data: '/russia.geojson'
+      data: '/russia.geojson',
+      maxzoom: 9,
+      tolerance: 0.4
     })
 
     // Идеальная заливка России, собранная из самих регионов (гарантирует 100% совпадение границ)
@@ -795,6 +793,7 @@ onMounted(() => {
       type: 'fill',
       source: 'mapbox-streets-v8',
       'source-layer': 'water',
+      minzoom: 3,
       filter: ['!=', 'class', 'ocean'], // Исключаем океаны
       paint: {
         'fill-color': '#ffffff', // Вода будет белой, создавая нежный контраст с серой землей
@@ -808,6 +807,7 @@ onMounted(() => {
       type: 'line',
       source: 'mapbox-streets-v8',
       'source-layer': 'waterway',
+      minzoom: 5,
       paint: {
         'line-color': '#ffffff',
         'line-width': 1,
@@ -821,6 +821,7 @@ onMounted(() => {
       type: 'line',
       source: 'mapbox-streets-v8',
       'source-layer': 'road',
+      minzoom: 8,
       paint: {
         'line-color': '#ffffff',
         'line-width': [
@@ -849,6 +850,7 @@ onMounted(() => {
       filter: ['!=', ['get', 'underground'], 'true'],
       type: 'fill',
       minzoom: 11,
+      maxzoom: 14,
       paint: {
         'fill-color': '#e0e0e0',
         'fill-opacity': 0.6
@@ -888,6 +890,7 @@ onMounted(() => {
       id: 'russia-regions',
       type: 'line',
       source: 'russia-regions-data',
+      maxzoom: 9,
       paint: {
         'line-color': 'rgba(0, 0, 0, 0.08)', // Более неяркий и деликатный цвет
         'line-width': 1.5, // Сделали потолще по просьбе
@@ -915,6 +918,7 @@ onMounted(() => {
         id: `${c.id}-fill`,
         type: 'fill',
         source: `${c.id}-data`,
+        minzoom: 7,
         paint: {
           'fill-color': 'rgba(0, 0, 0, 0.04)',
           'fill-opacity': 0,
@@ -926,6 +930,7 @@ onMounted(() => {
         id: `${c.id}-border`,
         type: 'line',
         source: `${c.id}-data`,
+        minzoom: 7,
         paint: {
           'line-color': 'rgba(0, 0, 0, 0.3)',
           'line-width': 1.5,
@@ -947,19 +952,6 @@ onMounted(() => {
     map.addSource('cities-data', {
       type: 'geojson',
       data: citiesGeoJSON
-    })
-
-    // Слой ПУЛЬСА (WebGL)
-    map.addLayer({
-      id: 'city-pulse',
-      type: 'circle',
-      source: 'cities-data',
-      paint: {
-        'circle-color': '#111111',
-        'circle-radius': 5,
-        'circle-opacity': 0.5,
-        'circle-pitch-alignment': 'map' // Прибито к земле
-      }
     })
 
     // Слой ТОЧКИ (WebGL)
@@ -1013,13 +1005,14 @@ onMounted(() => {
       }
     })
 
-    // Запуск пульсации на общем виде
-    startPulse()
-
-    // Добавляем маркеры городов (ТОЛЬКО ДЛЯ ХОВЕРА И КЛИКА, БЕЗ ТЕКСТА)
+    // Добавляем маркеры городов (С АППАРАТНОЙ CSS-ПУЛЬСАЦИЕЙ И ХОВЕРОМ)
     cities.forEach(city => {
       const el = document.createElement('div')
       el.className = 'city-marker-hitbox'
+
+      const pulseRing = document.createElement('span')
+      pulseRing.className = 'city-pulse-ring'
+      el.appendChild(pulseRing)
 
       el.addEventListener('click', () => {
         diveTo(city.id)
@@ -1028,8 +1021,9 @@ onMounted(() => {
       el.addEventListener('mouseenter', (e) => {
         hoveredCity.value = city
         prewarmCity(city)
-        updateTooltipPosition(e)
-        window.addEventListener('mousemove', updateTooltipPosition)
+        tooltipX.value = e.clientX + 15
+        tooltipY.value = e.clientY + 15
+        window.addEventListener('mousemove', updateTooltipPosition, { passive: true })
         // Подсвечиваем WebGL точку
         map.setPaintProperty('city-dot', 'circle-color', [
           'match', ['get', 'id'], city.id, '#111111', '#555555'
@@ -1057,6 +1051,9 @@ onMounted(() => {
         
       markers.push({ marker, city })
     })
+
+    // Запуск пульсации на общем виде
+    startPulse()
 
     // Анимация входа или загрузка по хэшу
     initialFlyTimer = setTimeout(() => {
@@ -1118,19 +1115,29 @@ const handleResize = () => {
   }, 200)
 }
 
+const scheduleTooltipUpdate = (event) => {
+  pendingTooltipX = event.clientX + 15
+  pendingTooltipY = event.clientY + 15
+  if (tooltipRafId) return
+  tooltipRafId = requestAnimationFrame(() => {
+    tooltipRafId = null
+    tooltipX.value = pendingTooltipX
+    tooltipY.value = pendingTooltipY
+  })
+}
+
 const updateComplexTooltipPosition = (event) => {
-  tooltipX.value = event.clientX + 15
-  tooltipY.value = event.clientY + 15
+  scheduleTooltipUpdate(event)
 }
 
 const updateTooltipPosition = (event) => {
-  tooltipX.value = event.clientX + 15
-  tooltipY.value = event.clientY + 15
+  scheduleTooltipUpdate(event)
 }
 
 onUnmounted(() => {
   stopPulse()
   cleanDiveArrival()
+  if (tooltipRafId) cancelAnimationFrame(tooltipRafId)
   if (initialFlyTimer) clearTimeout(initialFlyTimer)
   if (returnToPlanetTimer) clearTimeout(returnToPlanetTimer)
   if (resizeTimer) clearTimeout(resizeTimer)
@@ -1163,7 +1170,7 @@ onUnmounted(() => {
   cursor: default !important;
 }
 
-/* Стили HTML-маркера (теперь только хитбокс для ховера и текст) */
+/* Стили HTML-маркера (хитбокс для ховера и аппаратное кольцо пульсации) */
 :deep(.city-marker-hitbox) {
   cursor: pointer;
   display: flex;
@@ -1183,17 +1190,45 @@ onUnmounted(() => {
   transform: translate(-50%, -50%);
 }
 
+:deep(.city-pulse-ring) {
+  width: var(--city-pulse-base-size);
+  height: var(--city-pulse-base-size);
+  border-radius: var(--radius-round);
+  background-color: var(--color-black);
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: cityPulseRing var(--anim-duration-pulse) var(--anim-easing-linear) infinite;
+}
 
-/* Плавающий Тултип */
+:deep(.city-pulse-ring.is-paused) {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+@keyframes cityPulseRing {
+  0% {
+    transform: scale(1);
+    opacity: var(--opacity-80);
+  }
+  100% {
+    transform: scale(var(--city-pulse-scale-end));
+    opacity: 0;
+  }
+}
+
+/* Плавающий Тултип (GPU-композитное позиционирование без Layout-пересчетов) */
 .map-tooltip {
   position: fixed;
+  top: var(--space-0);
+  left: var(--space-0);
   z-index: var(--z-overlay);
   border: var(--border-width) solid var(--color-header-border);
   padding: var(--space-32);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-card);
   pointer-events: none;
-  transform: translateY(0);
+  will-change: transform, opacity;
+  transform: translate3d(var(--tooltip-x), var(--tooltip-y), var(--space-0));
 }
 
 .map-tooltip__header {
@@ -1245,7 +1280,7 @@ onUnmounted(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: translateY(var(--space-6));
+  transform: translate3d(var(--tooltip-x), calc(var(--tooltip-y) + var(--space-6)), var(--space-0));
 }
 /* --- ИНФОРМАЦИОННАЯ ПАНЕЛЬ (SIDEBAR) --- */
 .map-sidebar {
@@ -1545,6 +1580,7 @@ onUnmounted(() => {
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   flex-shrink: 0;
+  contain: layout style paint;
 }
 
 .complex-list-item:hover,

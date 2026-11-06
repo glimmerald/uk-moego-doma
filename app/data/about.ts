@@ -83,7 +83,7 @@ export const aboutData: AboutPageData = {
   },
   // Заглавная фотография страницы (Hero Cover)
   coverImage: {
-    src: '/images/about/office-hero.jpg',
+    src: '/optimized/about/office-hero.webp',
     alt: 'Центральный офис Управляющей Компании Моего Дома',
     caption: 'Центральный офис Управляющей Компании — координация всех эксплуатационных участков и сервисных служб'
   },

@@ -187,6 +187,13 @@
   --complex-thumb-size: clamp(48px, calc(1.5vw + 42px), 60px);
   --complex-item-padding: clamp(12px, calc(0.5vw + 10px), 16px);
   --sidebar-city-btn-padding: clamp(16px, calc(1vw + 12px), 24px) clamp(20px, calc(1.5vw + 14px), 32px);
+  --city-pulse-base-size: 10px;
+  --city-pulse-scale-end: 3.5;
+  --anim-duration-pulse: 4s;
+  --tooltip-x: 0px;
+  --tooltip-y: 0px;
+  --spot-x: 50%;
+  --spot-y: 50%;
 
   /* Asymmetric Press Layout */
   --press-item-1-width: 60%;
@@ -210,10 +217,11 @@
   --aspect-ratio-4-5: 4/5;
   --aspect-ratio-3-4: 3/4;
 
-  /* Hero Ambient Video Backlight */
-  --hero-ambient-blur: 50px;
+  /* Hero Ambient Video Backlight (Downsampled 4x for 16x faster GPU Gaussian blur) */
+  --hero-ambient-downsample: 25%;
+  --hero-ambient-blur: 12.5px;
   --hero-ambient-opacity: 0.75;
-  --hero-ambient-scale: 1.15;
+  --hero-ambient-scale: 4.6;
   --hero-ambient-saturate: 160%;
   --hero-ambient-brightness: 0.85;
   --hero-ambient-shadow: 0 0 50px rgba(0, 0, 0, 0.6);

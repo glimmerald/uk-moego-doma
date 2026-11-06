@@ -17,7 +17,9 @@
         ],
         "status": "Строится",
         "description": "Новый жилой комплекс в уютном зеленом районе Гурьевска.",
-        "image": "/optimized/Дома ССК/Photos/DSC01791.webp"
+        "image": "/optimized/Дома ССК/Photos/DSC01791.webp",
+        "thumb": "/optimized/thumbs/vklyuchi.webp",
+        "cardImage": "/optimized/cards/vklyuchi.webp"
       }
     ],
     "globeCoordinates": [
@@ -43,7 +45,9 @@
         ],
         "status": "Строится",
         "description": "Комфортная жизнь в ближайшем пригороде Краснодара.",
-        "image": "/optimized/Дома ССК/Photos/envato-labs-image-edit (2).webp"
+        "image": "/optimized/Дома ССК/Photos/envato-labs-image-edit (2).webp",
+        "thumb": "/optimized/thumbs/dom-na-lugovoi.webp",
+        "cardImage": "/optimized/cards/dom-na-lugovoi.webp"
       }
     ],
     "globeCoordinates": [
@@ -69,7 +73,9 @@
         ],
         "status": "Сдан",
         "description": "ЖК комфорт-класса в районе Краевой клинической больницы.",
-        "image": "/optimized/Дома ССК/ЖК Свобода/SOL09842.webp"
+        "image": "/optimized/Дома ССК/ЖК Свобода/SOL09842.webp",
+        "thumb": "/optimized/thumbs/svoboda.webp",
+        "cardImage": "/optimized/cards/svoboda.webp"
       },
       {
         "id": "trilogia",
@@ -81,7 +87,9 @@
         ],
         "status": "Сдан",
         "description": "Три современных дома в микрорайоне Гидростроителей.",
-        "image": "/optimized/Дома ССК/ЖК Трилогия/SOL00030.webp"
+        "image": "/optimized/Дома ССК/ЖК Трилогия/SOL00030.webp",
+        "thumb": "/optimized/thumbs/trilogia.webp",
+        "cardImage": "/optimized/cards/trilogia.webp"
       },
       {
         "id": "yunost",
@@ -93,7 +101,9 @@
         ],
         "status": "Сдан",
         "description": "Молодежный комплекс с продуманным благоустройством.",
-        "image": "/optimized/Дома ССК/Photos/envato-labs-image-edit (8)-2.webp"
+        "image": "/optimized/Дома ССК/Photos/envato-labs-image-edit (8)-2.webp",
+        "thumb": "/optimized/thumbs/yunost.webp",
+        "cardImage": "/optimized/cards/yunost.webp"
       },
       {
         "id": "kaskad",
@@ -105,7 +115,9 @@
         ],
         "status": "Сдан",
         "description": "Дом комфорт-класса в спокойном спальном районе.",
-        "image": "/optimized/Дома ССК/ЖК Каскад/SOL00046.webp"
+        "image": "/optimized/Дома ССК/ЖК Каскад/SOL00046.webp",
+        "thumb": "/optimized/thumbs/kaskad.webp",
+        "cardImage": "/optimized/cards/kaskad.webp"
       },
       {
         "id": "prityazhenie",
@@ -117,7 +129,9 @@
         ],
         "status": "Сдан",
         "description": "Современный ЖК с активной коммерческой инфраструктурой.",
-        "image": "/optimized/Дома ССК/ЖК Притяжение/SOL09909.webp"
+        "image": "/optimized/Дома ССК/ЖК Притяжение/SOL09909.webp",
+        "thumb": "/optimized/thumbs/prityazhenie.webp",
+        "cardImage": "/optimized/cards/prityazhenie.webp"
       },
       {
         "id": "pokolenie",
@@ -129,7 +143,9 @@
         ],
         "status": "Сдан",
         "description": "Комплекс для всей семьи с безопасными дворами.",
-        "image": "/optimized/Дома ССК/ЖК Поколение/SOL00245.webp"
+        "image": "/optimized/Дома ССК/ЖК Поколение/SOL00245.webp",
+        "thumb": "/optimized/thumbs/pokolenie.webp",
+        "cardImage": "/optimized/cards/pokolenie.webp"
       },
       {
         "id": "dom-na-moskovskoy",
@@ -141,7 +157,9 @@
         ],
         "status": "Сдан",
         "description": "Уютный дом с закрытой территорией.",
-        "image": "/optimized/Дома ССК/ЖК Дом на Московской/SOL09895.webp"
+        "image": "/optimized/Дома ССК/ЖК Дом на Московской/SOL09895.webp",
+        "thumb": "/optimized/thumbs/dom-na-moskovskoy.webp",
+        "cardImage": "/optimized/cards/dom-na-moskovskoy.webp"
       },
       {
         "id": "otkritie",
@@ -153,7 +171,9 @@
         ],
         "status": "Сдан",
         "description": "Новый стандарт качества в Молодежном микрорайоне.",
-        "image": "/optimized/Дома ССК/Photos/SOL05113 копия.webp"
+        "image": "/optimized/Дома ССК/Photos/SOL05113 копия.webp",
+        "thumb": "/optimized/thumbs/otkritie.webp",
+        "cardImage": "/optimized/cards/otkritie.webp"
       },
       {
         "id": "luchshiy",
@@ -165,7 +185,9 @@
         ],
         "status": "Строится",
         "description": "Продолжение популярного жилого комплекса.",
-        "image": "/optimized/Дома ССК/Photos/SOL05113 копия.webp"
+        "image": "/optimized/Дома ССК/Photos/SOL05113 копия.webp",
+        "thumb": "/optimized/thumbs/luchshiy.webp",
+        "cardImage": "/optimized/cards/luchshiy.webp"
       },
       {
         "id": "role-clef",
@@ -177,7 +199,9 @@
         ],
         "status": "Премиум",
         "description": "Клубный дом премиум-класса в историческом центре.",
-        "image": "/optimized/Дома ССК/Photos/SOL04790 копия 3.webp"
+        "image": "/optimized/Дома ССК/Photos/SOL04790 копия 3.webp",
+        "thumb": "/optimized/thumbs/role-clef.webp",
+        "cardImage": "/optimized/cards/role-clef.webp"
       },
       {
         "id": "serdce",
@@ -189,7 +213,9 @@
         ],
         "status": "Премиум",
         "description": "Сердце города. Проект с невероятными видами на стадион.",
-        "image": "/optimized/Дома ССК/Photos/SOL05059 копия.webp"
+        "image": "/optimized/Дома ССК/Photos/SOL05059 копия.webp",
+        "thumb": "/optimized/thumbs/serdce.webp",
+        "cardImage": "/optimized/cards/serdce.webp"
       },
       {
         "id": "flotiliya",
@@ -201,7 +227,9 @@
         ],
         "status": "Сдан",
         "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "/optimized/Дома ССК/ЖК Флотилия/SOL09699.webp"
+        "image": "/optimized/Дома ССК/ЖК Флотилия/SOL09699.webp",
+        "thumb": "/optimized/thumbs/flotiliya.webp",
+        "cardImage": "/optimized/cards/flotiliya.webp"
       },
       {
         "id": "barselona",
@@ -213,7 +241,9 @@
         ],
         "status": "Сдан",
         "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "/optimized/Дома ССК/ЖК Барселона/SOL00090.webp"
+        "image": "/optimized/Дома ССК/ЖК Барселона/SOL00090.webp",
+        "thumb": "/optimized/thumbs/barselona.webp",
+        "cardImage": "/optimized/cards/barselona.webp"
       },
       {
         "id": "piruet",
@@ -225,7 +255,9 @@
         ],
         "status": "Сдан",
         "description": "Новый современный жилой комплекс под управлением УК.",
-        "image": "/optimized/Дома ССК/ЖК Пируэт/SOL00082.webp"
+        "image": "/optimized/Дома ССК/ЖК Пируэт/SOL00082.webp",
+        "thumb": "/optimized/thumbs/piruet.webp",
+        "cardImage": "/optimized/cards/piruet.webp"
       },
       {
         "id": "segodnya",
@@ -237,7 +269,9 @@
         ],
         "status": "Сдан",
         "description": "Современный жилой комплекс комфорт-класса с безопасными закрытыми дворами и развитой инфраструктурой.",
-        "image": "/optimized/Дома ССК/ЖК Сегодня/main.webp"
+        "image": "/optimized/Дома ССК/ЖК Сегодня/main.webp",
+        "thumb": "/optimized/thumbs/segodnya.webp",
+        "cardImage": "/optimized/cards/segodnya.webp"
       }
     ],
     "globeCoordinates": [

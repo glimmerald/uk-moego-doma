@@ -5,13 +5,12 @@
     <IntroLoader v-if="showIntro" @complete="onIntroComplete" />
     
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" ref="heroSectionRef">
       <div class="hero__video-wrapper">
         <video
           ref="ambientVideoRef"
           class="hero__video-ambient"
-          src="/main_video.mp4"
-          autoplay
+          preload="none"
           loop
           muted
           playsinline
@@ -22,6 +21,9 @@
             ref="mainVideoRef"
             class="hero__video"
             src="/main_video.mp4"
+            poster="/optimized/hero-poster.webp"
+            width="1280"
+            height="720"
             autoplay
             loop
             muted
@@ -238,7 +240,7 @@
 
         <div class="press__list">
           <div class="press__item" v-for="(press, index) in pressList" :key="index"
-            @mouseenter="onPressMouseMove($event)" @mousemove="onPressMouseMove($event)"
+            @mouseenter="onPressMouseEnter($event)" @mousemove="onPressMouseMove($event)" @mouseleave="onPressMouseLeave($event)"
             >
             <!-- Фотография-подложка, проявляемая "фонариком" -->
             <div class="press__image-reveal">
@@ -488,6 +490,7 @@ onMounted(() => {
 })
 
 // Hero Video Elements (Main & Ambient Backlight)
+const heroSectionRef = ref(null)
 const mainVideoRef = ref(null)
 const ambientVideoRef = ref(null)
 
@@ -712,12 +715,12 @@ const newsList = allNewsData.slice(0, 5).map(item => ({
   slug: item.slug
 }))
 
-import press1 from '@/assets/images/press/press-1.jpg'
-import press2 from '@/assets/images/press/press-2.jpg'
-import press3 from '@/assets/images/press/press-3.jpg'
-import press4 from '@/assets/images/press/press-4.jpg'
-import press5 from '@/assets/images/press/press-5.jpg'
-import kazaryanImg from '@/assets/images/press/kazaryan.jpg'
+import press1 from '@/assets/images/press/press-1.webp'
+import press2 from '@/assets/images/press/press-2.webp'
+import press3 from '@/assets/images/press/press-3.webp'
+import press4 from '@/assets/images/press/press-4.webp'
+import press5 from '@/assets/images/press/press-5.webp'
+import kazaryanImg from '@/assets/images/press/kazaryan.webp'
 
 const pressList = [
   {
@@ -823,42 +826,113 @@ const getFilteredDebtors = (building) => {
   return building.debtors.filter(d => String(d.apt).includes(query))
 }
 
-// Эффект "фонарика" (spotlight reveal) при наведении на блок
-const onPressMouseMove = (e) => {
-  if (window.innerWidth <= 1024) return;
-  
+// Эффект "фонарика" (spotlight reveal) при наведении на блок без синхронного Layout Thrashing
+let activeSpotlightReveal = null
+let activeSpotlightRect = null
+let spotlightRafId = null
+let pendingSpotX = 0
+let pendingSpotY = 0
+
+const applySpotlightPosition = () => {
+  spotlightRafId = null
+  if (!activeSpotlightReveal || !activeSpotlightRect) return
+  const x = Math.round(pendingSpotX - activeSpotlightRect.left)
+  const y = Math.round(pendingSpotY - activeSpotlightRect.top)
+  activeSpotlightReveal.style.setProperty('--spot-x', `${x}px`)
+  activeSpotlightReveal.style.setProperty('--spot-y', `${y}px`)
+}
+
+const onPressMouseEnter = (e) => {
+  if (window.innerWidth <= 1024) return
   const item = e.currentTarget
   const imageReveal = item.querySelector('.press__image-reveal')
   if (imageReveal) {
-    const rect = imageReveal.getBoundingClientRect()
-    const x = Math.round(e.clientX - rect.left)
-    const y = Math.round(e.clientY - rect.top)
-    const mask = `radial-gradient(circle var(--press-spotlight-size) at ${x}px ${y}px, var(--color-spotlight-center) var(--percent-15), var(--color-spotlight-mid) var(--percent-50), var(--color-spotlight-edge) var(--percent-75), var(--color-spotlight-transparent) 100%)`
-    imageReveal.style.webkitMaskImage = mask
-    imageReveal.style.maskImage = mask
+    activeSpotlightReveal = imageReveal
+    activeSpotlightRect = imageReveal.getBoundingClientRect()
+    pendingSpotX = e.clientX
+    pendingSpotY = e.clientY
+    applySpotlightPosition()
   }
 }
 
+const onPressMouseMove = (e) => {
+  if (window.innerWidth <= 1024) return
+  if (!activeSpotlightReveal) {
+    onPressMouseEnter(e)
+    return
+  }
+  pendingSpotX = e.clientX
+  pendingSpotY = e.clientY
+  if (!spotlightRafId) {
+    spotlightRafId = requestAnimationFrame(applySpotlightPosition)
+  }
+}
+
+const onPressMouseLeave = () => {
+  if (spotlightRafId) {
+    cancelAnimationFrame(spotlightRafId)
+    spotlightRafId = null
+  }
+  activeSpotlightReveal = null
+  activeSpotlightRect = null
+}
 
 let syncVideos = null
 let onMainPlay = null
+let heroObserver = null
+let isHeroInView = true
+
+const initAmbientVideoIfNeeded = () => {
+  if (typeof window === 'undefined' || !ambientVideoRef.value) return
+  if (window.innerWidth > 1024 && !ambientVideoRef.value.getAttribute('src')) {
+    ambientVideoRef.value.src = '/main_video.mp4'
+    if (isHeroInView && mainVideoRef.value && !mainVideoRef.value.paused) {
+      ambientVideoRef.value.currentTime = mainVideoRef.value.currentTime
+      ambientVideoRef.value.play().catch(() => {})
+    }
+  } else if (window.innerWidth <= 1024 && !ambientVideoRef.value.paused) {
+    ambientVideoRef.value.pause()
+  }
+}
 
 onMounted(() => {
-  // Hero Video Ambient Sync
+  // Hero Video Ambient Sync & Offscreen Auto-Pause
   if (mainVideoRef.value && ambientVideoRef.value) {
+    initAmbientVideoIfNeeded()
     syncVideos = () => {
-      if (mainVideoRef.value && ambientVideoRef.value) {
-        if (Math.abs(mainVideoRef.value.currentTime - ambientVideoRef.value.currentTime) > 0.15) {
+      if (!isHeroInView || window.innerWidth <= 1024) return
+      if (mainVideoRef.value && ambientVideoRef.value && !ambientVideoRef.value.paused) {
+        if (Math.abs(mainVideoRef.value.currentTime - ambientVideoRef.value.currentTime) > 0.25) {
           ambientVideoRef.value.currentTime = mainVideoRef.value.currentTime
         }
       }
     }
     onMainPlay = () => {
-      ambientVideoRef.value?.play()
+      if (isHeroInView && window.innerWidth > 1024 && ambientVideoRef.value?.getAttribute('src')) {
+        ambientVideoRef.value.play().catch(() => {})
+      }
     }
     mainVideoRef.value.addEventListener('timeupdate', syncVideos)
     mainVideoRef.value.addEventListener('seeking', syncVideos)
     mainVideoRef.value.addEventListener('play', onMainPlay)
+
+    if ('IntersectionObserver' in window && heroSectionRef.value) {
+      heroObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          isHeroInView = entry.isIntersecting
+          if (entry.isIntersecting) {
+            mainVideoRef.value?.play().catch(() => {})
+            if (window.innerWidth > 1024 && ambientVideoRef.value?.getAttribute('src')) {
+              ambientVideoRef.value.play().catch(() => {})
+            }
+          } else {
+            mainVideoRef.value?.pause()
+            ambientVideoRef.value?.pause()
+          }
+        })
+      }, { rootMargin: '150px' })
+      heroObserver.observe(heroSectionRef.value)
+    }
   }
 
   nextTick(() => {
@@ -909,16 +983,27 @@ onMounted(() => {
       ScrollTrigger.create({
         trigger: el,
         start: 'top 85%',
-        onEnter: () => el.classList.add('is-revealed'),
+        onEnter: () => {
+          el.classList.add('is-revealed');
+          if (el.classList.contains('press__item')) {
+            setTimeout(() => el.classList.add('is-settled'), 1800);
+          }
+        },
         once: true
       });
     });
   });
 
   window.addEventListener('resize', handleNewsResize);
+  window.addEventListener('resize', initAmbientVideoIfNeeded);
 })
 
 onUnmounted(() => {
+  if (spotlightRafId) cancelAnimationFrame(spotlightRafId);
+  if (heroObserver) {
+    heroObserver.disconnect();
+    heroObserver = null;
+  }
   if (mainVideoRef.value) {
     if (syncVideos) {
       mainVideoRef.value.removeEventListener('timeupdate', syncVideos);
@@ -929,6 +1014,7 @@ onUnmounted(() => {
     }
   }
   window.removeEventListener('resize', handleNewsResize);
+  window.removeEventListener('resize', initAmbientVideoIfNeeded);
   ScrollTrigger.getAll().forEach(t => t.kill());
 })
 </script>
@@ -968,15 +1054,18 @@ onUnmounted(() => {
 
 .hero__video-ambient {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: calc((100% - var(--hero-ambient-downsample)) / 2);
+  left: calc((100% - var(--hero-ambient-downsample)) / 2);
+  width: var(--hero-ambient-downsample);
+  height: var(--hero-ambient-downsample);
   object-fit: cover;
   filter: blur(var(--hero-ambient-blur)) saturate(var(--hero-ambient-saturate)) brightness(var(--hero-ambient-brightness));
   transform: scale(var(--hero-ambient-scale));
+  transform-origin: center center;
   opacity: var(--hero-ambient-opacity);
   pointer-events: none;
   z-index: var(--z-behind);
+  contain: strict;
 }
 
 .hero__video-inner {
@@ -1281,6 +1370,7 @@ onUnmounted(() => {
   background-color: var(--color-dark);
   /* Темный фон для карточки */
   cursor: pointer;
+  contain: layout paint;
 }
 
 .accordion__item:focus-visible {
@@ -1920,6 +2010,11 @@ onUnmounted(() => {
   opacity: 1;
 }
 
+/* После завершения анимации освобождаем GPU-слои (VRAM) */
+.press__item.is-settled .press__word {
+  will-change: auto;
+}
+
 .press__footer {
   position: relative;
   z-index: var(--z-base);
@@ -1974,10 +2069,11 @@ onUnmounted(() => {
   opacity: 0;
   overflow: hidden;
   transition: opacity var(--anim-duration-medium) ease;
+  contain: strict;
 
-  /* Начальная маска до первого движения мыши */
-  -webkit-mask-image: radial-gradient(circle var(--press-spotlight-size) at var(--percent-50) var(--percent-50), var(--color-spotlight-center) var(--percent-15), var(--color-spotlight-mid) var(--percent-50), var(--color-spotlight-edge) var(--percent-75), var(--color-spotlight-transparent) 100%);
-  mask-image: radial-gradient(circle var(--press-spotlight-size) at var(--percent-50) var(--percent-50), var(--color-spotlight-center) var(--percent-15), var(--color-spotlight-mid) var(--percent-50), var(--color-spotlight-edge) var(--percent-75), var(--color-spotlight-transparent) 100%);
+  /* Позиция фонарика управляется через CSS-переменные без пересборки строки градиента в JS */
+  -webkit-mask-image: radial-gradient(circle var(--press-spotlight-size) at var(--spot-x) var(--spot-y), var(--color-spotlight-center) var(--percent-15), var(--color-spotlight-mid) var(--percent-50), var(--color-spotlight-edge) var(--percent-75), var(--color-spotlight-transparent) 100%);
+  mask-image: radial-gradient(circle var(--press-spotlight-size) at var(--spot-x) var(--spot-y), var(--color-spotlight-center) var(--percent-15), var(--color-spotlight-mid) var(--percent-50), var(--color-spotlight-edge) var(--percent-75), var(--color-spotlight-transparent) 100%);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-size: 100% 100%;
@@ -2006,6 +2102,7 @@ onUnmounted(() => {
   padding: var(--space-160) 0;
   background-color: var(--color-debt-bg);
   color: var(--color-text);
+  contain: layout style;
 }
 
 .debt__container {

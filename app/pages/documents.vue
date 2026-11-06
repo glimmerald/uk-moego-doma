@@ -932,6 +932,7 @@ onUnmounted(() => {
   border-bottom: var(--border-width) solid var(--color-border);
   background-color: transparent;
   transition: background-color var(--anim-duration-fast) var(--anim-easing-smooth);
+  contain: layout style paint;
 }
 
 .document-item:hover {
